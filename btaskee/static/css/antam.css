@@ -1,0 +1,153 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+    background-color: #f8f9fa;
+    color: #333;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+/* Section Features */
+.features-section {
+    padding: 60px 0;
+    background-color: #f8f9fa;
+}
+
+.section-title {
+    font-size: 32px;
+    font-weight: 600;
+    color: #333;
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+.hero-section {
+    margin-bottom: 50px;
+}
+
+.hero-image {
+    display: block;
+    width: 100%;
+    max-height: 400px;
+    object-fit: cover;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.features-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 30px;
+    margin-bottom: 40px;
+}
+
+.feature-card {
+    background-color: #fff;
+    border-radius: 8px;
+    padding: 25px 15px;
+    text-align: center;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+}
+
+.feature-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+}
+
+.feature-icon {
+    width: 70px;
+    height: 70px;
+    margin: 0 auto 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.feature-icon img {
+    max-width: 100%;
+    max-height: 100%;
+}
+
+.feature-title {
+    font-size: 18px;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 15px;
+}
+
+.feature-description {
+    font-size: 14px;
+    color: #666;
+    line-height: 1.5;
+}
+
+.pagination-dots {
+    display: flex;
+    justify-content: center;
+    margin: 40px 0;
+}
+
+.dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background-color: #ddd;
+    margin: 0 5px;
+    cursor: pointer;
+}
+
+.dot.active {
+    background-color: #ff7a00;
+}
+
+.trusted-by {
+    margin-top: 60px;
+}
+
+.partner-logos {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.partner-logos img {
+    height: 40px;
+    margin: 10px;
+    opacity: 0.8;
+    transition: opacity 0.3s ease;
+}
+
+.partner-logos img:hover {
+    opacity: 1;
+}
+
+@media (max-width: 992px) {
+    .features-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 576px) {
+    .features-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .section-title {
+        font-size: 26px;
+    }
+    
+    .features-section {
+        padding: 40px 0;
+    }
+}

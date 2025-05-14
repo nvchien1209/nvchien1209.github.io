@@ -1,0 +1,23 @@
+.carousel-control-prev-icon,
+.carousel-control-next-icon {
+  background-color: black;
+  border-radius: 50%;
+  padding: 15px;
+}
+
+.carousel-control-prev,
+.carousel-control-next {
+  opacity: 0.8;
+}
+
+.carousel-control-prev:hover,
+.carousel-control-next:hover {
+  opacity: 1;
+}
+/* Ẩn nút điều hướng trên thiết bị di động và tablet */
+@media (max-width: 991px) {
+    .carousel-control-prev,
+    .carousel-control-next {
+      display: none;
+    }
+  }

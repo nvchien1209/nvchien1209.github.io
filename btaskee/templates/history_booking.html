@@ -1,0 +1,280 @@
+{% extends "base.html" %}
+
+{% load static %}
+
+{% load humanize %}
+
+{% block title %}Lịch sử đặt dịch vụ{% endblock %}
+
+{% block extra_head %}
+    <link rel="stylesheet" href="{% static 'css/customerHistory.css' %}">
+    <script src="{% static 'js/customerHistory.js' %}"></script>
+{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex flex-column align-items-center mb-4">
+                <h2 class="mb-4">Lịch sử sử dụng dịch vụ</h2>
+                <!-- Filter Section -->
+                <div class="history-filter w-100" style="max-width: 900px;">
+                    <div class="row justify-content-center">
+                        <div class="col-md-3 mb-3">
+                            <label for="dateRange" class="form-label">Thời gian</label>
+                            <select class="form-select" id="dateRange">
+                                <option value="all">Tất cả</option>
+                                <option value="current-month">Tháng này</option>
+                                <option value="last-month">Tháng trước</option>
+                                <option value="last-3-months">3 tháng gần đây</option>
+                                <option value="custom">Tùy chỉnh</option>
+                            </select>
+                        </div>
+                        <!-- <div class="col-md-3 mb-3">
+                            <label for="serviceType" class="form-label">Loại dịch vụ</label>
+                            <select class="form-select" id="serviceType">
+                                <option value="all">Tất cả</option>
+                                <option value="regular">Vệ sinh thường xuyên</option>
+                                <option value="deep">Vệ sinh chuyên sâu</option>
+                                <option value="window">Vệ sinh cửa kính</option>
+                                <option value="moving">Vệ sinh chuyển nhà</option>
+                            </select>
+                        </div> -->
+                        <div class="col-md-3 mb-3">
+                            <label for="status" class="form-label">Trạng thái</label>
+                            <select class="form-select" id="status">
+                                <option value="all">Tất cả</option>
+                                <option value="pending">Đang chờ</option>
+                                <option value="in-progress">Đang thực hiện</option>
+                                <option value="completed">Hoàn thành</option>
+                                <option value="cancelled">Đã hủy</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3 mb-3 d-flex align-items-end">
+                            <button class="btn btn-primary w-100">
+                                <i class="fas fa-filter me-2"></i>Lọc
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+                <!-- Custom Date Range (initially hidden) -->
+                <div class="row mt-3 d-none" id="customDateRange">
+                    <div class="col-md-5">
+                        <label for="startDate" class="form-label">Từ ngày</label>
+                        <input type="date" class="form-control" id="startDate">
+                    </div>
+                    <div class="col-md-5">
+                        <label for="endDate" class="form-label">Đến ngày</label>
+                        <input type="date" class="form-control" id="endDate">
+                    </div>
+                    <div class="col-md-2 d-flex align-items-end">
+                        <button class="btn btn-outline-primary w-100">Áp dụng</button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- History List -->
+            <div class="history-list">
+                {% if bookings %}
+                    {% for item in bookings %}
+                        <!-- Service History Item 1 -->
+                        <div class="card service-history-card">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                    <h5 class="card-title mb-0">
+                                        <div class="d-flex align-items-center">
+                                            <div class="service-type-icon">
+                                                <i class="fas fa-broom fa-lg"></i>
+                                            </div>
+                                            {{ item.service }}
+                                        </div>
+                                    </h5>
+                                    <span class="badge bg-success">{{ item.status }}</span>
+                                </div>
+                                
+                                <div class="row">
+                                    <div class="col-md-8">
+                                        <p><i class="far fa-calendar-alt me-2"></i>Ngày thực hiện: {{ item.booking_date }}</p>
+                                        <p><i class="far fa-clock me-2"></i>Thời gian: {{ item.booking_time }}</p>
+                                        <p><i class="fas fa-map-marker-alt me-2"></i>Địa chỉ: {{ item.address }}</p>
+                                        <!-- <p><i class="fas fa-user me-2"></i>Nhân viên: Nguyễn Văn A</p> -->
+                                    </div>
+                                    <div class="col-md-4">
+                                        <p><i class="fas fa-tag me-2"></i>Mã đơn: {{  item.id }}</p>
+                                        <p><i class="fas fa-money-bill-wave me-2"></i>Giá: {{ item.total_amount_after_discount|intcomma }} VNĐ</p>
+                                        <p>
+                                            <i class="fas fa-star me-2"></i>Đánh giá: 
+                                            <span class="rating-stars">
+                                                <i class="fas fa-star"></i>
+                                                <i class="fas fa-star"></i>
+                                                <i class="fas fa-star"></i>
+                                                <i class="fas fa-star"></i>
+                                                <i class="fas fa-star-half-alt"></i>
+                                            </span>
+                                            (4.5/5)
+                                        </p>
+                                    </div>
+                                </div>
+                                
+                                <div class="d-flex justify-content-end mt-3">
+                                    <button class="btn btn-outline-primary me-2">
+                                        <i class="fas fa-sync-alt me-1"></i>Đặt lại
+                                    </button>
+                                    <button
+                                        class="btn btn-outline-secondary me-2 btn-detail"
+                                        data-bs-toggle="modal"
+                                        data-bs-target="#detailsModal"
+                                        data-id="{{ item.id }}"
+                                        data-booking-date="{{ item.created_at|date:'d/m/Y' }}"
+                                        data-execute-date="{{ item.booking_date|date:'d/m/Y' }}"
+                                        data-booking-time="{{ item.booking_time }}"
+                                        data-service="{{ item.service }}"
+                                        data-status="{{ item.status }}"
+                                        data-address="{{ item.address }}"
+                                        data-house-type="{{ item.house_type }}"
+                                        data-total="{{ item.total_amount_after_discount|intcomma }}"
+                                        data-payment-method="{{ item.payment_method }}"
+                                        data-payment-status="{{ item.payment_status }}"
+                                        data-payment-date="{{ item.payment_date|date:'d/m/Y' }}"
+                                        data-payment-code="{{ item.payment_code }}"
+                                        data-rating="{{ item.rating }}"
+                                        data-rating-date="{{ item.rating_date|date:'d/m/Y' }}"
+                                        data-rating-comment="{{ item.rating_comment }}"
+                                    >
+                                        <i class="fas fa-eye me-1"></i>Chi tiết
+                                    </button>
+                                    <button class="btn btn-outline-success">
+                                        <i class="fas fa-receipt me-1"></i>Hóa đơn
+                                    </button>
+                                    
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="empty-history">
+                        <img src="{% static 'images/empty_history.jpg' %}" alt="No History" class="mb-4">
+                        <h4>Bạn chưa có lịch sử sử dụng dịch vụ</h4>
+                        <p class="text-muted">Hãy đặt dịch vụ đầu tiên của bạn để bắt đầu trải nghiệm</p>
+                    </div>
+                {% endif %}
+
+            </div>
+            
+            <!-- Pagination -->
+            <div class="pagination">
+                <a href="#" class="disabled">&laquo;&laquo;</a>
+                <a href="#" class="disabled">&laquo;</a>
+                <a href="#" class="active">1</a>
+                <a href="#">2</a>
+                <a href="#">3</a>
+                <a href="#">4</a>
+                <a href="#">5</a>
+                <a href="#">&raquo;</a>
+                <a href="#">&raquo;&raquo;</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- Service Details Modal -->
+<div class="modal fade" id="detailsModal" tabindex="-1" aria-labelledby="detailsModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="detailsModalLabel">Chi tiết dịch vụ</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row mb-4">
+                    <div class="col-md-6">
+                        <h6>Thông tin đơn hàng</h6>
+                        <p><strong>Mã đơn:</strong> <span id="modal-booking-id"></span></p>
+                        <p><strong>Ngày đặt:</strong> <span id="modal-booking-date"></span></p>
+                        <p><strong>Ngày thực hiện:</strong> <span id="modal-execute-date"></span></p>
+                        <p><strong>Thời gian:</strong> <span id="modal-booking-time"></span></p>
+                        <p><strong>Loại dịch vụ:</strong> <span id="modal-service"></span></p>
+                        <p><strong>Trạng thái:</strong> <span id="modal-status"></span></p>
+                    </div>
+                    <div class="col-md-6">
+                        <h6>Thông tin địa điểm</h6>
+                        <p><strong>Địa chỉ:</strong> <span id="modal-address"></span></p>
+                        <!-- <p><strong>Loại nhà:</strong> <span id="modal-house-type"></span></p>
+                        <p><strong>Diện tích:</strong> <span id="modal-area"></span></p>
+                        <p><strong>Số phòng:</strong> <span id="modal-room-info"></span></p>
+                        <p><strong>Ghi chú:</strong> <span id="modal-note"></span></p> -->
+                    </div>
+                </div>
+                <div class="row mb-4">
+                    <div class="col-12">
+                        <h6>Chi tiết dịch vụ</h6>
+                        <table class="table table-bordered" id="modal-service-detail-table">
+                            <thead>
+                                <tr>
+                                    <th>Dịch vụ</th>
+                                    <th>Khu vực</th>
+                                    <th>Đơn giá</th>
+                                    <th>Số lượng</th>
+                                    <th>Thành tiền</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Nội dung sẽ được thêm bằng JS -->
+                            </tbody>
+                            <tfoot>
+                                <tr>
+                                    <td colspan="4" class="text-end"><strong>Tổng cộng:</strong></td>
+                                    <td id="modal-total-amount"><strong></strong></td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                </div>
+                <div class="row mb-4">
+                    <div class="col-md-6">
+                        <h6>Thông tin thanh toán</h6>
+                        <p><strong>Phương thức:</strong> <span id="modal-payment-method"></span></p>
+                        <p><strong>Ngày thanh toán:</strong> <span id="modal-payment-date"></span></p>
+                        <p><strong>Trạng thái:</strong> <span id="modal-payment-status"></span></p>
+                        <p><strong>Mã giao dịch:</strong> <span id="modal-payment-code"></span></p>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-12">
+                        <h6>Đánh giá & Phản hồi</h6>
+                        <div class="d-flex align-items-center mb-2">
+                            <div class="me-3">
+                                <span class="rating-stars" id="modal-rating-stars">
+                                    <!-- JS sẽ render sao -->
+                                </span>
+                                <span class="ms-2" id="modal-rating-score"></span>
+                            </div>
+                            <span class="text-muted" id="modal-rating-date"></span>
+                        </div>
+                        <div class="card">
+                            <div class="card-body">
+                                <p class="card-text" id="modal-rating-comment"></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Empty History State (Hidden by default, show when no history) -->
+<div class="empty-history d-none">
+    <img src="empty-history.svg" alt="No History" class="mb-4" style="max-width: 200px;">
+    <h4>Bạn chưa có lịch sử sử dụng dịch vụ</h4>
+    <p class="text-muted">Hãy đặt dịch vụ đầu tiên của bạn để bắt đầu trải nghiệm</p>
+    <button class="btn btn-primary mt-3">
+        <i class="fas fa-plus me-2"></i>Đặt dịch vụ ngay
+    </button>
+</div>
+{% endblock %}

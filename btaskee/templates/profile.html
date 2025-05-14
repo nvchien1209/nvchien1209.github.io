@@ -1,0 +1,184 @@
+{% extends "base.html" %}
+
+{% load static %}
+
+{% block title %}Tài khoản{% endblock %}
+
+{% block extra_head %}
+    <link rel="stylesheet" href="{% static 'css/customerDasshboard.css' %}">
+    <script src="{% static 'js/customerDashboard.js' %}"></script>
+{% endblock %}
+
+{% block content %}
+
+    
+    <!-- Main Content -->
+    <div class="container my-4">
+        
+        <div class="row">
+            <!-- User Sidebar -->
+            <div class="col-md-4 mb-4">
+                <div class="user-sidebar">
+                    <div class="user-avatar">
+                        <!-- <span class="text-muted">240 x 240</span> -->
+                        {% if user.avatar and user.avatar.url %}
+                            <img id="current-avatar" src="{{ user.avatar.url }}" alt="Avatar" class="img-fluid current-avatar" >
+                        {% else %}
+                            <img id="current-avatar" src="{% static 'images/avt_default.jpg' %}" alt="Avatar" class="img-fluid current-avatar">
+                        {% endif %}
+                        <div class="edit-profile-btn" id="edit-avatar-btn">
+                            <i class="fas fa-pencil-alt"></i>
+                        </div>
+                    </div>
+                    
+                    <!-- Avatar Upload Modal -->
+                    <div class="avatar-modal" id="avatar-modal">
+                        <div class="avatar-modal-content">
+                            <form id="avatar-upload-form" method="POST" enctype="multipart/form-data" action="{% url 'update_avatar' %}">
+                                {% csrf_token %}
+                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                    <h5 class="mb-0">Thay đổi ảnh đại diện</h5>
+                                    <button type="button" class="btn-close" id="close-avatar-modal"></button>
+                                </div>
+                                <div class="avatar-preview mb-3">
+                                    <img id="avatar-preview-img" src="" alt="Avatar Preview">
+                                </div>
+                                <div class="mb-3">
+                                    <label for="avatar-upload" class="form-label">Chọn ảnh mới</label>
+                                    <input class="form-control" type="file" id="avatar-upload" name="avatar" accept="image/*" required>
+                                </div>
+                                <div class="d-flex justify-content-end">
+                                    <button type="button" class="btn btn-secondary me-2" id="cancel-avatar">Hủy</button>
+                                    <button type="submit" class="btn save-btn" id="save-avatar">Lưu ảnh</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                    {% if user.first_name %}
+                    <h4 class="mt-3 mb-1">{{ user.first_name }} {{ user.last_name }}</h4>
+                    {% else %}
+                    <h4 class="mt-3 mb-1">Hãy cập nhật họ tên</h4>
+                    {% endif %}
+                    <p class="text-white-50 mb-3">Thành viên từ: {{ user.created_at|date:"m/Y" }}</p>
+                    
+                    <div class="user-stats">
+                        <div class="user-stat-item">
+                            <span class="stat-number">{{ user.total_bookings }}</span>
+                            <span class="stat-label">Đơn Dịch Vụ</span>
+                        </div>
+                        <div class="user-stat-item">
+                            <span class="stat-number">{{ user.reward_points }}</span>
+                            <span class="stat-label">Điểm Thưởng</span>
+                        </div>
+                        
+                        <div class="user-stat-item">
+                            <span class="stat-number">4.9</span>
+                            <span class="stat-label">Đánh Giá Trung Bình</span>
+                        </div>
+                    </div>
+                    
+                    <div class="user-rank">
+                        <div class="d-flex justify-content-between">
+                            <span>Thành viên {{ user.membership }}</span>
+                        </div>
+                        <div class="rank-progress">
+                            <div class="rank-progress-bar" style="width: 50%"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- User Content Area -->
+            <div class="col-md-8">
+                <!-- Personal Information Section -->
+                <div class="user-content-area mb-4">
+                    <form id="profile-form" method="POST" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        <div class="content-header">
+                            <h3>Thông Tin Cá Nhân</h3>
+                            <button type="submit" class="save-btn">
+                                <i class="fas fa-save me-1"></i>
+                                Lưu Thay Đổi
+                            </button>
+                        </div>
+                        
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label for="lastName" class="form-label">Họ</label>
+                                <input type="text" class="form-control" id="lastName" name="lastName" value="{{ user.first_name }}">
+                            </div>
+                            <div class="col-md-6">
+                                <label for="firstName" class="form-label">Tên</label>
+                                <input type="text" class="form-control" id="firstName" name="firstName" value="{{ user.last_name }}">
+                            </div>
+                            <div class="col-md-6">
+                                <label for="email" class="form-label">Email</label>
+                                <input type="email" class="form-control" id="email" name="email" value="{{ user.email }}">
+                            </div>
+                            <div class="col-md-6">
+                                <label for="phone" class="form-label">Số Điện Thoại</label>
+                                <input type="tel" class="form-control" id="phone" name="phone" value="{{ user.phone }}">
+                            </div>
+                            <div class="col-md-6">
+                                <label for="birthdate" class="form-label">Ngày Sinh</label>
+                                <input type="date" class="form-control" id="birthdate" name="birthdate" value="{{ user.date_of_birth|date:'Y-m-d' }}">
+                            </div>
+                            <div class="col-md-6">
+                                <label for="gender" class="form-label">Giới Tính</label>
+                                <select class="form-select" id="gender" name="gender">
+                                    <option value="Nam" {% if user.sex == "Nam" %}selected{% endif %}>Nam</option>
+                                    <option value="Nữ" {% if user.sex == "Nữ" %}selected{% endif %}>Nữ</option>
+                                    <option value="Khác" {% if user.sex == "Khác" %}selected{% endif %}>Khác</option>
+                                </select>
+
+                            </div>
+                            <!-- Thêm trường ẩn cho avatar -->
+                            <input type="file" name="avatar" id="avatar-upload-form" style="display: none;">
+                        </div>
+                    </form>
+                </div>
+                {% if messages %}
+                    <div class="messages">
+                        {% for message in messages %}
+                            {% if forloop.first %}
+                                <div class="alert alert-{{ message.tags|default:'info' }} alert-dismissible fade show" role="alert">
+                                    {{ message }}
+                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                                </div>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                {% endif %}
+
+                <!-- Password Section -->
+                <div class="user-content-area">
+                    <form id="password-form" method="POST" action="{% url 'change_password' %}">
+                        {% csrf_token %}
+                        <div class="content-header">
+                            <h3>Thay Đổi Mật Khẩu</h3>
+                        </div>
+                    
+                        <div class="row g-3">
+                            <div class="col-12">
+                                <label for="currentPassword" class="form-label">Mật Khẩu Hiện Tại</label>
+                                <input type="password" class="form-control" id="currentPassword" name="currentPassword">
+                            </div>
+                            <div class="col-12">
+                                <label for="newPassword" class="form-label">Mật Khẩu Mới</label>
+                                <input type="password" class="form-control" id="newPassword" name="newPassword">
+                            </div>
+                            <div class="col-12">
+                                <label for="confirmPassword" class="form-label">Xác Nhận Mật Khẩu</label>
+                                <input type="password" class="form-control" id="confirmPassword" name="confirmPassword">
+                            </div>
+                            <div class="col-12">
+                                <button type="submit" class="password-update-btn">Cập Nhật Mật Khẩu</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}

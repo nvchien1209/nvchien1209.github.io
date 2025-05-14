@@ -1,0 +1,171 @@
+{% extends "base.html" %}
+
+{% load static %}
+
+{% block title %}Tin tức{% endblock %}
+
+{% block extra_head %}
+    <link rel="stylesheet" href="{% static 'css/news.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1>Tin mới cập nhật</h1>
+    
+    <div class="article-grid">
+        <!-- Article 1 -->
+        <div class="article-card">
+            <div class="article-image-container">
+                <img src="{% static 'images/news1.png' %}" alt="Địa chỉ thuê người giúp việc uy tín" class="article-image">
+                <div class="image-overlay">ĐỊA CHỈ THUÊ NGƯỜI GIÚP VIỆC UY TÍN</div>
+            </div>
+            <div class="article-content">
+                <h2 class="article-title"><a href="#">Địa chỉ thuê người giúp việc uy tín</a></h2>
+                <div class="article-date">3/3/2025</div>
+                <p class="article-excerpt">Tìm thuê người giúp việc uy tín ở đâu tại TP.HCM và Hà Nội? Hãy tham khảo bài viết này để đưa ra lựa chọn đúng đắn!</p>
+                <a href="#" class="read-more">Xem thêm >></a>
+            </div>
+        </div>
+        
+        <!-- Article 2 -->
+        <div class="article-card">
+            <div class="article-image-container">
+                <img src="{% static 'images/news2.png' %}" alt="Thuê giúp việc cần lưu ý những gì" class="article-image">
+                <div class="image-overlay">THUÊ GIÚP VIỆC CẦN LƯU Ý NHỮNG GÌ? KINH NGHIỆM TỪ CHUYÊN GIA</div>
+            </div>
+            <div class="article-content">
+                <h2 class="article-title"><a href="#">Thuê giúp việc cần lưu ý những gì? Kinh nghiệm từ chuyên gia</a></h2>
+                <div class="article-date">1/3/2025</div>
+                <p class="article-excerpt">Trong cuộc sống bận rộn hiện nay, thuê giúp việc đang trở thành một nhu cầu thiết yếu của nhiều gia đình Việt Nam. Tuy nhiên, không phải ai cũng biết cách lựa chọn dịch vụ giúp việc nhà phù hợp và đáng tin cậy. Bài viết này sẽ cung cấp cho bạn những kinh nghiệm quý báu khi tìm người giúp việc để đảm bảo an toàn và hiệu quả cho gia đình.</p>
+                <a href="#" class="read-more">Xem thêm >></a>
+            </div>
+        </div>
+        
+        <!-- Article 3 -->
+        <div class="article-card">
+            <div class="article-image-container">
+                <img src="{% static 'images/news3.png' %}" alt="Nhu cầu giúp việc tại TP.HCM Tăng cao" class="article-image">
+                <div class="image-overlay">NHU CẦU GIÚP VIỆC TẠI TP.HCM TĂNG CAO: XU HƯỚNG VÀ GIẢI PHÁP</div>
+            </div>
+            <div class="article-content">
+                <h2 class="article-title"><a href="#">Nhu cầu giúp việc tại TP.HCM Tăng cao: Xu hướng và Giải pháp</a></h2>
+                <div class="article-date">27/2/2025</div>
+                <p class="article-excerpt">Hãy cùng tìm hiểu lý do tại sao nhu cầu thuê người giúp việc tại TP.HCM ngày càng tăng và khám phá giải pháp từ JupViec nhé!</p>
+                <a href="#" class="read-more">Xem thêm >></a>
+            </div>
+        </div>
+        
+        <!-- Article 4 -->
+        <div class="article-card">
+            <div class="article-image-container">
+                <img src="{% static 'images/news4.png' %}" alt="Đánh Giá JupViec" class="article-image">
+                <div class="image-overlay">ĐÁNH GIÁ JUPVIEC — NHẬN LIỀN 50K!</div>
+            </div>
+            <div class="article-content">
+                <h2 class="article-title"><a href="#">Đánh Giá JupViec — Nhận Liền 50K!</a></h2>
+                <div class="article-date">20/2/2025</div>
+                <p class="article-excerpt">Chia sẻ kinh nghiệm sử dụng dịch vụ của JupViec và nhận ngay 50K vào tài khoản! Chương trình khuyến mãi hấp dẫn dành cho khách hàng thân thiết.</p>
+                <a href="#" class="read-more">Xem thêm >></a>
+            </div>
+        </div>
+        
+        <!-- Article 5 -->
+        <div class="article-card">
+            <div class="article-image-container">
+                <img src="{% static 'images/news5.jpg' %}" alt="Giúp Việc Tết – Giải Pháp Hoàn Hảo Cho Mùa Tất Bật" class="article-image">
+                <div class="image-overlay">GIÚP VIỆC TẾT – GIẢI PHÁP HOÀN HẢO CHO MÙA TẤT BẬT</div>
+            </div>
+            <div class="article-content">
+                <h2 class="article-title"><a href="#">Giúp Việc Tết – Giải Pháp Hoàn Hảo Cho Mùa Tất Bật</a></h2>
+                <div class="article-date">16/1/2025</div>
+                <p class="article-excerpt">Tết đến, công việc ngập đầu, bạn đã có giải pháp chưa? Khám phá dịch vụ giúp việc Tết chuyên nghiệp.</p>
+                <a href="#" class="read-more">Xem thêm >></a>
+            </div>
+        </div>
+        
+        <!-- Article 6 -->
+        <div class="article-card">
+            <div class="article-image-container">
+                <img src="{% static 'images/news6.jpg' %}" alt="5 lợi ích khi thuê giúp việc Tết" class="article-image">
+                <div class="image-overlay">5 LỢI ÍCH KHI THUÊ GIÚP VIỆC TẾT</div>
+            </div>
+            <div class="article-content">
+                <h2 class="article-title"><a href="#">5 lợi ích khi thuê giúp việc Tết</a></h2>
+                <div class="article-date">13/1/2025</div>
+                <p class="article-excerpt">Tết sắp đến rồi, cùng khám phá xem giúp việc Tết sẽ mang lại lợi ích gì cho bạn? Tiết kiệm thời gian, giảm căng thẳng và tận hưởng kỳ nghỉ trọn vẹn.</p>
+                <a href="#" class="read-more">Xem thêm >></a>
+            </div>
+        </div>
+        
+        <!-- Article 7 -->
+        <div class="article-card">
+            <div class="article-image-container">
+                <img src="{% static 'images/news7.png' %}" alt="Dịch vụ dọn nhà đón Tết" class="article-image">
+                <div class="image-overlay">DỊCH VỤ DỌN NHÀ ĐÓN TẾT</div>
+            </div>
+            <div class="article-content">
+                <h2 class="article-title"><a href="#">Dịch vụ dọn nhà đón Tết - Tạo không gian sạch đẹp đón năm mới</a></h2>
+                <div class="article-date">5/1/2025</div>
+                <p class="article-excerpt">Đón Tết với không gian nhà sạch sẽ, gọn gàng và tràn đầy may mắn. Dịch vụ dọn nhà đón Tết chuyên nghiệp sẽ giúp bạn tiết kiệm thời gian và công sức.</p>
+                <a href="#" class="read-more">Xem thêm >></a>
+            </div>
+        </div>
+        
+        <!-- Article 8 -->
+        <div class="article-card">
+            <div class="article-image-container">
+                <img src="{% static 'images/news8.png' %}" alt="Kinh nghiệm thuê người giúp việc theo giờ" class="article-image">
+                <div class="image-overlay">KINH NGHIỆM THUÊ NGƯỜI GIÚP VIỆC THEO GIỜ</div>
+            </div>
+            <div class="article-content">
+                <h2 class="article-title"><a href="#">Kinh nghiệm thuê người giúp việc theo giờ hiệu quả và an toàn</a></h2>
+                <div class="article-date">28/12/2024</div>
+                <p class="article-excerpt">Chia sẻ những điều cần biết khi thuê người giúp việc theo giờ, từ cách tìm kiếm, đánh giá đến quản lý công việc hiệu quả.</p>
+                <a href="#" class="read-more">Xem thêm >></a>
+            </div>
+        </div>
+        
+        <!-- Article 9 -->
+        <div class="article-card">
+            <div class="article-image-container">
+                <img src="{% static 'images/news9.png' %}" alt="Cách vệ sinh nhà cửa hiệu quả" class="article-image">
+                <div class="image-overlay">CÁCH VỆ SINH NHÀ CỬA HIỆU QUẢ</div>
+            </div>
+            <div class="article-content">
+                <h2 class="article-title"><a href="#">Cách vệ sinh nhà cửa hiệu quả - Bí quyết từ chuyên gia</a></h2>
+                <div class="article-date">15/12/2024</div>
+                <p class="article-excerpt">Khám phá những mẹo vệ sinh nhà cửa hiệu quả, nhanh chóng từ các chuyên gia giúp việc hàng đầu. Tiết kiệm thời gian và công sức cho gia đình bạn.</p>
+                <a href="#" class="read-more">Xem thêm >></a>
+            </div>
+        </div>
+        
+        <!-- Article 10 -->
+        <div class="article-card">
+            <div class="article-image-container">
+                <img src="{% static 'images/news10.png' %}" alt="Cách Thuê Giúp Việc Tết Hiệu Quả Nhất" class="article-image">
+                <div class="image-overlay">CÁCH THUÊ GIÚP VIỆC TẾT HIỆU QUẢ NHẤT</div>
+            </div>
+            <div class="article-content">
+                <h2 class="article-title"><a href="#">Cách Thuê Giúp Việc Tết Hiệu Quả Nhất</a></h2>
+                <div class="article-date">10/12/2024</div>
+                <p class="article-excerpt">Hướng dẫn chi tiết cách thuê dịch vụ giúp việc Tết hiệu quả, tiết kiệm chi phí và đảm bảo chất lượng tốt nhất cho gia đình.</p>
+                <a href="#" class="read-more">Xem thêm >></a>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Pagination -->
+    <div class="pagination">
+        <a href="#" class="disabled">&laquo;&laquo;</a>
+        <a href="#" class="disabled">&laquo;</a>
+        <a href="#" class="active">1</a>
+        <a href="#">2</a>
+        <a href="#">3</a>
+        <a href="#">4</a>
+        <a href="#">5</a>
+        <a href="#">&raquo;</a>
+        <a href="#">&raquo;&raquo;</a>
+    </div>
+</div>
+
+{% endblock %}

@@ -1,0 +1,340 @@
+{% extends "base.html" %}
+
+{% load static %}
+
+{% block title %}Home{% endblock %}
+
+{% block extra_head %}
+    
+    <script   script src="{% static 'js/sliderservice.js' %}"></script>
+    <script src="{% static 'js/feedback.js' %}"></script>
+{% endblock %}
+
+{% block content %}
+        <!-- BANNER SECTION - Tách riêng -->
+        <section id="banner-section">
+            <div class="container-fluid px-0">
+                <div id="carouselExampleIndicators" class="carousel slide" data-bs-ride="carousel" data-bs-interval="3000">
+                    <div class="carousel-indicators">
+                        <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
+                        <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="1" aria-label="Slide 2"></button>
+                    </div>
+                    <div class="carousel-inner">
+                        <div class="carousel-item active">
+                            <img src="{% static 'images/banner1.png' %}" class="d-block w-100" alt="bTaskee Banner 1">
+                        </div>
+                        <div class="carousel-item">
+                            <img src="{% static 'images/banner2.png' %}" class="d-block w-100" alt="bTaskee Banner 2">
+                        </div>
+                    </div>
+                    <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="prev">
+                        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                        <span class="visually-hidden">Previous</span>
+                    </button>
+                    <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="next">
+                        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                        <span class="visually-hidden">Next</span>
+                    </button>
+                </div>
+            </div>
+        </section>
+    
+    <!-- Section Tiêu đề -->
+    <section class="services-title-section py-5">
+        <div class="container">
+            <div class="row">
+                <div class="col-12 text-center mb-4">
+                    <h2 class="section-title">Tất cả những tiện ích gia đình mà bạn cần</h2>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Section Slider -->
+    <section class="services-slider-section pb-5">
+        <div class="container">
+            <div class="position-relative">
+                <div class="row">
+                    <div class="col-12">
+                        <!-- Nút điều hướng -->
+                        <!-- <div class="slider-controls position-relative mb-4">
+                            <button id="prev-btn" class="service-control prev-control position-absolute start-0">
+                                <i class="bi bi-chevron-left"></i>
+                            </button>
+                            
+                            <button id="next-btn" class="service-control next-control position-absolute end-0">
+                                <i class="bi bi-chevron-right"></i>
+                            </button>
+                        </div> -->
+                        
+                        <!-- Main Slider -->
+                        <div class="multiple-items ">
+                            <!-- Dịch vụ 1 -->
+                            <div class="service-slide px-2">
+                                <div class="service-card">
+                                    <div class="service-img">
+                                        <img src="{% static 'images/gvtheogio.jpg' %}" alt="Giúp việc nhà theo giờ" class="img-fluid rounded">
+                                    </div>
+                                    <div class="service-content mt-3">
+                                        <h4 class="service-title">Giúp việc nhà theo giờ</h4>
+                                        <p class="service-desc">Là dịch vụ đầu tiên bTaskee triển khai. Giờ đây công việc dọn dẹp không còn là nỗi bận tâm, bạn sẽ có nhiều thời gian nghỉ ngơi và tận hưởng cuộc sống.</p>
+                                        <a href="#" class="btn-link">Đặt dịch vụ ngay</a>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Dịch vụ 2 -->
+                            <div class="service-slide px-2">
+                                <div class="service-card">
+                                    <div class="service-img">
+                                        <img src="{% static 'images/tongvesinh.png' %}" alt="Tổng vệ sinh" class="img-fluid rounded">
+                                    </div>
+                                    <div class="service-content mt-3">
+                                        <h4 class="service-title">Tổng vệ sinh</h4>
+                                        <p class="service-desc">Xử lý chuyên sâu mọi vết bẩn trong căn nhà của bạn với từ 2 cộng tác viên giúp việc nhà trở lên.</p>
+                                        <a href="#" class="btn-link">Đặt dịch vụ ngay</a>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Dịch vụ 3 -->
+                            <div class="service-slide px-2">
+                                <div class="service-card">
+                                    <div class="service-img">
+                                        <img src="{% static 'images/dicho.png' %}" alt="Đi chợ" class="img-fluid rounded">
+                                    </div>
+                                    <div class="service-content mt-3">
+                                        <h4 class="service-title">Đi chợ</h4>
+                                        <p class="service-desc">Việc mua sắm thực phẩm và đồ dùng gia đình trở nên tiện lợi hơn bao giờ hết. Giao hàng tận nơi chỉ sau 1h.</p>
+                                        <a href="#" class="btn-link">Đặt dịch vụ ngay</a>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Dịch vụ 4 -->
+                            <div class="service-slide px-2">
+                                <div class="service-card">
+                                    <div class="service-img">
+                                        <img src="{% static 'images/vesinhmaylanh.png' %}" alt="Vệ sinh máy lạnh" class="img-fluid rounded">
+                                    </div>
+                                    <div class="service-content mt-3">
+                                        <h4 class="service-title">Vệ sinh máy lạnh</h4>
+                                        <p class="service-desc">Giúp cải thiện chất lượng không khí, giảm mức tiêu thụ điện năng và tăng tuổi thọ máy lạnh tại nhà hay phòng làm việc của bạn.</p>
+                                        <a href="#" class="btn-link">Đặt dịch vụ ngay</a>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Dịch vụ 5 -->
+                            <div class="service-slide px-2">
+                                <div class="service-card">
+                                    <div class="service-img">
+                                        <img src="{% static 'images/giatui.png' %}" alt="Giặt ủi" class="img-fluid rounded">
+                                    </div>
+                                    <div class="service-content mt-3">
+                                        <h4 class="service-title">Giặt ủi</h4>
+                                        <p class="service-desc">Dịch vụ giặt ủi tận nhà với tiêu chuẩn chuyên nghiệp, giúp quần áo của bạn luôn sạch sẽ và thơm tho.</p>
+                                        <a href="#" class="btn-link">Đặt dịch vụ ngay</a>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Thêm các dịch vụ khác tại đây -->
+                        </div>
+                        
+                        <!-- Chỉ số trang -->
+                        <div class="carousel-indicators custom-indicators mt-4">
+                            <!-- Indicators sẽ được tạo động bằng JavaScript -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <section class="features-section">
+        <div class="container">
+            <h2 class="section-title">An tâm với lựa chọn của bạn</h2>
+            
+            <div class="hero-section">
+                <img src="{% static 'images/home-page-an-tam-voi-lua-chon-cua-ban.png' %}" alt="Người dùng đang sử dụng ứng dụng" class="hero-image">
+            </div>
+            
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <img src="{% static 'images/badge-time-clock.png' %}" alt="Biểu tượng đặt lịch">
+                    </div>
+                    <h3 class="feature-title">Đặt lịch nhanh chóng</h3>
+                    <p class="feature-description">Thao tác 60 giây trên ứng dụng, có ngay người nhận việc sau 60 phút</p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <img src="{% static 'images/badge-pay.png' %}" alt="Biểu tượng giá cả">
+                    </div>
+                    <h3 class="feature-title">Giá cả rõ ràng</h3>
+                    <p class="feature-description">Giá dịch vụ được hiển thị rõ ràng trên ứng dụng. Bạn không phải trả thêm bất kỳ khoản chi phí nào.</p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <img src="{% static 'images/badge-service.png' %}" alt="Biểu tượng dịch vụ">
+                    </div>
+                    <h3 class="feature-title">Đa dạng dịch vụ</h3>
+                    <p class="feature-description">Với 9 dịch vụ tiện ích, bTaskee sẵn sàng hỗ trợ mọi nhu cầu việc nhà của bạn.</p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <img src="{% static 'images/badge-insurrance.png' %}" alt="Biểu tượng an toàn">
+                    </div>
+                    <h3 class="feature-title">An toàn tối đa</h3>
+                    <p class="feature-description">Người làm uy tín, luôn có hồ sơ lý lịch rõ ràng và được Công ty giám sát trong suốt quá trình làm việc.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+        
+
+    
+    <section class="process-section">
+        <h2 class="section-title">Quy trình sử dụng dịch vụ</h2>
+        
+        <div class="process-steps">
+            <!-- Bước 1 -->
+            <div class="process-step">
+                <div class="step-image">
+                    <img src="{% static 'images/chondv.png' %}" alt="Chọn dịch vụ">
+                </div>
+                <div class="step-content">
+                    <h3 class="step-title">Chọn dịch vụ</h3>
+                    <p class="step-description">Chúng tôi có tới 9 dịch vụ tiện ích sẵn sàng hỗ trợ bạn.</p>
+                </div>
+            </div>
+            
+            <!-- Bước 2 -->
+            <div class="process-step">
+                <div class="step-image">
+                    <img src="{% static 'images/chontgdd.png' %}" alt="Chọn thời gian và địa điểm">
+                </div>
+                <div class="step-content">
+                    <h3 class="step-title">Chọn thời gian và địa điểm</h3>
+                    <p class="step-description">Xác định ngày, giờ và địa điểm để đặt dịch vụ bTaskee trong vòng chưa đầy 60 giây. Bạn có thể tùy chọn số lần sử dụng theo nhu cầu.</p>
+                </div>
+            </div>
+            
+            <!-- Bước 3 -->
+            <div class="process-step">
+                <div class="step-image">
+                    <img src="{% static 'images/thcv.png' %}" alt="Tiến hành công việc">
+                </div>
+                <div class="step-content">
+                    <h3 class="step-title">Tiến hành công việc</h3>
+                    <p class="step-description">Người giúp việc gia đình/đối tác sẽ xác nhận đến nhà bạn như đã hẹn và thực hiện nhiệm vụ. Chất lượng, sự chuyên nghiệp luôn được đảm bảo 100%.</p>
+                </div>
+            </div>
+            
+            <!-- Bước 4 -->
+            <div class="process-step">
+                <div class="step-image">
+                    <img src="{% static 'images/dgxh.png' %}" alt="Đánh giá và xếp hạng">
+                </div>
+                <div class="step-content">
+                    <h3 class="step-title">Đánh giá và xếp hạng</h3>
+                    <p class="step-description">Bạn có thể đánh giá chất lượng dịch vụ thông qua ứng dụng bTaskee.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Section Phản hồi của khách hàng -->
+    <section class="testimonials-section py-5">
+        <div class="container">
+            <h2 class="section-title text-center mb-4">Phản hồi của khách hàng</h2>
+            <div class="divider mx-auto mb-5"></div>
+            
+            <!-- Testimonial Content -->
+            <div class="testimonial-content text-center mb-5">
+                <div class="testimonial-slider">
+                    <!-- Testimonial 1 -->
+                    <div class="testimonial-item">
+                        <p class="testimonial-text">Dịch vụ JupViec.vn là hợp lý nhất cho gia đình bạn, sau mấy giờ nhân viên JupViec.vn như cô Tấm thời xưa sẽ làm hết công việc một cách chuyên nghiệp, và luôn cố gắng từng ngày. Chỉ có điều cô Tấm đến từ Công ty và các bạn phải trả tiền cho dịch vụ hiện đại này :))</p>
+                        <h5 class="testimonial-name mt-4">Chị Lê Thị Kim Hương</h5>
+                        <p class="testimonial-location">Hà Nội</p>
+                    </div>
+                    
+                    <!-- Testimonial 2 -->
+                    <div class="testimonial-item">
+                        <p class="testimonial-text">Tôi rất hài lòng với dịch vụ giúp việc nhà. Nhân viên đến đúng giờ và làm việc rất chăm chỉ, nhà cửa sạch sẽ và gọn gàng hơn hẳn.</p>
+                        <h5 class="testimonial-name mt-4">Anh Nguyễn Văn Minh</h5>
+                        <p class="testimonial-location">TP. Hồ Chí Minh</p>
+                    </div>
+                    
+                    <!-- Testimonial 3 -->
+                    <div class="testimonial-item">
+                        <p class="testimonial-text">Dịch vụ vệ sinh máy lạnh rất tốt, nhân viên làm việc cẩn thận và chuyên nghiệp. Máy lạnh nhà tôi hoạt động tốt hơn và tiết kiệm điện hơn.</p>
+                        <h5 class="testimonial-name mt-4">Chị Trần Thị Mai</h5>
+                        <p class="testimonial-location">Đà Nẵng</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Avatar Slider -->
+            <div class="avatar-slider-container">
+                <div class="avatar-slider">
+                    <!-- Avatar 1 -->
+                    <div class="avatar-item">
+                        <div class="avatar-img active">
+                            <img src="../images/avatar1.jpg" alt="Avatar Khách hàng" class="img-fluid">
+                        </div>
+                    </div>
+                    
+                    <!-- Avatar 2 -->
+                    <div class="avatar-item">
+                        <div class="avatar-img">
+                            <img src="../images/avt2.jpg" alt="Avatar Khách hàng" class="img-fluid">
+                        </div>
+                    </div>
+                    
+                    <!-- Avatar 3 -->
+                    <div class="avatar-item">
+                        <div class="avatar-img">
+                            <img src="../images/avt3.jpg" alt="Avatar Khách hàng" class="img-fluid">
+                        </div>
+                    </div>
+                    
+                    <!-- Avatar 4 -->
+                    <div class="avatar-item">
+                        <div class="avatar-img">
+                            <img src="../images/avt4.jpg" alt="Avatar Khách hàng" class="img-fluid">
+                        </div>
+                    </div>
+                    
+                    <!-- Avatar 5 -->
+                    <div class="avatar-item">
+                        <div class="avatar-img">
+                            <img src="../images/avt5.jpg" alt="Avatar Khách hàng" class="img-fluid">
+                        </div>
+                    </div>
+                    
+                    <!-- Avatar 6 -->
+                    <div class="avatar-item">
+                        <div class="avatar-img">
+                            <img src="../images/avt6.jpg" alt="Avatar Khách hàng" class="img-fluid">
+                        </div>
+                    </div>
+                    
+                    <!-- Avatar 7 -->
+                    <div class="avatar-item">
+                        <div class="avatar-img">
+                            <img src="../images/avt7.jpg" alt="Avatar Khách hàng" class="img-fluid">
+                        </div>
+                    </div>
+                </div>
+            </div>
+             
+        </div>
+        
+    </section>
+{% endblock %}

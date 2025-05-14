@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Đăng Ký</title>
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="{% static 'vendors/bootstrap/bootstrap-5.3.3-dist/css/bootstrap.min.css' %}">
+    <link rel="stylesheet" href="{% static 'css/register.css' %}">
+</head>
+<body>
+    <div class="container">
+        <div class="register-container border-orange">
+            <h1 class="register-header">Đăng Ký</h1>
+            
+            <!-- Hiển thị thông báo lỗi -->
+            {% if messages %}
+            <div class="alert alert-danger">
+                <ul class="mb-0">
+                    {% for message in messages %}
+                    <li>{{ message }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+            {% endif %}
+
+            <form id="registerForm" method="POST" novalidate>
+                {% csrf_token %}
+                
+                <div class="mb-3">
+                    <label for="username" class="form-label">Tên đăng nhập:</label>
+                    <input type="text" class="form-control" id="username" name="username" 
+                           value="{{ username|default:'' }}" required>
+                    <div class="invalid-feedback">
+                        Vui lòng nhập tên đăng nhập (tối thiểu 5 ký tự).
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label for="password" class="form-label">Mật khẩu:</label>
+                    <input type="password" class="form-control" id="password" name="password" required>
+                    <div class="invalid-feedback">
+                        Vui lòng nhập mật khẩu hợp lệ.
+                    </div>
+                    <div class="password-requirements">
+                        Mật khẩu phải có ít nhất 8 ký tự, bao gồm chữ hoa, chữ thường và số.
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label for="phone" class="form-label">Số điện thoại:</label>
+                    <input type="tel" class="form-control" id="phone" name="phone" 
+                           value="{{ phone|default:'' }}" required>
+                    <div class="invalid-feedback">
+                        Vui lòng nhập số điện thoại hợp lệ.
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label for="email" class="form-label">Email:</label>
+                    <input type="email" class="form-control" id="email" name="email" 
+                           value="{{ email|default:'' }}" required>
+                    <div class="invalid-feedback">
+                        Vui lòng nhập địa chỉ email hợp lệ.
+                    </div>
+                </div>
+
+                <button type="submit" class="btn btn-register">Đăng ký</button>
+            </form>
+
+            <div class="register-footer">
+                <p>Đã có tài khoản? <a href="{% url 'login' %}">Đăng nhập!</a></p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script src="{% static 'js/register.js' %}"></script>
+</body>
+</html>

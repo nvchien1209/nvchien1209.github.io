@@ -1,0 +1,209 @@
+/* CSS cho phần tiêu đề */
+.section-title {
+    font-size: 2.2rem;
+    font-weight: 700;
+    color: #333;
+    margin-bottom: 1rem;
+    position: relative;
+    padding-bottom: 0.5rem;
+}
+
+/* CSS cho service card */
+.service-card {
+    height: 100%;
+    transition: all 0.3s ease;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
+    background-color: #fff;
+    margin-bottom: 15px;
+}
+
+.service-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+}
+
+.service-img {
+    overflow: hidden;
+    position: relative;
+    height: 200px;
+}
+
+.service-img img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.5s ease;
+}
+
+.service-card:hover .service-img img {
+    transform: scale(1.05);
+}
+
+.service-content {
+    padding: 1.25rem;
+}
+
+
+.service-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 0.75rem;
+}
+
+/* .service-desc {
+    font-size: 0.9rem;
+    color: #666;
+    margin-bottom: 1rem;
+    line-height: 1.5;
+} */
+.service-desc {
+    font-size: 0.9rem;
+    color: #666;
+    margin-bottom: 1rem;
+    line-height: 1.5;
+    flex-grow: 1; /* Cho phép phần mô tả linh hoạt chiều cao */
+}
+
+/* .btn-link {
+    color: #ff6b00;
+    font-weight: 500;
+    text-decoration: none;
+    position: relative;
+    transition: all 0.3s ease;
+    display: inline-block;
+} */
+.btn-link {
+    color: #ff6b00;
+    font-weight: 500;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    display: inline-block;
+    position: absolute;
+    bottom: 25px; /* Đặt nút ở vị trí cố định từ dưới lên */
+}
+
+.btn-link:after {
+    content: '→';
+    margin-left: 5px;
+    transition: all 0.3s ease;
+}
+
+.btn-link:hover {
+    color: #e85d00;
+}
+
+.btn-link:hover:after {
+    margin-left: 10px;
+}
+
+/* CSS cho nút điều hướng */
+.slider-controls {
+    height: 40px;
+    margin-bottom: 20px;
+}
+
+.service-control {
+    width: 40px;
+    height: 40px;
+    background-color: #333;
+    border-radius: 50%;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    font-size: 1.2rem;
+    cursor: pointer;
+    z-index: 100;
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+.prev-control {
+    left: -50px;
+}
+
+.next-control {
+    right: -50px;
+}
+
+.service-control:hover {
+    background-color: #ff6b00;
+}
+
+/* Custom Slick Styles */
+.slick-list {
+    padding: 20px 0;
+}
+
+.slick-track {
+    display: flex !important;
+}
+
+.service-slide {
+    height: inherit !important;
+    display: flex !important;
+}
+
+/* Custom indicators for Slick */
+.slick-dots {
+    position: relative;
+    bottom: -30px;
+    display: flex !important;
+    justify-content: center;
+    list-style: none;
+    padding: 0;
+    margin: 20px 0 0;
+}
+
+.slick-dots li {
+    margin: 0 5px;
+}
+
+.slick-dots li button {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background-color: #ccc;
+    border: none;
+    font-size: 0;
+    padding: 0;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.slick-dots li.slick-active button {
+    background-color: #ff6b00;
+    width: 14px;
+    height: 14px;
+}
+
+/* Responsive styles */
+@media (max-width: 991px) {
+    .section-title {
+        font-size: 1.8rem;
+    }
+    
+    .service-img {
+        height: 180px;
+    }
+}
+
+@media (max-width: 767px) {
+    .section-title {
+        font-size: 1.5rem;
+    }
+    
+    .service-card {
+        margin-bottom: 15px;
+    }
+    
+    .service-img {
+        height: 160px;
+    }
+}
+

@@ -1,0 +1,171 @@
+body {
+    margin: 0;
+    padding: 0;
+}
+
+#map {
+    width: 100%;
+    height: 500px;
+}
+
+#info {
+    padding: 10px;
+    font-family: Arial;
+}
+
+.mapboxgl-ctrl-geocoder {
+    max-width: 400px;
+}
+
+/* Pin marker styles */
+.pin {
+    width: 30px;
+    height: 30px;
+    border-radius: 50% 50% 50% 0;
+    background: #00cae9;
+    position: absolute;
+    transform: rotate(-45deg);
+    left: 50%;
+    top: 50%;
+    margin: -20px 0 0 -15px;
+}
+
+.pin:after {
+    content: "";
+    width: 14px;
+    height: 14px;
+    margin: 8px 0 0 8px;
+    background: #fff;
+    position: absolute;
+    border-radius: 50%;
+}
+
+.pin.red {
+    background: #ff0000;
+}
+
+.pin.green {
+    background: #00ff00;
+}
+
+/* Pulse animation styles */
+.pulse {
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 50%;
+    height: 14px;
+    width: 14px;
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    margin: 11px 0px 0px -7px;
+    transform: rotateX(55deg);
+    z-index: -2;
+}
+
+.pulse:after {
+    content: "";
+    border-radius: 50%;
+    height: 40px;
+    width: 40px;
+    position: absolute;
+    margin: -13px 0 0 -13px;
+    animation: pulsate 1s ease-out;
+    animation-iteration-count: infinite;
+    opacity: 0;
+    box-shadow: 0 0 1px 2px #00cae9;
+    animation-delay: 1.1s;
+}
+
+.pin.red + .pulse:after {
+    box-shadow: 0 0 1px 2px #ff0000;
+}
+
+.pin.green + .pulse:after {
+    box-shadow: 0 0 1px 2px #00ff00;
+}
+
+@keyframes pulsate {
+    0% {
+        transform: scale(0.1, 0.1);
+        opacity: 0;
+    }
+    50% {
+        opacity: 1;
+    }
+    100% {
+        transform: scale(1.2, 1.2);
+        opacity: 0;
+    }
+}
+/* Styling cho phần tổng giá và nút đặt dịch vụ */
+.booking-section {
+    border-top: 1px solid #e9ecef;
+    padding-top: 20px;
+    padding-bottom: 20px;
+}
+.total-price-container {
+    background-color: #f8f9fa;
+    padding: 15px;
+    border-radius: 10px;
+    border-left: 4px solid #fd7e14;
+}
+.price-item {
+    margin-bottom: 8px;
+    color: #6c757d;
+}
+.total-amount {
+    color: #212529;
+}
+.total-price {
+    color: #fd7e14;
+}
+.btn-primary {
+    background-color: #fd7e14;
+    border-color: #fd7e14;
+}
+.btn-primary:hover {
+    background-color: #e76c0c;
+    border-color: #e76c0c;
+}
+.btn-primary:disabled {
+    background-color: #ffc107;
+    border-color: #ffc107;
+    color: #212529;
+}
+
+/* Styling cho phần mã giảm giá */
+.coupon-container {
+    margin-top: 15px;
+}
+.coupon-message {
+    font-size: 0.85rem;
+}
+.coupon-message.success {
+    color: #198754;
+}
+.coupon-message.error {
+    color: #dc3545;
+}
+.discount-item {
+    color: #198754;
+}
+.discount-amount {
+    color: #198754;
+}
+#apply-coupon {
+    border-color: #fd7e14;
+    color: #fd7e14;
+}
+#apply-coupon:hover {
+    background-color: #fd7e14;
+    color: white;
+}
+.btn-outline-primary {
+    border-color: #fd7e14;
+    color: #fd7e14;
+}
+.btn-outline-primary:hover {
+    background-color: #fd7e14;
+    border-color: #fd7e14;
+    color: white;
+}

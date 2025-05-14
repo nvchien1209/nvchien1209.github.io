@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>bTaskee - Dịch vụ tổng vệ sinh nhà</title>
+    <link href="../vendors/bootstrap/bootstrap-5.3.3-dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <script src="../vendors/jquery/jquery-3.7.1.js"></script>
+    <link rel="stylesheet" href="../css/styles.css">
+    <link rel="stylesheet" href="../css/service1.css">
+    <script src="../js/header.js"></script>
+    
+    <style>
+        /* Styles riêng cho trang tổng vệ sinh */
+        .compare-services {
+            background-color: #f8f9fa;
+            border-radius: 10px;
+            padding: 30px;
+        }
+        
+        .compare-table th {
+            background-color: #fd7e14;
+            color: white;
+            text-align: center;
+            vertical-align: middle;
+        }
+        
+        .service-tab-container .nav-pills .nav-link {
+            color: #495057;
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            margin-right: 5px;
+            position: relative;
+        }
+        
+        .service-tab-container .nav-pills .nav-link.active {
+            color: white;
+            background-color: #fd7e14;
+        }
+        
+        .tab-content-box {
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+        
+        .cleaning-detail-image {
+            width: 100%;
+            height: 250px;
+            object-fit: cover;
+            border-radius: 8px;
+        }
+        
+        .pricing-card.selected {
+            border: 2px solid #fd7e14;
+            position: relative;
+        }
+        
+        .pricing-card.selected::before {
+            content: "✓";
+            position: absolute;
+            top: -10px;
+            right: -10px;
+            background: #fd7e14;
+            color: white;
+            width: 25px;
+            height: 25px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+        
+        .comparison-item {
+            border-bottom: 1px solid #dee2e6;
+            padding: 15px 0;
+        }
+        
+        .comparison-item:last-child {
+            border-bottom: none;
+        }
+        
+        .highlight-text {
+            color: #fd7e14;
+            font-weight: bold;
+        }
+    </style>
+</head> 
+<body>
+    <!-- HEADER sẽ được giữ nguyên -->
+
+    <!-- Section 1: Giải pháp tổng vệ sinh -->
+    <section class="solution-section py-4">
+        <div class="container">
+            <h1 class="section-title fw-bold mb-4">Dịch vụ tổng vệ sinh nhà của bTaskee</h1>
+            
+            <div class="row align-items-center mb-4">
+                <div class="col-lg-6">
+                    <p class="section-text">
+                        Dịch vụ tổng vệ sinh nhà của bTaskee là giải pháp toàn diện và chuyên nghiệp dành cho những ngôi nhà cần được làm sạch sâu, kỹ lưỡng đến từng chi tiết. Khác với dịch vụ dọn dẹp thông thường, tổng vệ sinh sẽ giúp căn nhà của bạn được làm sạch đến những khu vực khó tiếp cận và những vết bẩn cứng đầu lâu ngày.
+                    </p>
+                    
+                    <p class="section-text">
+                        Đội ngũ nhân viên của bTaskee được tuyển chọn và đào tạo chuyên sâu, được trang bị đầy đủ dụng cụ và hóa chất chuyên dụng phù hợp cho từng loại bề mặt và vật dụng. Chúng tôi cam kết mang đến cho bạn một không gian sống sạch sẽ, thơm tho và an toàn cho sức khỏe.
+                    </p>
+                </div>
+                <div class="col-lg-6">
+                    <img src="../images/tongvesinh.png" alt="Dịch vụ tổng vệ sinh" class="img-fluid rounded">
+                </div>
+            </div>
+            
+            <!-- Phần so sánh dịch vụ -->
+            <div class="compare-services mt-5">
+                <h2 class="text-center mb-4">Khác biệt của dịch vụ tổng vệ sinh so với giúp việc theo giờ</h2>
+                
+                <div class="row">
+                    <!-- Tính chất công việc -->
+                    <div class="col-md-6 mb-4">
+                        <div class="comparison-item">
+                            <h4><i class="fas fa-tasks text-primary me-2"></i> Tính chất công việc</h4>
+                            <p>
+                                Không chỉ thực hiện vệ sinh nhà cửa căn bản (dọn dẹp, quét, lau nhà,...); dịch vụ tổng vệ sinh, người giúp việc sẽ làm sạch đến từng chi tiết nhỏ nhất trong nhà bạn từ vệ sinh trần nhà, lau kính, vệ sinh lỗ thông hơi, gầm tủ, nội thất và các góc khuất trong nhà,... đều sẽ được làm sạch bằng quy trình chuyên biệt phù hợp.
+                            </p>
+                        </div>
+                    </div>
+                    
+                    <!-- Đội ngũ -->
+                    <div class="col-md-6 mb-4">
+                        <div class="comparison-item">
+                            <h4><i class="fas fa-users text-primary me-2"></i> Đội ngũ</h4>
+                            <p>
+                                So với việc chỉ có một người giúp việc đến thực hiện dọn dẹp như dịch vụ <span class="highlight-text">giúp việc theo giờ</span>, dịch vụ tổng vệ sinh luôn có ít nhất 2 - 3 người giúp việc đến thực hiện công việc, có nhóm trưởng phụ trách phân công, kiểm tra, đảm bảo tiến độ và chất lượng công việc.
+                            </p>
+                        </div>
+                    </div>
+                    
+                    <!-- Thời gian -->
+                    <div class="col-md-6 mb-4">
+                        <div class="comparison-item">
+                            <h4><i class="fas fa-clock text-primary me-2"></i> Thời gian</h4>
+                            <p>
+                                Nếu như dọn dẹp, lau chùi nhà cửa là công việc thường ngày thì tổng vệ sinh nhà ở là việc được khuyến khích thực hiện định kỳ 2 - 3 tháng/lần và vào các dịp đặc biệt, lễ Tết.
+                            </p>
+                        </div>
+                    </div>
+                    
+                    <!-- Dụng cụ -->
+                    <div class="col-md-6 mb-4">
+                        <div class="comparison-item">
+                            <h4><i class="fas fa-tools text-primary me-2"></i> Dụng cụ</h4>
+                            <p>
+                                Đội ngũ giúp việc bắt buộc phải mang theo các thiết bị, dụng cụ chuyên dụng hỗ trợ cho công việc khi đến thực hiện nhiệm vụ. Bạn sẽ hoàn toàn không mất phí cho dụng cụ tổng vệ sinh như dịch vụ giúp việc theo giờ.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Section 2: Chi tiết tổng vệ sinh -->
+    <section class="service-details-section py-4">
+        <div class="container">
+            <h2 class="section-title fw-bold mb-4">Tổng vệ sinh nhà cửa bao gồm những công việc gì?</h2>
+            
+            <div class="service-tab-container">
+                <ul class="nav nav-pills nav-fill mb-3" id="serviceTab" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active" id="general-tab" data-bs-toggle="pill" data-bs-target="#general" type="button" role="tab" aria-controls="general" aria-selected="true">Công việc chung</button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="kitchen-tab" data-bs-toggle="pill" data-bs-target="#kitchen" type="button" role="tab" aria-controls="kitchen" aria-selected="false">Nhà bếp</button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="bedroom-tab" data-bs-toggle="pill" data-bs-target="#bedroom" type="button" role="tab" aria-controls="bedroom" aria-selected="false">Phòng ngủ</button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="bathroom-tab" data-bs-toggle="pill" data-bs-target="#bathroom" type="button" role="tab" aria-controls="bathroom" aria-selected="false">Nhà tắm</button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="additional-tab" data-bs-toggle="pill" data-bs-target="#additional" type="button" role="tab" aria-controls="additional" aria-selected="false">Tùy chọn thêm</button>
+                    </li>
+                </ul>
+                
+                <div class="tab-content tab-content-box" id="serviceTabContent">
+                    <!-- Công việc chung -->
+                    <div class="tab-pane fade show active" id="general" role="tabpanel" aria-labelledby="general-tab">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <img src="../images/general-cleaning.jpg" alt="Vệ sinh chung" class="cleaning-detail-image mb-3">
+                            </div>
+                            <div class="col-md-6">
+                                <h4 class="mb-3">Vệ sinh chung</h4>
+                                <ul class="list-unstyled">
+                                    <li><i class="fas fa-check-circle text-success me-2"></i> Quét mạng nhện</li>
+                                    <li><i class="fas fa-check-circle text-success me-2"></i> Lau sạch quạt trần</li>
+                                    <li><i class="fas fa-check-circle text-success me-2"></i> Phủi bụi trên rèm cửa, kệ cửa sổ</li>
+                                    <li><i class="fas fa-check-circle text-success me-2"></i> Làm sạch bụi trên tất cả bề mặt đồ nội thất, đồ trang trí</li>
+                                    <li><i class="fas fa-check-circle text-success me-2"></i> Lau gương soi, cửa kính</li>
+                                    <li><i class="fas fa-check-circle text-success me-2"></i> Dọn sạch rác</li>
+                                    <li><i class="fas fa-check-circle text-success me-2"></i> Quét và lau sàn</li>
+                                    <li><i class="fas fa-check-circle text-success me-2"></i> Dọn sạch bậc cầu thang</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Nhà bếp -->
+                    <div class="tab-pane fade" id="kitchen" role="tabpanel" aria-labelledby="kitchen-tab">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <img src="../images/kitchen-cleaning.jpg" alt="Vệ sinh nhà bếp" class="cleaning-detail-image mb-3">
+                            </div>
+                            <div class="col-md-6">
+                                <h4 class="mb-3">Nhà bếp</h4>
+                                <ul class="list-unstyled">
+                                    <li><i class="fas fa-check-circle text-success me-2"></i> Làm sạch bàn ghế</li>
+                                    <li><i class="fas fa-check-circle text-success me-2"></i> Làm sạch mặt bếp và quạt hút mùi</li>
+                                    <li><i class="fas fa-check-circle text-success me-2"></i> Làm sạch các thiết bị gia dụng</li>
+                                    <li><i class="fas fa-check-circle text-success me-2"></i> Làm sạch mặt bàn</li>
+                                    <li><i class="fas fa-check-circle text-success me-2"></i> Lau sạch thiết bị điện tử</li>
+                                    <li><i class="fas fa-check-circle text-success me-2"></i> Cọ và làm sạch bồn rửa</li>
+                                    <li><i class="fas fa-check-circle text-success me-2"></i> Hút bụi và lau sàn</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Phòng ngủ -->
+                    <div class="tab-pane fade" id="bedroom" role="tabpanel" aria-labelledby="bedroom-tab">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <img src="../images/bedroom-cleaning.jpg" alt="Vệ sinh phòng ngủ" class="cleaning-detail-image mb-3">
+                            </div>
+                            <div class="col-md-6">
+                                <h4 class="mb-3">Phòng ngủ</h4>
+                                <ul class="list-unstyled">
+                                    <li><i class="fas fa-check-circle text-success me-2"></i> Lau bụi và lau tất cả các bề mặt có thể tiếp cận</li>
+                                    <li><i class="fas fa-check-circle text-success me-2"></i> Lau công tắc và tay cầm</li>
+                                    <li><i class="fas fa-check-circle text-success me-2"></i> Lau sạch gương</li>
+                                    <li><i class="fas fa-check-circle text-success me-2"></i> Sắp xếp lại giường cho gọn gàng (để lại khăn trải giường mới nếu bạn muốn chúng tôi thay)</li>
+                                    <li><i class="fas fa-check-circle text-success me-2"></i> Hút bụi và lau sàn</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Nhà tắm -->
+                    <div class="tab-pane fade" id="bathroom" role="tabpanel" aria-labelledby="bathroom-tab">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <img src="../images/bathroom-cleaning.jpg" alt="Vệ sinh nhà tắm" class="cleaning-detail-image mb-3">
+                            </div>
+                            <div class="col-md-6">
+                                <h4 class="mb-3">Nhà tắm</h4>
+                                <ul class="list-unstyled">
+                                    <li><i class="fas fa-check-circle text-success me-2"></i> Làm sạch toilet</li>
+                                    <li><i class="fas fa-check-circle text-success me-2"></i> Lau chùi sạch vòi sen, bồn tắm và bồn rửa</li>
+                                    <li><i class="fas fa-check-circle text-success me-2"></i> Làm sạch bên ngoài tủ, gương và đồ đạc</li>
+                                    <li><i class="fas fa-check-circle text-success me-2"></i> Lau công tắc và tay cầm</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Tùy chọn thêm -->
+                    <div class="tab-pane fade" id="additional" role="tabpanel" aria-labelledby="additional-tab">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <img src="../images/additional-cleaning.jpg" alt="Tùy chọn thêm" class="cleaning-detail-image mb-3">
+                            </div>
+                            <div class="col-md-6">
+                                <h4 class="mb-3">Tùy chọn thêm</h4>
+                                <ul class="list-unstyled">
+                                    <li><i class="fas fa-check-circle text-success me-2"></i> Làm sạch sâu một vị trí nào đó</li>
+                                    <li><i class="fas fa-check-circle text-success me-2"></i> Di chuyển đồ đạc (nhẹ)</li>
+                                    <li><i class="fas fa-check-circle text-success me-2"></i> Lau, dọn bên trong tủ (tủ bếp, tủ đồ,...)</li>
+                                    <li><i class="fas fa-check-circle text-success me-2"></i> Bên trong các thiết bị gia dụng (tủ lạnh, lò nướng,...)</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Section 3: Giá tổng vệ sinh -->
+    <section class="pricing-section py-4">
+        <div class="container">
+            <h2 class="section-title fw-bold mb-4">Giá dịch vụ tổng vệ sinh</h2>
+            
+            <div class="row mb-4">
+                <div class="col-md-4 mb-4 mb-md-0">
+                    <div class="pricing-card shadow-sm h-100" data-square="150" id="square-150">
+                        <div class="select-indicator">
+                            <div class="radio-button"></div>
+                        </div>
+                        <h3 class="fw-bold mb-2">150 m²</h3>
+                        <p class="room-size text-muted">(3 người - 4 tiếng)</p>
+                        <div class="divider my-3"></div>
+                        <p class="price fw-bold">900,000<sup>đ</sup> - 1,140,000<sup>đ</sup></p>
+                    </div>
+                </div>
+                
+                <div class="col-md-4 mb-4 mb-md-0">
+                    <div class="pricing-card shadow-sm h-100" data-square="200" id="square-200">
+                        <div class="select-indicator">
+                            <div class="radio-button"></div>
+                        </div>
+                        <h3 class="fw-bold mb-2">200 m²</h3>
+                        <p class="room-size text-muted">(4 người - 4 tiếng)</p>
+                        <div class="divider my-3"></div>
+                        <p class="price fw-bold">1,200,000<sup>đ</sup> - 1,520,000<sup>đ</sup></p>
+                    </div>
+                </div>
+                
+                <div class="col-md-4">
+                    <div class="pricing-card shadow-sm h-100" data-square="400" id="square-400">
+                        <div class="select-indicator">
+                            <div class="radio-button"></div>
+                        </div>
+                        <h3 class="fw-bold mb-2">400 m²</h3>
+                        <p class="room-size text-muted">(4 người - 8 tiếng)</p>
+                        <div class="divider my-3"></div>
+                        <p class="price fw-bold">2,640,000<sup>đ</sup> - 3,344,000<sup>đ</sup></p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="pricing-notes bg-light rounded p-4 mt-5">
+                <div class="note-header d-flex align-items-center mb-3">
+                    <i class="fas fa-info-circle me-2"></i>
+                    <h3 class="fw-bold m-0">Lưu ý</h3>
+                </div>
+                
+                <ul class="notes-list ps-0">
+                    <li class="mb-2">* Giá mang tính chất tham khảo ở thời điểm hiện tại.</li>
+                    <li class="mb-2">* Giá dịch vụ có thể tự động điều chỉnh tùy vào khu vực, cuối tuần, giờ cao điểm (trước 8h và sau 17h) hay lễ tết.</li>
+                    <li class="mb-2">* Nếu diện tích nhà của bạn lớn hơn các gói trên, vui lòng liên hệ trực tiếp để nhận báo giá chính xác.</li>
+                    <li class="mb-2">* Đối với những căn nhà có mức độ bẩn cao, lâu ngày không vệ sinh, mức giá có thể điều chỉnh theo tình trạng thực tế.</li>
+                </ul>
+            </div>
+        </div>
+    </section>
+
+    <!-- Section 4: Dịch vụ thêm -->
+    <section class="additional-services-section py-4">
+        <div class="container">
+            <h2 class="section-title fw-bold mb-4">Dịch vụ thêm</h2>
+            <p class="section-text mb-4">Bạn có thể lựa chọn các dịch vụ bổ sung để trải nghiệm dịch vụ đầy đủ hơn:</p>
+            
+            <div class="row g-4">
+                <div class="col-md-6">
+                    <div class="add-service-card shadow-sm" data-service="windows">
+                        <div class="service-checkbox">
+                            <input type="checkbox" id="windows-service" class="service-checkbox-input">
+                            <label for="windows-service" class="service-checkbox-label"></label>
+                        </div>
+                        <div class="service-content d-flex">
+                            <div class="service-icon">
+                                <i class="fas fa-window-maximize"></i>
+                            </div>
+                            <div class="service-details ms-3">
+                                <h3 class="fw-bold fs-5">Vệ sinh cửa kính</h3>
+                                <p class="text-muted mb-2">Làm sạch kỹ lưỡng cửa kính, cửa sổ khó tiếp cận</p>
+                                <p class="service-price fw-bold">150,000<sup>đ</sup>/giờ</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-6">
+                    <div class="add-service-card shadow-sm" data-service="furniture">
+                        <div class="service-checkbox">
+                            <input type="checkbox" id="furniture-service" class="service-checkbox-input">
+                            <label for="furniture-service" class="service-checkbox-label"></label>
+                        </div>
+                        <div class="service-content d-flex">
+                            <div class="service-icon">
+                                <i class="fas fa-couch"></i>
+                            </div>
+                            <div class="service-details ms-3">
+                                <h3 class="fw-bold fs-5">Vệ sinh nội thất</h3>
+                                <p class="text-muted mb-2">Làm sạch sâu ghế sofa, đệm, thảm (không bao gồm giặt)</p>
+                                <p class="service-price fw-bold">200,000<sup>đ</sup>/giờ</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Section 5: Quy trình làm việc -->
+    <section class="process-section py-4">
+        <div class="container">
+            <h2 class="section-title fw-bold mb-4">Quy trình tổng vệ sinh</h2>
+            
+            <div class="row">
+                <div class="col-md-3 text-center mb-4">
+                    <div class="process-item">
+                        <div class="process-icon rounded-circle bg-primary text-white d-flex align-items-center justify-content-center mx-auto mb-3" style="width: 80px; height: 80px;">
+                            <i class="fas fa-clipboard-list fa-2x"></i>
+                        </div>
+                        <h4 class="process-title">Khảo sát</h4>
+                        <p class="process-desc">Đánh giá hiện trạng, xác định phạm vi công việc và quy mô nhân sự</p>
+                    </div>
+                </div>
+                <div class="col-md-3 text-center mb-4">
+                    <div class="process-item">
+                        <div class="process-icon rounded-circle bg-primary text-white d-flex align-items-center justify-content-center mx-auto mb-3" style="width: 80px; height: 80px;">
+                            <i class="fas fa-users-cog fa-2x"></i>
+                        </div>
+                        <h4 class="process-title">Phân công</h4>
+                        <p class="process-desc">Phân chia nhiệm vụ cho từng thành viên trong đội nhân viên</p>
+                    </div>
+                </div>
+                <div class="col-md-3 text-center mb-4">
+                    <div class="process-item">
+                        <div class="process-icon rounded-circle bg-primary text-white d-flex align-items-center justify-content-center mx-auto mb-3" style="width: 80px; height: 80px;">
+                            <i class="fas fa-broom fa-2x"></i>
+                        </div>
+                        <h4 class="process-title">Thực hiện</h4>
+                        <p class="process-desc">Tiến hành vệ sinh theo quy trình từ trên xuống dưới, từ trong ra ngoài</p>
+                    </div>
+                </div>
+                <div class="col-md-3 text-center mb-4">
+                    <div class="process-item">
+                        <div class="process-icon rounded-circle bg-primary text-white d-flex align-items-center justify-content-center mx-auto mb-3" style="width: 80px; height: 80px;">
+                            <i class="fas fa-clipboard-check fa-2x"></i>
+                        </div>
+                        <h4 class="process-title">Nghiệm thu</h4>
+                        <p class="process-desc">Kiểm tra chất lượng, hoàn thiện và bàn giao cho khách hàng</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Section: Chọn ngày, giờ và địa chỉ -->
+    <section class="booking-details-section py-4">
+        <div class="container">
+            <h2 class="section-title fw-bold mb-4">Thông tin đặt dịch vụ</h2>
+            
+            <div class="row g-4">
+                <!-- Chọn ngày và giờ -->
+                <div class="col-lg-6">
+                    <div class="booking-card shadow-sm p-4 mb-4">
+                        <h3 class="fw-bold fs-5 mb-3">
+                            <i class="fas fa-calendar-alt me-2 text-primary"></i>
+                            Chọn ngày và giờ
+                        </h3>
+                        
+                        <div class="row g-3">
+                            <!-- Chọn ngày -->
+                            <div class="col-md-12">
+                                <label for="service-date" class="form-label">Ngày thực hiện</label>
+                                <div class="date-picker-container">
+                                    <input type="date" class="form-control" id="service-date" required>
+                                </div>
+                            </div>
+                            
+                            <!-- Chọn khung giờ -->
+                            <div class="col-md-12">
+                                <label class="form-label">Khung giờ</label>
+                                <div class="time-slots-container">
+                                    <div class="row g-2">
+                                        <div class="col-4 col-md-3">
+                                            <div class="time-slot-item" data-time="08:00">
+                                                <input type="radio" name="timeSlot" id="time-8" class="time-slot-input" value="08:00">
+                                                <label for="time-8" class="time-slot-label">08:00</label>
+                                            </div>
+                                        </div>
+                                        <div class="col-4 col-md-3">
+                                            <div class="time-slot-item" data-time="09:00">
+                                                <input type="radio" name="timeSlot" id="time-9" class="time-slot-input" value="09:00">
+                                                <label for="time-9" class="time-slot-label">09:00</label>
+                                            </div>
+                                        </div>
+                                        <div class="col-4 col-md-3">
+                                            <div class="time-slot-item" data-time="13:00">
+                                                <input type="radio" name="timeSlot" id="time-13" class="time-slot-input" value="13:00">
+                                                <label for="time-13" class="time-slot-label">13:00</label>
+                                            </div>
+                                        </div>
+                                        <div class="col-4 col-md-3">
+                                            <div class="time-slot-item" data-time="14:00">
+                                                <input type="radio" name="timeSlot" id="time-14" class="time-slot-input" value="14:00">
+                                                <label for="time-14" class="time-slot-label">14:00</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>

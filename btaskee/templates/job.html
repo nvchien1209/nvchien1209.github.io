@@ -1,0 +1,200 @@
+{% extends "base.html" %}
+
+{% load static %}
+
+{% block title %}Tuyển dụng{% endblock %}
+
+{% block extra_head %}
+    <link rel="stylesheet" href="{% static 'css/job.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1>Thông tin tuyển dụng</h1>
+    
+    <!-- Section 1: Recruitment Process -->
+    <section class="recruitment-process">
+        <!-- Partner Banner Image -->
+        <img src="{% static 'images/dacquyen.png' %}" alt="Đặc quyền của đối tác" class="partner-banner">
+        
+        <!-- Features Section -->
+        <div class="features">
+            <div class="feature-item">
+                <div class="feature-icon">🏠</div>
+                <div class="feature-title">Không bị phụ thuộc vào một khách hàng</div>
+                <div class="feature-desc">Bạn không bị ràng buộc vào một khách hàng cụ thể mà có thể linh hoạt làm việc cho nhiều đối tác.</div>
+            </div>
+            
+            <div class="feature-item">
+                <div class="feature-icon">⏰</div>
+                <div class="feature-title">Linh động về thời gian</div>
+                <div class="feature-desc">Bạn có thể chủ động lựa chọn thời gian làm việc phù hợp với mình và thời gian, địa điểm làm việc theo nhu cầu.</div>
+            </div>
+            
+            <div class="feature-item">
+                <div class="feature-icon">📋</div>
+                <div class="feature-title">Thu nhập cao</div>
+                <div class="feature-desc">Thu nhập lên đến 20 triệu/tháng tùy theo khối lượng công việc và năng lực của bạn.</div>
+            </div>
+            
+            <div class="feature-item">
+                <div class="feature-icon">🛡️</div>
+                <div class="feature-title">Đảm bảo quyền lợi lao động</div>
+                <div class="feature-desc">Được hưởng nhiều quyền lợi từ hệ thống phúc lợi lên đến 100 triệu đồng.</div>
+            </div>
+        </div>
+        
+        <!-- Registration Steps -->
+        <div class="registration-steps">
+            <h2>Các bước đăng ký</h2>
+            
+            <div class="steps-container">
+                <div class="progress-line"></div>
+                
+                <div class="step">
+                    <div class="step-number">1</div>
+                    <div class="step-title">Bước 1</div>
+                    <div class="step-desc">Tải ứng dụng và hoàn thành hồ sơ, nhận thông tin về kinh nghiệm liên quan đến công việc.</div>
+                </div>
+                
+                <div class="step">
+                    <div class="step-number">2</div>
+                    <div class="step-title">Bước 2</div>
+                    <div class="step-desc">Nhận hồ sơ phỏng vấn tại văn phòng.</div>
+                </div>
+                
+                <div class="step">
+                    <div class="step-number">3</div>
+                    <div class="step-title">Bước 3</div>
+                    <div class="step-desc">Hoàn thành tất cả thủ tục yêu cầu.</div>
+                </div>
+                
+                <div class="step">
+                    <div class="step-number">4</div>
+                    <div class="step-title">Bước 4</div>
+                    <div class="step-desc">Trở thành đối tác của JupViec và bắt đầu công việc.</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Requirements Section -->
+        <div class="requirements">
+            <div class="req-column">
+                <div class="req-title">
+                    <span class="req-icon">📱</span>
+                    <span>Yêu cầu chung</span>
+                </div>
+                <ul class="req-list">
+                    <li>Có điện thoại đi động thông minh.</li>
+                    <li>Có phương tiện đi lại di chuyển.</li>
+                    <li>Cần sự chuyên nghiệp và tinh thần làm việc.</li>
+                    <li>Ưu tiên ứng viên có kinh nghiệm làm người giúp việc gia đình.</li>
+                </ul>
+            </div>
+            
+            <div class="req-column">
+                <div class="req-title">
+                    <span class="req-icon">📄</span>
+                    <span>Hồ sơ yêu cầu</span>
+                </div>
+                <ul class="req-list">
+                    <li>01 bản photo công chứng Chứng minh nhân dân.</li>
+                    <li>01 bản photo/copy công chứng hộ khẩu.</li>
+                    <li>01 bản photo công chứng bằng cấp (nếu có).</li>
+                    <li>Giấy giới thiệu của Phường hoặc giấy lý lịch tư pháp số 50 tại Phường Thành Thái.</li>
+                    <li>(Các giấy tờ phải được chứng thực không quá 06 tháng).</li>
+                </ul>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Section 2: Job Listings -->
+    <section class="job-listings">
+        <h2>Vị trí tuyển dụng hiện tại</h2>
+        
+        <!-- Job 1 -->
+        <div class="job-card">
+            <div class="job-image-container">
+                <img src="{% static 'images/job1.png' %}" alt="Cơ Hội Nghề Nghiệp Ổn Định Cùng Thu Nhập Lên Đến 20 Triệu/tháng" class="job-image">
+                <div class="image-overlay">CƠ HỘI NGHỀ NGHIỆP ỔN ĐỊNH CÙNG THU NHẬP LÊN ĐẾN 20 TRIỆU/THÁNG</div>
+            </div>
+            <div class="job-content">
+                <h2 class="job-title"><a href="#">Cơ Hội Nghề Nghiệp Ổn Định Cùng Thu Nhập Lên Đến 20 Triệu/tháng</a></h2>
+                <div class="job-date">7/3/2025</div>
+                <p class="job-excerpt">Bạn đang tìm kiếm một công việc ổn định với mức thu nhập hấp dẫn? Bạn là người phụ nữ chăm chỉ, có trách nhiệm và mong muốn cải thiện cuộc sống? Hãy gia nhập đội ngũ nhân viên giúp việc chuyên nghiệp tại JupViec.vn</p>
+                <a href="#" class="read-more">Xem thêm >></a>
+            </div>
+        </div>
+        
+        <!-- Job 2 -->
+        <div class="job-card">
+            <div class="job-image-container">
+                <img src="{% static 'images/job2.png' %}" alt="Tuyển Dụng Nhân Viên Giúp Việc Chuyên Nghiệp" class="job-image">
+                <div class="image-overlay">TUYỂN DỤNG NHÂN VIÊN GIÚP VIỆC CHUYÊN NGHIỆP</div>
+            </div>
+            <div class="job-content">
+                <h2 class="job-title"><a href="#">Tuyển Dụng Nhân Viên Giúp Việc Chuyên Nghiệp</a></h2>
+                <div class="job-date">19/2/2025</div>
+                <p class="job-excerpt">Bạn đang tìm kiếm công việc làm ổn định và có thu nhập tốt? Bạn cần tìm kiếm công việc có thể chủ động tự do lựa chọn thời gian phù hợp? Chào mừng bạn đến với JupViec.</p>
+                <a href="#" class="read-more">Xem thêm >></a>
+            </div>
+        </div>
+        
+        <!-- Job 3 -->
+        <div class="job-card">
+            <div class="job-image-container">
+                <img src="{% static 'images/job3.png' %}" alt="[Bình Dương] Tuyển Tổ Trưởng Quản Lý Khu Vực" class="job-image">
+                <div class="image-overlay">[BÌNH DƯƠNG] TUYỂN TỔ TRƯỞNG QUẢN LÝ KHU VỰC</div>
+            </div>
+            <div class="job-content">
+                <h2 class="job-title"><a href="#">[Bình Dương] Tuyển Tổ Trưởng Quản Lý Khu Vực</a></h2>
+                <div class="job-date">1/2/2025</div>
+                <p class="job-excerpt">Công ty cổ phần phát triển dịch vụ nhà sạch JMC – Tên thương hiệu: JupViec.vn (JupViec) là công ty công nghệ cung cấp nền tảng kết nối nhu cầu giúp việc của Khách hàng và Người lao động. Thành lập năm 2012, JupViec hiện đang tạo ra việc làm cho hơn 2.000 lao động giúp việc, đáp ứng nhu cầu của hơn 200.000 Khách hàng, phục vụ tại 5 tỉnh thành trên cả nước: Hà Nội, TP. Hồ Chí Minh, Đà Nẵng, Hải Phòng, Bình Dương.</p>
+                <a href="#" class="read-more">Xem thêm >></a>
+            </div>
+        </div>
+        
+        <!-- Job 4 -->
+        <div class="job-card">
+            <div class="job-image-container">
+                <img src="{% static 'images/job4.png' %}" alt="[Bình Dương] - Tuyển Dụng Nhân Viên Phát Triển Thị Trường" class="job-image">
+                <div class="image-overlay">[BÌNH DƯƠNG] - TUYỂN DỤNG NHÂN VIÊN PHÁT TRIỂN THỊ TRƯỜNG</div>
+            </div>
+            <div class="job-content">
+                <h2 class="job-title"><a href="#">[Bình Dương] - Tuyển Dụng Nhân Viên Phát Triển Thị Trường</a></h2>
+                <div class="job-date">30/1/2025</div>
+                <p class="job-excerpt">JupViec.vn là nền tảng kết nối nhu cầu giữa người giúp việc và khách hàng thông qua ứng dụng điện thoại được đầu tư từ Quỹ CyberAgent Ventures của Nhật Bản và Quỹ Patamar Capital của Mỹ và mới đây nhất là STI Holding với chung mục tiêu tạo ra cuộc sống tốt đẹp hơn cho phụ nữ Việt.</p>
+                <a href="#" class="read-more">Xem thêm >></a>
+            </div>
+        </div>
+        
+        <!-- Job 5 -->
+        <div class="job-card">
+            <div class="job-image-container">
+                <img src="{% static 'images/job5.jpg' %}" alt="[HCM, HN] Cơ Hội Thực Tập Sinh Content/Creative" class="job-image">
+                <div class="image-overlay">[HCM, HN] CƠ HỘI THỰC TẬP SINH CONTENT/CREATIVE</div>
+            </div>
+            <div class="job-content">
+                <h2 class="job-title"><a href="#">[HCM, HN] Cơ Hội Thực Tập Sinh Content/Creative</a></h2>
+                <div class="job-date">15/1/2025</div>
+                <p class="job-excerpt">JupViec.vn đang tìm kiếm các bạn thực tập sinh đam mê sáng tạo nội dung và thiết kế. Đây là cơ hội tuyệt vời để phát triển kỹ năng và xây dựng portfolio của bạn trong môi trường năng động, chuyên nghiệp.</p>
+                <a href="#" class="read-more">Xem thêm >></a>
+            </div>
+        </div>
+        
+    </section>
+    <!-- Pagination -->
+    <div class="pagination">
+        <a href="#" class="disabled">&laquo;&laquo;</a>
+        <a href="#" class="disabled">&laquo;</a>
+        <a href="#" class="active">1</a>
+        <a href="#">2</a>
+        <a href="#">3</a>
+        <a href="#">4</a>
+        <a href="#">5</a>
+        <a href="#">&raquo;</a>
+        <a href="#">&raquo;&raquo;</a>
+    </div>
+</div>
+
+{% endblock %}
