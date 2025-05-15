@@ -123,6 +123,18 @@ class ServiceBookingDetailInline(admin.TabularInline):
     filter_horizontal = ('additional_services',)
     readonly_fields = ('total_price',)
 
+class FeedbackInline(admin.TabularInline):
+    model = Feedback
+    extra = 1
+
+    def save_formset(self, request, form, formset, change):
+        instances = formset.save(commit=False)
+        for obj in instances:
+            if not obj.customer:
+                obj.customer = obj.booking.customer
+            obj.save()
+        formset.save_m2m()
+
 
 @admin.register(ServiceBooking)
 class ServiceBookingAdmin(admin.ModelAdmin):
@@ -147,7 +159,7 @@ class ServiceBookingAdmin(admin.ModelAdmin):
         }),
         ('Thông tin thanh toán', {
             'fields': ('sub_total', 'promotion', 'discount_amount', 
-                       'total_amount_after_discount', 'payment_status', 'payment_method')
+                       'total_amount_after_discount', 'payment_status', 'payment_method', 'date_paid', 'payment_code')
         }),
         ('Trạng thái', {
             'fields': ('status',)
@@ -158,8 +170,8 @@ class ServiceBookingAdmin(admin.ModelAdmin):
         }),
     )
     
-    inlines = [ServiceBookingDetailInline]
-    
+    inlines = [ServiceBookingDetailInline, FeedbackInline]
+
     actions = ['mark_as_confirmed', 'mark_as_completed', 'mark_as_cancelled']
     
     def mark_as_confirmed(self, request, queryset):
@@ -176,6 +188,8 @@ class ServiceBookingAdmin(admin.ModelAdmin):
         updated = queryset.update(status='Hủy bỏ')
         self.message_user(request, f'{updated} booking(s) đã bị hủy.')
     mark_as_cancelled.short_description = 'Đánh dấu là Hủy bỏ'
+
+    
 
 @admin.register(ServiceBookingDetail)
 class ServiceBookingDetailAdmin(admin.ModelAdmin):

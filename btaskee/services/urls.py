@@ -9,4 +9,7 @@ urlpatterns = [
     path('api/check-promotion/', views.check_promotion_code, name='check_promotion'), # Kiểm tra mã giảm giá
     path('api/create-booking/', views.create_booking, name='create_booking'), # Tạo booking
     path('history/', views.booking_history, name='booking_history'),  # Lịch sử đặt dịch vụ
+    path('booking/destroy-booking/<int:booking_id>', views.destroy_booking, name="destroy_booking"), 
+    path('booking/rate', views.rate_booking, name="rate_booking"),
+    path('booking/filter-booking', views.filter_history, name="filter_history"),
 ]

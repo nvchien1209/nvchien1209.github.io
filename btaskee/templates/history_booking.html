@@ -4,6 +4,8 @@
 
 {% load humanize %}
 
+{% load custom_tags %}
+
 {% block title %}Lịch sử đặt dịch vụ{% endblock %}
 
 {% block extra_head %}
@@ -14,7 +16,7 @@
 {% block content %}
 <div class="container py-5">
     <div class="row">
-        <div class="col-12">
+        <class class="col-12">
             <div class="d-flex flex-column align-items-center mb-4">
                 <h2 class="mb-4">Lịch sử sử dụng dịch vụ</h2>
                 <!-- Filter Section -->
@@ -58,6 +60,7 @@
                     </div>
                 </div>
             </div>
+            <div>
                 <!-- Custom Date Range (initially hidden) -->
                 <div class="row mt-3 d-none" id="customDateRange">
                     <div class="col-md-5">
@@ -73,7 +76,10 @@
                     </div>
                 </div>
             </div>
-            
+                
+        </class>
+
+
             <!-- History List -->
             <div class="history-list">
                 {% if bookings %}
@@ -90,7 +96,17 @@
                                             {{ item.service }}
                                         </div>
                                     </h5>
-                                    <span class="badge bg-success">{{ item.status }}</span>
+                                    {% if item.status == "Hoàn thành" %}
+                                        <span class="badge bg-success">{{ item.status }}</span>
+                                    {% elif item.status == "Đã xác nhận" %}
+                                        <span class="badge bg-primary">{{ item.status }}</span>
+                                    {% elif item.status == "Hủy bỏ" %}
+                                        <span class="badge bg-danger">{{ item.status }}</span>
+                                    {% elif item.status == "Đang thực hiện" %}
+                                        <span class="badge bg-warning text-dark">{{ item.status }}</span>
+                                    {% else %}
+                                        <span class="badge bg-secondary">{{ item.status }}</span>
+                                    {% endif %}
                                 </div>
                                 
                                 <div class="row">
@@ -103,17 +119,22 @@
                                     <div class="col-md-4">
                                         <p><i class="fas fa-tag me-2"></i>Mã đơn: {{  item.id }}</p>
                                         <p><i class="fas fa-money-bill-wave me-2"></i>Giá: {{ item.total_amount_after_discount|intcomma }} VNĐ</p>
-                                        <p>
-                                            <i class="fas fa-star me-2"></i>Đánh giá: 
-                                            <span class="rating-stars">
-                                                <i class="fas fa-star"></i>
-                                                <i class="fas fa-star"></i>
-                                                <i class="fas fa-star"></i>
-                                                <i class="fas fa-star"></i>
-                                                <i class="fas fa-star-half-alt"></i>
-                                            </span>
-                                            (4.5/5)
-                                        </p>
+                                        {% if item.feedbacks.count > 0 %}
+                                            {% for fb in item.feedbacks.all %}
+                                                    <p>
+                                                        <i class="fas fa-star me-2"></i>Đánh giá:
+                                                        <span class="rating-stars">
+                                                            {% for i in fb.rating|get_range %}
+                                                                <i class="fas fa-star"></i>
+                                                            {% endfor %}
+                                                        </span>
+                                                    </p>
+                                            {% endfor %} 
+                                        {% else %}
+                                            <p>
+                                                <i class="fas fa-star me-2"></i>Đánh giá: <span class="text-muted">Chưa đánh giá</span>
+                                            </p>
+                                        {% endif %}  
                                     </div>
                                 </div>
                                 
@@ -132,31 +153,55 @@
                                         data-service="{{ item.service }}"
                                         data-status="{{ item.status }}"
                                         data-address="{{ item.address }}"
-                                        data-house-type="{{ item.house_type }}"
                                         data-total="{{ item.total_amount_after_discount|intcomma }}"
                                         data-payment-method="{{ item.payment_method }}"
                                         data-payment-status="{{ item.payment_status }}"
-                                        data-payment-date="{{ item.payment_date|date:'d/m/Y' }}"
+                                        data-payment-date="{{ item.date_paid|date:'d/m/Y' }}"
                                         data-payment-code="{{ item.payment_code }}"
-                                        data-rating="{{ item.rating }}"
-                                        data-rating-date="{{ item.rating_date|date:'d/m/Y' }}"
-                                        data-rating-comment="{{ item.rating_comment }}"
+                                        data-rating="{{ item.feedbacks.first.rating }}"
+                                        data-rating-comment="{{ item.feedbacks.first.comment }}"
+                                        data-service-details="{{ item.details.package }}"
+                                        {% if item.details %}
+                                            {% for detail in item.details.all %}
+                                                data-service-package="{{ detail.package.name }}"
+                                                {% if detail.additional_services.all %}
+                                                    data-service-adds="{% for additional_service in detail.additional_services.all %}{{ additional_service.name }}{% if not forloop.last %}, {% endif %}{% endfor %}"
+                                                    data-service-addprice="{% for additional_service in detail.additional_services.all %}{{ additional_service.price_per_unit }}{% if not forloop.last %}, {% endif %}{% endfor %}"
+                                                {% endif %}
+                                               
+                                            {% endfor %}
+                                        {% endif %}
+                                        data-subtotal="{{ item.sub_total }}"
+                                        data-discount-amount="{{ item.discount_amount|intcomma }}"
                                     >
                                         <i class="fas fa-eye me-1"></i>Chi tiết
                                     </button>
-                                    <button class="btn btn-outline-success">
-                                        <i class="fas fa-receipt me-1"></i>Hóa đơn
-                                    </button>
-                                    
+                                    {% if item.payment_status == 'Chưa thanh toán' %}  
+                                        <button class="btn btn-outline-success">
+                                            <i class="fas fa-receipt me-1"></i>Thanh toán
+                                        </button>
+                                    {% else %}
+                                        <button class="btn btn-outline-success">
+                                            <i class="fas fa-receipt me-1"></i>Đã thanh toán
+                                        </button>
+                                    {% endif %}
+                                    {% if item.status != "Đang thực hiện" and item.status != "Hoàn thành" and item.status != "Hủy bỏ" %}
+                                        <button class="btn btn-outline-danger"
+                                                data-id="{{ item.id }}">
+                                            <i class="fas fa-receipt me-1"
+                                            ></i>Hủy đơn
+                                        </button>
+                                    {% endif %}
                                 </div>
                             </div>
                         </div>
                     {% endfor %}
                 {% else %}
                     <div class="empty-history">
-                        <img src="{% static 'images/empty_history.jpg' %}" alt="No History" class="mb-4">
                         <h4>Bạn chưa có lịch sử sử dụng dịch vụ</h4>
                         <p class="text-muted">Hãy đặt dịch vụ đầu tiên của bạn để bắt đầu trải nghiệm</p>
+                        <img src="{% static 'images/empty_history.jpg' %}" alt="No History" class="mb-4">
+                        
                     </div>
                 {% endif %}
 
@@ -201,63 +246,70 @@
                     <div class="col-md-6">
                         <h6>Thông tin địa điểm</h6>
                         <p><strong>Địa chỉ:</strong> <span id="modal-address"></span></p>
-                        <!-- <p><strong>Loại nhà:</strong> <span id="modal-house-type"></span></p>
-                        <p><strong>Diện tích:</strong> <span id="modal-area"></span></p>
-                        <p><strong>Số phòng:</strong> <span id="modal-room-info"></span></p>
-                        <p><strong>Ghi chú:</strong> <span id="modal-note"></span></p> -->
                     </div>
                 </div>
                 <div class="row mb-4">
-                    <div class="col-12">
-                        <h6>Chi tiết dịch vụ</h6>
-                        <table class="table table-bordered" id="modal-service-detail-table">
-                            <thead>
+                <div class="col-12">
+                    <h6 class="mt-3 mb-3 fw-bold">Chi tiết dịch vụ</h6>
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-hover align-middle text-center mb-0" id="modal-service-detail-table">
+                            <thead class="table-primary">
                                 <tr>
-                                    <th>Dịch vụ</th>
-                                    <th>Khu vực</th>
-                                    <th>Đơn giá</th>
-                                    <th>Số lượng</th>
-                                    <th>Thành tiền</th>
+                                    <th scope="col">Dịch vụ</th>
+                                    <th scope="col">Đơn giá</th>
+                                    <!-- <th scope="col">Số lượng</th> -->
+                                    <th scope="col">Thành tiền</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                <!-- Nội dung sẽ được thêm bằng JS -->
+                                <!-- Dữ liệu sẽ được thêm động bằng JS -->
                             </tbody>
                             <tfoot>
                                 <tr>
-                                    <td colspan="4" class="text-end"><strong>Tổng cộng:</strong></td>
-                                    <td id="modal-total-amount"><strong></strong></td>
+                                    <td colspan="2" class="text-end"><strong>Giảm giá:</strong></td>
+                                    <td id="modal-discount-amount" class="text-end"><strong>197,500 VNĐ</strong></td>
+                                </tr>
+                                <tr>
+                                    <td colspan="2" class="text-end"><strong>Tổng cộng:</strong></td>
+                                    <td id="modal-total-amount" class="text-end"><strong>197,500 VNĐ</strong></td>
                                 </tr>
                             </tfoot>
                         </table>
                     </div>
                 </div>
+</div>
+
                 <div class="row mb-4">
                     <div class="col-md-6">
                         <h6>Thông tin thanh toán</h6>
+                        <p><strong>Trạng thái:</strong> <span id="modal-payment-status"></span></p>
                         <p><strong>Phương thức:</strong> <span id="modal-payment-method"></span></p>
                         <p><strong>Ngày thanh toán:</strong> <span id="modal-payment-date"></span></p>
-                        <p><strong>Trạng thái:</strong> <span id="modal-payment-status"></span></p>
                         <p><strong>Mã giao dịch:</strong> <span id="modal-payment-code"></span></p>
                     </div>
                 </div>
                 <div class="row">
                     <div class="col-12">
                         <h6>Đánh giá & Phản hồi</h6>
-                        <div class="d-flex align-items-center mb-2">
-                            <div class="me-3">
-                                <span class="rating-stars" id="modal-rating-stars">
-                                    <!-- JS sẽ render sao -->
-                                </span>
-                                <span class="ms-2" id="modal-rating-score"></span>
+                        <form id="modal-rating-form">
+                            <div class="d-flex align-items-center mb-2">
+                                <div class="me-3">
+                                    <span class="rating-stars" id="modal-rating-stars">
+                                        {% for i in "12345" %}
+                                            <i class="fas fa-star star-select text-secondary" data-value="{{ i }}"></i>
+                                        {% endfor %}
+                                    </span>
+                                    <span class="ms-2" id="modal-rating-score"></span>
+                                </div>
+                                <span class="text-muted" id="modal-rating-date"></span>
                             </div>
-                            <span class="text-muted" id="modal-rating-date"></span>
-                        </div>
-                        <div class="card">
-                            <div class="card-body">
-                                <p class="card-text" id="modal-rating-comment"></p>
+                            <div class="mb-3">
+                                <input type="text" class="form-control" id="modal-rating-comment-input" placeholder="Nhập bình luận của bạn...">
                             </div>
-                        </div>
+                            <div>
+                                <button type="submit" class="btn btn-primary">Gửi đánh giá</button>
+                            </div>
+                        </form>
                     </div>
                 </div>
             </div>
@@ -270,7 +322,7 @@
 
 <!-- Empty History State (Hidden by default, show when no history) -->
 <div class="empty-history d-none">
-    <img src="empty-history.svg" alt="No History" class="mb-4" style="max-width: 200px;">
+    <img src="empty-history.jpg" alt="No History" class="mb-4" style="max-width: 200px;">
     <h4>Bạn chưa có lịch sử sử dụng dịch vụ</h4>
     <p class="text-muted">Hãy đặt dịch vụ đầu tiên của bạn để bắt đầu trải nghiệm</p>
     <button class="btn btn-primary mt-3">

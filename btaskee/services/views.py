@@ -1,14 +1,14 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from .models import Category, Service, ServicePackage, AdditionalService, ServiceBooking, ServiceBookingDetail, Promotion
+from .models import Category, Service, ServicePackage, AdditionalService, ServiceBooking, ServiceBookingDetail, Promotion, Feedback
 from django.http import JsonResponse
 from django.utils import timezone
-from django.db import transaction
 from django.contrib import messages
 from decimal import Decimal
 from datetime import datetime, date
 import json
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.http import require_POST
 
 
 def home_view(request):
@@ -126,8 +126,9 @@ def create_booking(request):
         time_str = data.get('time')
         address = data.get('address')
         coupon_code = data.get('coupon')
-        total_amount = Decimal(str(data.get('total', 0)))
-        
+        sub_total = Decimal(str(data.get('sub_total', 0)))
+        print(sub_total)
+
         # Kiểm tra các trường bắt buộc
         if not package_id or not date_str or not time_str or not address:
             return JsonResponse({'success': False, 'message': 'Thiếu thông tin cần thiết'})
@@ -149,13 +150,13 @@ def create_booking(request):
         if(coupon_code):
             promotion = Promotion.objects.filter(promotion_code__iexact=coupon_code).first() if coupon_code else None
             if promotion.discount_type == 'Phần trăm':
-                discount_amount = (promotion.discount_value / Decimal(100)) * total_amount
+                discount_amount = (promotion.discount_value / Decimal(100)) * sub_total
             else:
                 discount_amount = promotion.discount_value if promotion else 0
         else:
             promotion = None
             discount_amount = 0
-            sub_total = total_amount
+            sub_total = sub_total
                 
 
         # Tạo booking mới
@@ -166,10 +167,10 @@ def create_booking(request):
             booking_date=booking_date,  # chỉ lưu ngày, không lưu thời gian
             booking_time=booking_time,
             address=address,
-            sub_total=total_amount + discount_amount,
+            sub_total=sub_total,
             promotion=promotion,
             discount_amount=discount_amount,
-            total_amount_after_discount=total_amount,
+            total_amount_after_discount=sub_total - discount_amount,
             status='Đang chờ',
             payment_status='Chưa thanh toán',
             payment_method='Tiền mặt'  # Mặc định là tiền mặt, có thể cập nhật sau
@@ -180,7 +181,7 @@ def create_booking(request):
         booking_detail = ServiceBookingDetail(
             booking=booking,
             package=package,
-            total_price=total_amount + discount_amount
+            total_price=sub_total + discount_amount
         )
         booking_detail.save()
         
@@ -208,8 +209,77 @@ def create_booking(request):
     
 
 def booking_history(request):
-    bookings = ServiceBooking.objects.prefetch_related('ServiceBookingDetail', 'AdditionalService').filter(customer=request.user).order_by('-created_at')
+    bookings = ServiceBooking.objects.prefetch_related('details', 'feedbacks').filter(customer=request.user).order_by('-created_at')
+    AdditionalServices = AdditionalService.objects.all()
     context = {
-        'bookings': bookings
+        'bookings': bookings,
+        'AdditionalServices': AdditionalServices,
     }
+    for item in bookings:
+        print(item.sub_total)
+        print('abc')
+        print(item.total_amount_after_discount)
+        if item.id == 6:
+            print(item.details.all())
+            for detail in item.details.all():
+                print(f'{detail.package.name} ')
+                for additional_service in detail.additional_services.all():
+                    print(f'{additional_service.name}: {additional_service.price_per_unit} VNĐ')
     return render(request, 'history_booking.html', context)
+
+@require_POST
+@login_required
+@csrf_exempt
+def destroy_booking(request, booking_id):
+    try:
+        booking = get_object_or_404(ServiceBooking, id=booking_id, customer=request.user)
+        if booking.status != 'Hủy bỏ':
+            booking.status = 'Hủy bỏ'
+            booking.save()
+            return JsonResponse({'success': True, 'message': 'Đã hủy đơn thành công!'})
+        else:
+            return JsonResponse({'success': False, 'message': 'Đơn đã được hủy trước đó!'})
+    except Exception as e:
+        return JsonResponse({'success': False, 'message': f'Có lỗi xảy ra: {str(e)}'})
+    
+@require_POST
+@login_required
+@csrf_exempt
+def rate_booking(request):
+    try:
+        data = json.loads(request.body)
+        booking_id = data.get('bookingId')
+        rating = data.get('rating')
+        comment = data.get('comment', '')
+        print("hi1")
+        if not booking_id or not rating:
+            return JsonResponse({'success': False, 'message': 'Thiếu thông tin đánh giá.'})
+
+        booking = get_object_or_404(ServiceBooking, id=booking_id, customer=request.user)
+        print("hi2")
+        # Kiểm tra xem đã đánh giá chưa
+        feedback_obj = Feedback.objects.filter(booking=booking, customer=request.user).first()
+        if feedback_obj:
+            # Nếu đã đánh giá, cập nhật lại theo đánh giá mới nhất
+            feedback_obj.rating = rating
+            feedback_obj.comment = comment
+            feedback_obj.created_at = timezone.now()
+            feedback_obj.save()
+            return JsonResponse({'success': True, 'message': 'Cập nhật đánh giá thành công!'})
+        print("hi3")
+        feedback = Feedback.objects.create(
+            booking=booking,
+            customer=request.user,
+            rating=rating,
+            comment=comment,
+            created_at=timezone.now()
+        )
+
+        return JsonResponse({'success': True, 'message': 'Đánh giá thành công!'})
+
+    except Exception as e:
+        return JsonResponse({'success': False, 'message': f'Có lỗi xảy ra: {str(e)}'})
+    
+def filter_history(request, type_filter):
+    pass
+    

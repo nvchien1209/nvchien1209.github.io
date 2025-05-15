@@ -1,4 +1,3 @@
-// ...existing code...
 
 document.addEventListener('DOMContentLoaded', function () {
     // --- Biến lưu trạng thái ---
@@ -259,8 +258,10 @@ document.getElementById('proceed-booking').addEventListener('click', function ()
             time: document.querySelector('input[name="timeSlot"]:checked')?.value || '',
             address: fullAddress,
             coupon: document.getElementById('coupon-code').value.trim(),
-            total: getTotalPrice() - discountAmount
+            sub_total: getTotalPrice(),
+            
         };
+        
 
         fetch('/api/create-booking/', {
             method: 'POST',
@@ -278,9 +279,11 @@ document.getElementById('proceed-booking').addEventListener('click', function ()
         .catch(() => {
             alert('Không thể kết nối tới máy chủ.');
         });
+        console.log(bookingData['sub_total'])
         bsModal.hide();
         //alert('Đặt dịch vụ thành công!');
     });
+
 });
 
 

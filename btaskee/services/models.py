@@ -120,6 +120,8 @@ class ServiceBooking(models.Model):
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='Đang chờ')
     payment_status = models.CharField(max_length=20, choices=PAYMENT_STATUS_CHOICES, default='Chưa thanh toán')
     payment_method = models.CharField(max_length=20, choices=PAYMENT_METHOD_CHOICES, default='Tiền mặt')
+    payment_code = models.CharField(max_length=50, blank=True)  # Mã thanh toán (nếu có)
+    date_paid = models.DateField(null=True, blank=True)  # Ngày thanh toán
 
     #Thông tin hệ thống
     created_at = models.DateTimeField(auto_now_add=True)
@@ -127,6 +129,9 @@ class ServiceBooking(models.Model):
 
     class Meta:
         ordering = ['-created_at']
+
+    def __str__(self):
+        return f'Booking {self.id}'
 
 
 class ServiceBookingDetail(models.Model):
