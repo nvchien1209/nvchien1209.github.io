@@ -8,8 +8,8 @@ from datetime import datetime, date
 import json
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.csrf import csrf_exempt
-from django.views.decorators.http import require_POST
-
+from django.views.decorators.http import require_POST, require_GET
+from django.template.loader import render_to_string
 
 def home_view(request):
     user_data = None
@@ -112,6 +112,8 @@ def check_promotion_code(request):
 @csrf_exempt
 def create_booking(request):
 
+    user = request.user
+
     if request.method != 'POST':
         return JsonResponse({'success': False, 'message': 'Phương thức không được hỗ trợ'})
     
@@ -193,8 +195,8 @@ def create_booking(request):
                     booking_detail.additional_services.add(additional_service)
                 except AdditionalService.DoesNotExist:
                     pass  # Bỏ qua nếu dịch vụ không tồn tại
-        
-        
+
+
         return JsonResponse({
             'success': True,
             'message': 'Đặt dịch vụ thành công',
@@ -279,7 +281,50 @@ def rate_booking(request):
 
     except Exception as e:
         return JsonResponse({'success': False, 'message': f'Có lỗi xảy ra: {str(e)}'})
-    
-def filter_history(request, type_filter):
-    pass
-    
+
+
+@require_GET
+def filter_history(request):
+    now = timezone.now()
+    if request.headers.get('x-requested-with') != 'XMLHttpRequest':
+        return JsonResponse({'success': False, 'message': 'Yêu cầu không hợp lệ.'}, status=400)
+    try:
+        # Lấy dữ liệu từ query params (GET)
+        date_range = request.GET.get('dateRange', '')
+        status = request.GET.get('status', '')
+
+        # Khởi tạo queryset ban đầu
+        bookings = ServiceBooking.objects.filter(customer=request.user)
+
+        # Lọc theo date_range
+        if date_range:
+            if date_range == 'current-month':
+                # Lấy ra tháng và năm hiện tại bằng timezone
+                this_month = now.month
+                this_year = now.year
+                bookings = bookings.filter(
+                    booking_date__year=this_year,
+                    booking_date__month=this_month
+                )
+            elif date_range == 'last-month':
+                last_month = now.month - 1 if now.month > 1 else 12
+                last_year = now.year if last_month != 12 else now.year - 1
+                bookings = bookings.filter(
+                    booking_date__year=last_year,
+                    booking_date__month=last_month
+                )
+            elif date_range == 'last-3-months':  # Thêm điều kiện cho 'last-3-months'
+                # Lấy ra 3 tháng trước
+                three_months_ago = now - timezone.timedelta(days=90)
+                bookings = bookings.filter(
+                    booking_date__gte=three_months_ago
+                )
+
+        # Lọc theo status (nếu có)
+        if status:
+            bookings = bookings.filter(status=status)
+
+        print(bookings)
+        return JsonResponse({'success': True, 'message': 'Lọc lịch sử thành công!'})
+    except Exception as e:
+        return JsonResponse({'success': False, 'error': str(e)})

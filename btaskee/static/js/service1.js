@@ -250,7 +250,7 @@ document.getElementById('proceed-booking').addEventListener('click', function ()
 
     // Xử lý xác nhận đặt dịch vụ
     modal.querySelector('#confirm-booking-btn').addEventListener('click', function () {
-        // TODO: Gửi dữ liệu đặt dịch vụ lên server tại đây
+        // Gửi dữ liệu đặt dịch vụ lên server tại đây
         const bookingData = {
             packageId: selectedPackage,
             additionalServices: selectedAdditional,

@@ -1,6 +1,9 @@
 from django.db import models
 from django.utils import timezone
 from django.core.exceptions import ValidationError
+from django.utils.translation import gettext_lazy as _
+import datetime
+from django.utils import timezone
 
 # Create your models here.
 class Category(models.Model):
@@ -132,6 +135,12 @@ class ServiceBooking(models.Model):
 
     def __str__(self):
         return f'Booking {self.id}'
+    
+    def get_assigned_staff(self):
+        """Return list of assigned staff names"""
+        return ", ".join([assignment.staff.full_name for assignment in self.staff_assignments.all()])
+    get_assigned_staff.short_description = "Nhân viên đã phân công"
+
 
 
 class ServiceBookingDetail(models.Model):
@@ -159,4 +168,119 @@ class Feedback(models.Model):
     
     
 
+class Staff(models.Model):
+    # Thông tin nhân viên
+    full_name = models.CharField(_('Họ tên'), max_length=100)
+    date_of_birth = models.DateField(_('Ngày sinh'))
+    phone_number = models.CharField(_('Số điện thoại'), max_length=15)
+    address = models.TextField(_('Địa chỉ'))
     
+    # Giới tính
+    GENDER_CHOICES = (
+        ('Nam', 'Nam'),
+        ('Nữ', 'Nữ'),
+        ('Khác', 'Khác'),
+    )
+    gender = models.CharField(_('Giới tính'), max_length=10, choices=GENDER_CHOICES)
+    
+    # Trạng thái làm việc
+    STATUS_CHOICES = (
+        ('Đang rảnh', 'Đang rảnh'),
+        ('Đang làm việc', 'Đang làm việc'),
+        ('Nghỉ phép', 'Nghỉ phép'),
+        ('Không hoạt động', 'Không hoạt động'),
+    )
+    status = models.CharField(_('Trạng thái'), max_length=20, choices=STATUS_CHOICES, default='Đang rảnh')
+
+    skills = models.CharField(_('Kỹ năng'), max_length=255)
+    
+    # System fields
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    
+    def __str__(self):
+        return f"{self.full_name} - {self.get_status_display()}"
+    
+    class Meta:
+        verbose_name = _('Staff')
+        verbose_name_plural = _('Staffs')
+        ordering = ['full_name']
+
+    def is_available(self, booking_date, booking_time, duration=3, exclude_booking_id=None):
+        """Kiểm tra xem nhân viên có khả dụng cho một khung giờ booking với tùy chọn loại trừ booking hiện tại"""
+        if self.status in ['Nghỉ phép', 'Không hoạt động']:
+            return False
+            
+        # Chuyển đổi booking_time thành datetime để dễ so sánh
+        if isinstance(booking_time, str):
+            hours, minutes = map(int, booking_time.split(':'))
+        else:
+            hours, minutes = booking_time.hour, booking_time.minute
+            
+        booking_start = datetime.datetime.combine(booking_date, datetime.time(hours, minutes))
+        booking_end = booking_start + datetime.timedelta(hours=duration)
+        
+        # Lấy tất cả các booking mà nhân viên này đã được phân công
+        # Loại trừ booking hiện tại nếu đang kiểm tra trong trường hợp chỉnh sửa
+        assigned_bookings = self.assigned_bookings.filter(booking__booking_date=booking_date)
+        if exclude_booking_id:
+            assigned_bookings = assigned_bookings.exclude(booking_id=exclude_booking_id)
+        
+        for assignment in assigned_bookings:
+            booking = assignment.booking
+            
+            # Chuyển đổi thời gian booking sang datetime
+            if isinstance(booking.booking_time, str):
+                b_hours, b_minutes = map(int, booking.booking_time.split(':'))
+            else:
+                b_hours, b_minutes = booking.booking_time.hour, booking.booking_time.minute
+                
+            existing_start = datetime.datetime.combine(booking.booking_date, datetime.time(b_hours, b_minutes))
+            existing_end = existing_start + datetime.timedelta(hours=duration)
+            
+            # Kiểm tra xem có sự trùng lặp không
+            if (booking_start < existing_end and booking_end > existing_start):
+                return False
+                
+        return True
+    
+    def update_status_on_booking_complete(self):
+        """
+        Update staff status to 'Đang rảnh' if all assigned bookings are completed.
+        """
+        # Get all active assignments (not completed or cancelled)
+        active_assignments = self.assigned_bookings.exclude(
+            booking__status__in=['Hoàn thành', 'Hủy bỏ']
+        )
+        # If no active assignments, set status to 'Đang rảnh'
+        if not active_assignments.exists():
+            self.status = 'Đang rảnh'
+            self.save()
+
+
+class StaffAssignment(models.Model):
+    """Model to manage staff assignments to bookings"""
+    booking = models.ForeignKey('ServiceBooking', on_delete=models.CASCADE, related_name='staff_assignments')
+    staff = models.ForeignKey(Staff, on_delete=models.CASCADE, related_name='assigned_bookings')
+    assigned_at = models.DateTimeField(auto_now_add=True)
+    
+    def __str__(self):
+        return f"{self.staff.full_name} - {self.booking}"
+    
+    class Meta:
+        verbose_name = _('Phân công nhân viên')
+        verbose_name_plural = _('Phân công nhân viên')
+        unique_together = ('booking', 'staff')
+    
+    def clean(self):
+        # Kiểm tra trạng thái nhân viên
+        if self.staff.status in ['Nghỉ phép', 'Không hoạt động']:
+            raise ValidationError(_(f"Nhân viên {self.staff.full_name} đang {self.staff.get_status_display()}, không thể phân công."))
+        
+        # Kiểm tra xem nhân viên có khả dụng tại thời điểm booking không
+        # Truyền ID booking hiện tại để loại trừ nó khỏi kiểm tra khả năng làm việc khi chỉnh sửa
+        exclude_id = self.booking.id if self.pk else None
+        if not self.staff.is_available(self.booking.booking_date, self.booking.booking_time, exclude_booking_id=exclude_id):
+            raise ValidationError(_(f"Nhân viên {self.staff.full_name} đã có lịch làm việc trùng với thời gian này."))
+        
+        super().clean()

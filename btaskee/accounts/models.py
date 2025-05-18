@@ -57,11 +57,11 @@ class CustomUser(AbstractUser):
         return self.username
     
     def save(self, *args, **kwargs):
-        if self.reward_points   >= 1000:
+        if self.reward_points   >= 250:
             self.membership = 'Kim cương'
-        elif self.reward_points >= 500:
-            self.membership = 'Vàng'
         elif self.reward_points >= 100:
+            self.membership = 'Vàng'
+        elif self.reward_points >= 50:
             self.membership = 'Bạc'
         else:
             self.membership = 'Đồng'

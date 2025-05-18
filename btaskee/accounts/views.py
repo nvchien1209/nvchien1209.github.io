@@ -6,6 +6,8 @@ import re
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import update_session_auth_hash
+from services.models import ServiceBooking
+
 
 def login_view(request):
     if request.method == 'POST':
@@ -109,6 +111,10 @@ def logout_view(request):
 @login_required
 def profile_view(request):
     user = request.user
+    update_point(request)
+    print(user.reward_points)
+    update_total_booking(request)
+    print(user.total_bookings)
     context = {
         'user': user,
     }
@@ -238,4 +244,19 @@ def update_avatar(request):
         
         print("Đã nhận request để cập nhật avatar")
     return redirect('profile')
-    
+
+def update_point(request):
+    user = request.user
+    num_booking_completed = ServiceBooking.objects.filter(customer=request.user, status='Hoàn thành').count()
+    user.reward_points = num_booking_completed * 10
+    user.save()
+    print(f"Điểm thưởng đã được cập nhật cho user: {user.username}")
+    return user.reward_points
+
+def update_total_booking(request):
+    user = request.user
+    num_booking_completed = ServiceBooking.objects.filter(customer=request.user, status='Hoàn thành').count()
+    user.total_bookings = num_booking_completed
+    user.save()
+    print(f"Tổng số booking đã được cập nhật cho user: {user.username}")
+    return user.total_bookings

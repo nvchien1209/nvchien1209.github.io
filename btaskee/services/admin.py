@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Category, Service, ServicePackage, AdditionalService, Promotion, ServiceBooking, ServiceBookingDetail, Feedback
+from .models import Category, Service, ServicePackage, AdditionalService, Promotion, ServiceBooking, ServiceBookingDetail, Feedback, StaffAssignment, Staff
 from django.utils.html import format_html
 
 class ServiceInline(admin.TabularInline):
@@ -136,10 +136,35 @@ class FeedbackInline(admin.TabularInline):
         formset.save_m2m()
 
 
+@admin.register(Staff)
+class StaffAdmin(admin.ModelAdmin):
+    list_display = ('full_name', 'phone_number', 'status', 'gender', 'skills')
+    list_filter = ('status', 'gender', 'skills')
+    search_fields = ('full_name', 'phone_number', 'address')
+    fieldsets = (
+        ('Thông tin cá nhân', {
+            'fields': ('full_name', 'date_of_birth', 'gender', 'phone_number', 'address')
+        }),
+        ('Thông tin công việc', {
+            'fields': ('status', 'skills')
+        }),
+    )
+
+class StaffAssignmentInline(admin.TabularInline):
+    model = StaffAssignment
+    extra = 1
+    autocomplete_fields = ['staff']    
+    def formfield_for_foreignkey(self, db_field, request, **kwargs):
+        if db_field.name == "staff":
+            # Only show staff that are available (not on leave or inactive)
+            kwargs["queryset"] = Staff.objects.exclude(status__in=['Nghỉ phép', 'Không hoạt động' , 'Đang làm việc'])
+        return super().formfield_for_foreignkey(db_field, request, **kwargs)
+
+
 @admin.register(ServiceBooking)
 class ServiceBookingAdmin(admin.ModelAdmin):
     list_display = ('id', 'created_at', 'customer', 'category', 'service', 'booking_date', 
-                    'booking_time', 'status', 'payment_status', 'total_amount_after_discount')
+                    'booking_time', 'status', 'payment_status', 'total_amount_after_discount', 'get_assigned_staff')
     list_filter = ('status', 'payment_status', 'payment_method', 'category', 'service', 'booking_date')
     search_fields = ('customer__username', 'customer__email', 'customer__full_name', 
                      'address', 'promotion__promotion_code')
@@ -170,7 +195,8 @@ class ServiceBookingAdmin(admin.ModelAdmin):
         }),
     )
     
-    inlines = [ServiceBookingDetailInline, FeedbackInline]
+
+    inlines = [ServiceBookingDetailInline, FeedbackInline, StaffAssignmentInline]
 
     actions = ['mark_as_confirmed', 'mark_as_completed', 'mark_as_cancelled']
     
@@ -182,6 +208,11 @@ class ServiceBookingAdmin(admin.ModelAdmin):
     def mark_as_completed(self, request, queryset):
         updated = queryset.update(status='Hoàn thành')
         self.message_user(request, f'{updated} booking(s) đã được hoàn thành.')
+        # Cập nhật trạng thái nhân viên
+        for booking in queryset:
+            for assignment in booking.staff_assignments.all():
+                assignment.staff.update_status_on_booking_complete()
+    mark_as_completed.short_description = 'Đánh dấu là Hoàn thành'
     mark_as_completed.short_description = 'Đánh dấu là Hoàn thành'
     
     def mark_as_cancelled(self, request, queryset):
@@ -189,7 +220,40 @@ class ServiceBookingAdmin(admin.ModelAdmin):
         self.message_user(request, f'{updated} booking(s) đã bị hủy.')
     mark_as_cancelled.short_description = 'Đánh dấu là Hủy bỏ'
 
-    
+    def save_formset(self, request, form, formset, change):
+        """Xác thực phân công nhân viên trước khi lưu và xử lý ngoại lệ đúng cách"""
+        # Xác thực tất cả các phân công trước khi lưu
+        instances = formset.save(commit=False)
+        
+        # Thu thập lỗi xác thực
+        errors = []
+        
+        # Bước 1 - xác thực tất cả các phân công
+        for instance in instances:
+            if isinstance(instance, StaffAssignment):
+                try:
+                    # Xác thực phân công
+                    instance.clean()
+                except ValidationError as e:
+                    errors.append(f"Lỗi với nhân viên {instance.staff.full_name}: {e}")
+        
+        # Nếu có lỗi, hiển thị tất cả cùng một lúc
+        if errors:
+            error_message = "\n".join(errors)
+            raise ValidationError(error_message)
+            
+        # Bước 2 - lưu tất cả các instance đã được xác thực
+        for instance in instances:
+            if isinstance(instance, StaffAssignment):
+                # Cập nhật trạng thái nhân viên nếu cần
+                if instance.staff.status == 'Đang rảnh':
+                    instance.staff.status = 'Đang làm việc'
+                    instance.staff.save()
+            
+            instance.save()
+        
+        # Lưu các quan hệ many-to-many
+        formset.save_m2m()
 
 @admin.register(ServiceBookingDetail)
 class ServiceBookingDetailAdmin(admin.ModelAdmin):
@@ -228,3 +292,5 @@ class FeedbackAdmin(admin.ModelAdmin):
     def rating_stars(self, obj):
         return format_html('⭐' * obj.rating)
     rating_stars.short_description = 'Đánh giá'
+
+

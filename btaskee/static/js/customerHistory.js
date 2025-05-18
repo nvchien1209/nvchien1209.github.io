@@ -124,7 +124,6 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     });
 });
-// ...existing code...
 
 // Đánh giá sao trong modal
 document.addEventListener('DOMContentLoaded', function () {
@@ -206,4 +205,44 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 });
 
-
+document.addEventListener('DOMContentLoaded', function () {
+    // Sử dụng selector cụ thể hơn để tìm đúng nút lọc
+    const filterButton = document.querySelector('button.btn-primary');
+    
+    if (filterButton) {
+        filterButton.addEventListener('click', function (e) {
+            const dateRange = document.getElementById('dateRange').value;
+            const status = document.getElementById('status').value;
+            console.log('Date range:', dateRange);
+            console.log('Status:', status);
+            const params = new URLSearchParams({
+                dateRange: dateRange,
+                status: status
+            });
+            // Gửi yêu cầu AJAX đến server với các tham số lọc
+            fetch(`/booking/filter-booking?${params.toString()}`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    console.log('Dữ liệu đã được lọc thành công:', data.filteredBookings);
+                } else if (data.error) {
+                    alert('Có lỗi xảy ra khi lọc dữ liệu: 1' + data.error);
+                } else {
+                    alert('Có lỗi xảy ra khi lọc dữ liệu!2');
+                }
+            })
+            .catch(error => {
+                alert('Có lỗi xảy ra khi lọc dữ liệu3!');
+                console.error(error);
+            });
+        });
+    } else {
+        console.error('Filter button not found!');
+    }
+});
