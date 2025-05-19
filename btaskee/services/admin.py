@@ -1,6 +1,7 @@
 from django.contrib import admin
 from .models import Category, Service, ServicePackage, AdditionalService, Promotion, ServiceBooking, ServiceBookingDetail, Feedback, StaffAssignment, Staff
 from django.utils.html import format_html
+from django.core.exceptions import ValidationError
 
 class ServiceInline(admin.TabularInline):
     model = Service
@@ -38,22 +39,22 @@ class ServiceAdmin(admin.ModelAdmin):
 
 @admin.register(ServicePackage)
 class ServicePackageAdmin(admin.ModelAdmin):
-    list_display = ('name', 'service', 'price_min', 'price_max', 'is_active', 'created_at')
+    list_display = ('name', 'service', 'price_min', 'price_max', 'is_active', 'created_at', 'duration')
     list_filter = ('service', 'is_active')
     search_fields = ('name', 'description')
     readonly_fields = ('created_at', 'updated_at')
     list_editable = ('is_active',)
     fieldsets = (
         (None, {
-            'fields': ('service', 'name', 'description')
+            'fields': ('service', 'name', 'description', 'duration')
         }),
-        ('Thông tin giá', {
+        ('Pricing', {
             'fields': ('price_min', 'price_max')
         }),
-        ('Trạng thái', {
+        ('Status', {
             'fields': ('is_active',)
         }),
-        ('Thông tin thời gian', {
+        ('Time Information', {
             'fields': ('created_at', 'updated_at'),
             'classes': ('collapse',)
         }),
@@ -70,13 +71,13 @@ class AdditionalServiceAdmin(admin.ModelAdmin):
         (None, {
             'fields': ('name', 'description')
         }),
-        ('Thông tin giá', {
+        ('Pricing', {
             'fields': ('price_per_unit',)
         }),
-        ('Trạng thái', {
+        ('Status', {
             'fields': ('is_active',)
         }),
-        ('Thông tin thời gian', {
+        ('Time Information', {
             'fields': ('created_at', 'updated_at'),
             'classes': ('collapse',)
         }),
@@ -92,19 +93,19 @@ class PromotionAdmin(admin.ModelAdmin):
     readonly_fields = ('created_at', 'updated_at')
     
     fieldsets = (
-        ('Thông tin cơ bản', {
+        ('General Information', {
             'fields': ('promotion_code', 'description', 'is_active')
         }),
-        ('Cài đặt giảm giá', {
+        ('Discount Settings', {
             'fields': ('discount_type', 'discount_value')
         }),
-        ('Thời gian áp dụng', {
+        ('Time Period', {
             'fields': ('start_date', 'end_date')
         }),
-        ('Giới hạn sử dụng', {
+        ('Usage Limit', {
             'fields': ('usage_limit',)
         }),
-        ('Thông tin hệ thống', {
+        ('System Information', {
             'fields': ('created_at', 'updated_at'),
             'classes': ('collapse',)
         }),
@@ -142,22 +143,43 @@ class StaffAdmin(admin.ModelAdmin):
     list_filter = ('status', 'gender', 'skills')
     search_fields = ('full_name', 'phone_number', 'address')
     fieldsets = (
-        ('Thông tin cá nhân', {
+        ('Personal Information', {
             'fields': ('full_name', 'date_of_birth', 'gender', 'phone_number', 'address')
         }),
-        ('Thông tin công việc', {
+        ('Job Information', {
             'fields': ('status', 'skills')
         }),
     )
 
+    def mark_as_available(self, request, queryset):
+        updated = queryset.update(status='Đang rảnh')
+        self.message_user(request, f'{updated} nhân viên đã được đánh dấu là Đang rảnh.')
+    mark_as_available.short_description = 'Đánh dấu là Đang rảnh'
+    def mark_as_on_leave(self, request, queryset):
+        updated = queryset.update(status='Nghỉ phép')
+        self.message_user(request, f'{updated} nhân viên đã được đánh dấu là Nghỉ phép.')
+    mark_as_on_leave.short_description = 'Đánh dấu là Nghỉ phép'
+    def mark_as_inactive(self, request, queryset):
+        updated = queryset.update(status='Không hoạt động')
+        self.message_user(request, f'{updated} nhân viên đã được đánh dấu là Không hoạt động.')
+    mark_as_inactive.short_description = 'Đánh dấu là Không hoạt động'
+    def mark_as_working(self, request, queryset):
+        updated = queryset.update(status='Đang làm việc')
+        self.message_user(request, f'{updated} nhân viên đã được đánh dấu là Đang làm việc.')
+    mark_as_working.short_description = 'Đánh dấu là Đang làm việc'
+    actions = [mark_as_available, mark_as_on_leave, mark_as_inactive, mark_as_working]
+
 class StaffAssignmentInline(admin.TabularInline):
     model = StaffAssignment
     extra = 1
-    autocomplete_fields = ['staff']    
+    
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         if db_field.name == "staff":
-            # Only show staff that are available (not on leave or inactive)
-            kwargs["queryset"] = Staff.objects.exclude(status__in=['Nghỉ phép', 'Không hoạt động' , 'Đang làm việc'])
+            kwargs["queryset"] = Staff.objects.filter(status__in=['Đang rảnh', 'Đang làm việc'])
+            kwargs["required"] = True
+            # Chỉ định widget là Select thay vì AutocompleteSelect
+            from django.forms.widgets import Select
+            kwargs["widget"] = Select(attrs={'style': 'width: 100%'})
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
 
@@ -173,26 +195,29 @@ class ServiceBookingAdmin(admin.ModelAdmin):
     date_hierarchy = 'booking_date'
     
     fieldsets = (
-        ('Thông tin khách hàng', {
+        ('Customer', {
             'fields': ('customer',)
         }),
-        ('Thông tin dịch vụ', {
+        ('Service Information', {
             'fields': ('category', 'service')
         }),
-        ('Thời gian và địa điểm', {
+        ('Time and Location', {
             'fields': ('booking_date', 'booking_time', 'address')
         }),
-        ('Thông tin thanh toán', {
+        ('Payment Information', {
             'fields': ('sub_total', 'promotion', 'discount_amount', 
                        'total_amount_after_discount', 'payment_status', 'payment_method', 'date_paid', 'payment_code')
         }),
-        ('Trạng thái', {
+        ('Status', {
             'fields': ('status',)
         }),
-        ('Thông tin hệ thống', {
+        ('System Information', {
             'fields': ('created_at', 'updated_at'),
             'classes': ('collapse',)
         }),
+        # ('Chi tiết dịch vụ', {
+        #     'fields': ('service_booking_details',)
+        # })
     )
     
 
@@ -200,6 +225,7 @@ class ServiceBookingAdmin(admin.ModelAdmin):
 
     actions = ['mark_as_confirmed', 'mark_as_completed', 'mark_as_cancelled']
     
+
     def mark_as_confirmed(self, request, queryset):
         updated = queryset.update(status='Đã xác nhận')
         self.message_user(request, f'{updated} booking(s) đã được xác nhận.')
@@ -213,7 +239,6 @@ class ServiceBookingAdmin(admin.ModelAdmin):
             for assignment in booking.staff_assignments.all():
                 assignment.staff.update_status_on_booking_complete()
     mark_as_completed.short_description = 'Đánh dấu là Hoàn thành'
-    mark_as_completed.short_description = 'Đánh dấu là Hoàn thành'
     
     def mark_as_cancelled(self, request, queryset):
         updated = queryset.update(status='Hủy bỏ')
@@ -222,31 +247,39 @@ class ServiceBookingAdmin(admin.ModelAdmin):
 
     def save_formset(self, request, form, formset, change):
         """Xác thực phân công nhân viên trước khi lưu và xử lý ngoại lệ đúng cách"""
-        # Xác thực tất cả các phân công trước khi lưu
         instances = formset.save(commit=False)
-        
-        # Thu thập lỗi xác thực
         errors = []
         
-        # Bước 1 - xác thực tất cả các phân công
+        # Xác thực tất cả các phân công
         for instance in instances:
             if isinstance(instance, StaffAssignment):
                 try:
+                    # Đảm bảo instance có đủ thông tin trước khi clean
+                    if not hasattr(instance, 'staff') or not instance.staff:
+                        errors.append("Nhân viên không được để trống.")
+                        continue
+                    if not hasattr(instance, 'booking') or not instance.booking:
+                        errors.append("Booking không được để trống.")
+                        continue
+                    
                     # Xác thực phân công
                     instance.clean()
                 except ValidationError as e:
-                    errors.append(f"Lỗi với nhân viên {instance.staff.full_name}: {e}")
+                    if hasattr(instance, 'staff') and instance.staff:
+                        errors.append(f"Lỗi với nhân viên {instance.staff.full_name}: {e}")
+                    else:
+                        errors.append(f"Lỗi phân công: {e}")
         
         # Nếu có lỗi, hiển thị tất cả cùng một lúc
         if errors:
             error_message = "\n".join(errors)
             raise ValidationError(error_message)
-            
-        # Bước 2 - lưu tất cả các instance đã được xác thực
+        
+        # Lưu tất cả các instance đã được xác thực
         for instance in instances:
             if isinstance(instance, StaffAssignment):
                 # Cập nhật trạng thái nhân viên nếu cần
-                if instance.staff.status == 'Đang rảnh':
+                if instance.staff and instance.staff.status == 'Đang rảnh':
                     instance.staff.status = 'Đang làm việc'
                     instance.staff.save()
             
@@ -278,13 +311,13 @@ class FeedbackAdmin(admin.ModelAdmin):
     date_hierarchy = 'created_at'
     
     fieldsets = (
-        ('Thông tin cơ bản', {
+        ('General Information', {
             'fields': ('customer', 'booking')
         }),
-        ('Nội dung đánh giá', {
+        ('Feedback Content', {
             'fields': ('rating', 'comment')
         }),
-        ('Thông tin hệ thống', {
+        ('System Information', {
             'fields': ('created_at', 'updated_at'),
             'classes': ('collapse',)
         }),

@@ -46,10 +46,10 @@ INSTALLED_APPS = [
 ]
 
 # JAZZMIN_SETTINGS = {
-#     "site_title": "BTaskee Admin",
-#     "site_header": "BTaskee Admin",
-#     # "site_logo": "images/logo_btaskee_ver_3.png",
-#     "login_logo": "images/logo_btaskee_ver_3.png",
+#     "show_ui_builder": True,
+# }
+# JAZZMIN_UI_TWEAKS = {
+#     "theme": "sketchy",
 # }
 
 from django.contrib.messages import constants as messages

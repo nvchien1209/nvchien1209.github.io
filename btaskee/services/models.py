@@ -33,6 +33,7 @@ class ServicePackage(models.Model):
     service = models.ForeignKey(Service, on_delete=models.CASCADE, related_name='packages')
     name = models.CharField(max_length=255, unique=True) #tên gói dịch vụ
     description = models.TextField(blank=True) #mô tả gói dịch vụ
+    duration = models.IntegerField(null=True, blank=True)  # Thời gian thực hiện (giờ)
     price_min = models.DecimalField(max_digits=10, decimal_places=0)  # Giá tối thiểu
     price_max = models.DecimalField(max_digits=10, decimal_places=0) 
     is_active = models.BooleanField(default=True)
@@ -139,7 +140,7 @@ class ServiceBooking(models.Model):
     def get_assigned_staff(self):
         """Return list of assigned staff names"""
         return ", ".join([assignment.staff.full_name for assignment in self.staff_assignments.all()])
-    get_assigned_staff.short_description = "Nhân viên đã phân công"
+    get_assigned_staff.short_description = "Staff Assigned"
 
 
 
@@ -152,7 +153,11 @@ class ServiceBookingDetail(models.Model):
     
     def __str__(self):
         return f'ServiceBookingDetail for {self.booking.id}'
-    
+
+    class Meta:
+        verbose_name = _('Chi tiết đặt dịch vụ')
+        verbose_name_plural = _('Service Booking Details')
+        ordering = ['-booking__created_at']
 
 class Feedback(models.Model):
     # Thông tin phản hồi
@@ -165,23 +170,26 @@ class Feedback(models.Model):
 
     def __str__(self):
         return f'Feedback for {self.booking.id}'
-    
+    class Meta:
+        verbose_name = _('Đánh giá')
+        verbose_name_plural = _('Feedbacks')
+        ordering = ['-created_at']
     
 
 class Staff(models.Model):
     # Thông tin nhân viên
-    full_name = models.CharField(_('Họ tên'), max_length=100)
-    date_of_birth = models.DateField(_('Ngày sinh'))
-    phone_number = models.CharField(_('Số điện thoại'), max_length=15)
-    address = models.TextField(_('Địa chỉ'))
-    
+    full_name = models.CharField('Full Name', max_length=100)
+    date_of_birth = models.DateField('Date of Birth')
+    phone_number = models.CharField('Phone Number', max_length=15)
+    address = models.TextField('Address')
+
     # Giới tính
     GENDER_CHOICES = (
         ('Nam', 'Nam'),
         ('Nữ', 'Nữ'),
         ('Khác', 'Khác'),
     )
-    gender = models.CharField(_('Giới tính'), max_length=10, choices=GENDER_CHOICES)
+    gender = models.CharField('Sex', max_length=10, choices=GENDER_CHOICES)
     
     # Trạng thái làm việc
     STATUS_CHOICES = (
@@ -190,10 +198,10 @@ class Staff(models.Model):
         ('Nghỉ phép', 'Nghỉ phép'),
         ('Không hoạt động', 'Không hoạt động'),
     )
-    status = models.CharField(_('Trạng thái'), max_length=20, choices=STATUS_CHOICES, default='Đang rảnh')
+    status = models.CharField('Status', max_length=20, choices=STATUS_CHOICES, default='Đang rảnh')
 
-    skills = models.CharField(_('Kỹ năng'), max_length=255)
-    
+    skills = models.CharField('Skills', max_length=255)
+
     # System fields
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -222,11 +230,15 @@ class Staff(models.Model):
         
         # Lấy tất cả các booking mà nhân viên này đã được phân công
         # Loại trừ booking hiện tại nếu đang kiểm tra trong trường hợp chỉnh sửa
-        assigned_bookings = self.assigned_bookings.filter(booking__booking_date=booking_date)
+        assigned_bookings = self.assigned_bookings.all()
         if exclude_booking_id:
             assigned_bookings = assigned_bookings.exclude(booking_id=exclude_booking_id)
         
         for assignment in assigned_bookings:
+            # Kiểm tra nếu booking của assignment đã hủy hoặc hoàn thành thì bỏ qua
+            if assignment.booking.status in ['Hoàn thành', 'Hủy bỏ']:
+                continue
+                
             booking = assignment.booking
             
             # Chuyển đổi thời gian booking sang datetime
@@ -243,7 +255,6 @@ class Staff(models.Model):
                 return False
                 
         return True
-    
     def update_status_on_booking_complete(self):
         """
         Update staff status to 'Đang rảnh' if all assigned bookings are completed.
@@ -273,9 +284,19 @@ class StaffAssignment(models.Model):
         unique_together = ('booking', 'staff')
     
     def clean(self):
+        # Kiểm tra xem self.staff và self.booking có tồn tại không
+        if not hasattr(self, 'staff') or not self.staff:
+            raise ValidationError(_("Nhân viên không tồn tại."))
+        if not hasattr(self, 'booking') or not self.booking:
+            raise ValidationError(_("Booking không tồn tại."))
+
         # Kiểm tra trạng thái nhân viên
         if self.staff.status in ['Nghỉ phép', 'Không hoạt động']:
             raise ValidationError(_(f"Nhân viên {self.staff.full_name} đang {self.staff.get_status_display()}, không thể phân công."))
+        
+        # Kiểm tra xem booking có bị hủy hoặc đã hoàn thành không
+        if self.booking.status in ['Hoàn thành', 'Hủy bỏ']:
+            raise ValidationError(_(f"Không thể phân công nhân viên cho booking đã {self.booking.status}."))
         
         # Kiểm tra xem nhân viên có khả dụng tại thời điểm booking không
         # Truyền ID booking hiện tại để loại trừ nó khỏi kiểm tra khả năng làm việc khi chỉnh sửa
