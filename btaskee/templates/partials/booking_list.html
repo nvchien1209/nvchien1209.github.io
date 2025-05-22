@@ -1,0 +1,124 @@
+<!-- templates/partials/booking_list.html -->
+{% load humanize %}
+{% load custom_tags %}
+{% load static %}
+
+{% if bookings %}
+    {% for item in bookings %}
+        <div class="card service-history-card">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h5 class="card-title mb-0">
+                        <div class="d-flex align-items-center">
+                            <div class="service-type-icon">
+                                <i class="fas fa-broom fa-lg"></i>
+                            </div>
+                            {{ item.service }}
+                        </div>
+                    </h5>
+                    {% if item.status == "Hoàn thành" %}
+                        <span class="badge bg-success">{{ item.status }}</span>
+                    {% elif item.status == "Đã xác nhận" %}
+                        <span class="badge bg-primary">{{ item.status }}</span>
+                    {% elif item.status == "Hủy bỏ" %}
+                        <span class="badge bg-danger">{{ item.status }}</span>
+                    {% elif item.status == "Đang thực hiện" %}
+                        <span class="badge bg-warning text-dark">{{ item.status }}</span>
+                    {% else %}
+                        <span class="badge bg-secondary">{{ item.status }}</span>
+                    {% endif %}
+                </div>
+                
+                <div class="row">
+                    <div class="col-md-8">
+                        <p><i class="far fa-calendar-alt me-2"></i>Ngày thực hiện: {{ item.booking_date }}</p>
+                        <p><i class="far fa-clock me-2"></i>Thời gian: {{ item.booking_time }}</p>
+                        <p><i class="fas fa-map-marker-alt me-2"></i>Địa chỉ: {{ item.address }}</p>
+                    </div>
+                    <div class="col-md-4">
+                        <p><i class="fas fa-tag me-2"></i>Mã đơn: {{ item.id }}</p>
+                        <p><i class="fas fa-money-bill-wave me-2"></i>Giá: {{ item.total_amount_after_discount|intcomma }} VNĐ</p>
+                        {% if item.feedbacks.count > 0 %}
+                            {% for fb in item.feedbacks.all %}
+                                <p>
+                                    <i class="fas fa-star me-2"></i>Đánh giá:
+                                    <span class="rating-stars">
+                                        {% for i in fb.rating|get_range %}
+                                            <i class="fas fa-star"></i>
+                                        {% endfor %}
+                                    </span>
+                                </p>
+                            {% endfor %} 
+                        {% else %}
+                            <p>
+                                <i class="fas fa-star me-2"></i>Đánh giá: <span class="text-muted">Chưa đánh giá</span>
+                            </p>
+                        {% endif %}  
+                    </div>
+                </div>
+                
+                <div class="d-flex justify-content-end mt-3">
+                    <button class="btn btn-outline-primary me-2">
+                        <i class="fas fa-sync-alt me-1"></i>Đặt lại
+                    </button>
+                    <button
+                        class="btn btn-outline-secondary me-2 btn-detail"
+                        data-bs-toggle="modal"
+                        data-bs-target="#detailsModal"
+                        data-id="{{ item.id }}"
+                        data-booking-date="{{ item.created_at|date:'d/m/Y' }}"
+                        data-execute-date="{{ item.booking_date|date:'d/m/Y' }}"
+                        data-booking-time="{{ item.booking_time }}"
+                        data-service="{{ item.service }}"
+                        data-status="{{ item.status }}"
+                        data-address="{{ item.address }}"
+                        data-total="{{ item.total_amount_after_discount|intcomma }}"
+                        data-payment-method="{{ item.payment_method }}"
+                        data-payment-status="{{ item.payment_status }}"
+                        data-payment-date="{{ item.date_paid|date:'d/m/Y' }}"
+                        data-payment-code="{{ item.payment_code }}"
+                        data-rating="{{ item.feedbacks.first.rating }}"
+                        data-rating-comment="{{ item.feedbacks.first.comment }}"
+                        data-service-details="{{ item.details.package }}"
+                        {% if item.details %}
+                            {% for detail in item.details.all %}
+                                data-service-package="{{ detail.package.name }}"
+                                {% if detail.additional_services.all %}
+                                    data-service-adds="{% for additional_service in detail.additional_services.all %}{{ additional_service.name }}{% if not forloop.last %}, {% endif %}{% endfor %}"
+                                    data-service-addprice="{% for additional_service in detail.additional_services.all %}{{ additional_service.price_per_unit }}{% if not forloop.last %}, {% endif %}{% endfor %}"
+                                {% endif %}
+                            {% endfor %}
+                        {% endif %}
+                        data-subtotal="{{ item.sub_total }}"
+                        data-discount-amount="{{ item.discount_amount|intcomma }}"
+                        {% if item.staff_assignments %}
+                            data-staff-names="{% for staff in item.staff_assignments.all %}{{ staff.staff.full_name }}{% if not forloop.last %}, {% endif %}{% endfor %}"
+                            data-staff-phones="{% for staff in item.staff_assignments.all %}{{ staff.staff.phone_number }}{% if not forloop.last %}, {% endif %}{% endfor %}"
+                        {% endif %}
+                    >
+                        <i class="fas fa-eye me-1"></i>Chi tiết
+                    </button>
+                    {% if item.payment_status == 'Chưa thanh toán' %}  
+                        <button class="btn btn-outline-success">
+                            <i class="fas fa-receipt me-1"></i>Thanh toán
+                        </button>
+                    {% else %}
+                        <button class="btn btn-outline-success">
+                            <i class="fas fa-receipt me-1"></i>Đã thanh toán
+                        </button>
+                    {% endif %}
+                    {% if item.status != "Đang thực hiện" and item.status != "Hoàn thành" and item.status != "Hủy bỏ" %}
+                        <button class="btn btn-outline-danger" data-id="{{ item.id }}">
+                            <i class="fas fa-receipt me-1"></i>Hủy đơn
+                        </button>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    {% endfor %}
+{% else %}
+    <div class="empty-history">
+        <h4>Bạn chưa có lịch sử sử dụng dịch vụ</h4>
+        <img src="{% static 'images/empty_history.jpg' %}" alt="No History" class="mb-4">         
+    </div>
+{% endif %}

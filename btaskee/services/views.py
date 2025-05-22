@@ -10,6 +10,7 @@ from django.contrib.auth.decorators import login_required
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST, require_GET
 from django.template.loader import render_to_string
+from django.core.paginator import Paginator
 
 def home_view(request):
     user_data = None
@@ -298,11 +299,12 @@ def filter_history(request):
         # Lấy dữ liệu từ query params (GET)
         date_range = request.GET.get('dateRange', '')
         status = request.GET.get('status', '')
+        page = request.GET.get('page', 1)  # Lấy số trang từ query params, mặc định là 1
         print(date_range)
         print(status)
         # Khởi tạo queryset ban đầu
         bookings = ServiceBooking.objects.filter(customer=request.user)
-
+    
         # Lọc theo date_range
         if date_range:
             if date_range == 'current-month':
@@ -340,9 +342,27 @@ def filter_history(request):
                 bookings = bookings.filter(status='Đang thực hiện')
             elif status == 'all':
                 bookings = ServiceBooking.objects.filter(customer=request.user)
-               
         print(bookings)
+        # Phân trang
+        # paginator = Paginator(bookings, 5)  # 10 items per page
+        # bookings_page = paginator.get_page(page)
         
-        return JsonResponse({'success': True, 'message': 'Lọc lịch sử thành công!'})
+        # Render HTML template với dữ liệu đã lọc
+        html = render_to_string('partials/booking_list.html', {
+            'bookings': bookings,
+            # 'page_obj': bookings_page,
+        }, request=request)
+        
+        # pagination_html = render_to_string('partials/pagination.html', {
+        #     'page_obj': bookings_page,
+        # }, request=request)
+        
+        return JsonResponse({
+            'success': True,
+            'html': html,
+            # 'pagination_html': pagination_html,
+            # 'total_count': paginator.count
+        })
+        
     except Exception as e:
         return JsonResponse({'success': False, 'error': str(e)})
