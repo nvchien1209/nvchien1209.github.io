@@ -8,6 +8,7 @@ document.addEventListener('DOMContentLoaded', function() {
         initCancelBookingEvents();
         initRatingEvents();
         initFilterEvents();
+        
     }
     
     // ===== Xử lý sử dụng bootstrap modal =====
@@ -292,6 +293,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const dateRange = document.getElementById('dateRange').value;
             const status = document.getElementById('status').value;
             
+            
             console.log('Applying filters:', { dateRange, status });
             
             // Hiển thị loading
@@ -299,9 +301,10 @@ document.addEventListener('DOMContentLoaded', function() {
             
             const params = new URLSearchParams({
                 dateRange: dateRange,
-                status: status
+                status: status,
+                
             });
-            
+
             fetch(`/booking/filter-booking?${params.toString()}`, {
                 method: 'GET',
                 headers: {
@@ -317,9 +320,13 @@ document.addEventListener('DOMContentLoaded', function() {
                     // Cập nhật danh sách booking
                     historyList.innerHTML = data.html;
                     
-                    // Khởi tạo lại TẤT CẢ events sau khi filter
-                    console.log('Reinitializing events after filter...');
-                    initAllEvents();
+                    // Cập nhật pagination 
+                    // const paginationContainer = document.querySelector('.pagination-container');
+                    // if (paginationContainer && data.pagination_html) {
+                    //     paginationContainer.innerHTML = data.pagination_html;
+                    // }
+
+                    
                     
                     console.log('Dữ liệu đã được lọc thành công. Tổng số:', data.total_count);
                 } else {
@@ -352,3 +359,69 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 });
+
+// ===== Xử lý sự kiện phân trang =====
+// function initPaginationEvents() {
+//     const paginationLinks = document.querySelectorAll('.pagination .page-link');
+    
+//     paginationLinks.forEach(link => {
+        
+//         const newLink = link.cloneNode(true);
+//         link.parentNode.replaceChild(newLink, link);
+        
+//         newLink.addEventListener('click', function(e) {
+//             e.preventDefault();
+            
+//             if (this.classList.contains('disabled') || this.parentNode.classList.contains('active')) {
+//                 return;
+//             }
+            
+//             const page = this.getAttribute('data-page');
+//             if (page) {
+//                 loadPage(page);
+//             }
+//         });
+//     });
+// }
+
+// function loadPage(page) {
+//     const dateRange = document.getElementById('dateRange').value;
+//     const status = document.getElementById('status').value;
+//     const historyList = document.querySelector('.history-list');
+    
+//     showLoading();
+    
+//     const params = new URLSearchParams({
+//         dateRange: dateRange,
+//         status: status,
+//         page: page
+//     });
+    
+//     fetch(`/booking/filter-booking?${params.toString()}`, {
+//         method: 'GET',
+//         headers: {
+//             'Content-Type': 'application/json',
+//             'X-Requested-With': 'XMLHttpRequest'
+//         }
+//     })
+//     .then(response => response.json())
+//     .then(data => {
+//         hideLoading();
+        
+//         if (data.success) {
+//             historyList.innerHTML = data.html;
+            
+//             const paginationContainer = document.querySelector('.pagination-container');
+//             if (paginationContainer && data.pagination_html) {
+//                 paginationContainer.innerHTML = data.pagination_html;
+//             }
+            
+//             initAllEvents();
+//             initPaginationEvents();
+//         }
+//     })
+//     .catch(error => {
+//         hideLoading();
+//         console.error('Pagination error:', error);
+//     });
+// }

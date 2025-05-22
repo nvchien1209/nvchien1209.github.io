@@ -73,23 +73,15 @@
 
             <!-- History List -->
             <div class="history-list">
-                {% include 'partials/booking_list.html' with bookings=bookings %}
-        
-                
-
+                {% include 'partials/booking_list.html' with bookings=bookings %}  
             </div>
             
             <!-- Pagination -->
-            <div class="pagination">
-                <a href="#" class="disabled">&laquo;&laquo;</a>
-                <a href="#" class="disabled">&laquo;</a>
-                <a href="#" class="active">1</a>
-                <a href="#">2</a>
-                <a href="#">3</a>
-                <a href="#">4</a>
-                <a href="#">5</a>
-                <a href="#">&raquo;</a>
-                <a href="#">&raquo;&raquo;</a>
+
+            <div class="pagination-container mt-4">
+                {% if bookings %}
+                {% include 'partials/pagination.html' %}
+                {% endif %}
             </div>
         </div>
     </div>

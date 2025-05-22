@@ -214,26 +214,14 @@ def create_booking(request):
 def booking_history(request):
     bookings = ServiceBooking.objects.prefetch_related('details', 'feedbacks', 'staff_assignments').filter(customer=request.user).order_by('-created_at')
     AdditionalServices = AdditionalService.objects.all()
+    paginator = Paginator(bookings, 5)  
+    page = request.GET.get('page', 1)
+    bookings_page = paginator.get_page(page)
     context = {
-        'bookings': bookings,
+        'bookings': bookings_page,
         'AdditionalServices': AdditionalServices,
+        'page_obj': bookings_page,
     }
-    for item in bookings:
-        print(item.sub_total)
-        print('abc')
-        print(item.total_amount_after_discount)
-        if item.id == 6:
-            print(item.details.all())
-            for detail in item.details.all():
-                print(f'{detail.package.name} ')
-                for additional_service in detail.additional_services.all():
-                    print(f'{additional_service.name}: {additional_service.price_per_unit} VNĐ')
-    # Lấy danh sách nhân viên đã được gán cho từng booking
-    for booking in bookings:
-        staff_assignments = StaffAssignment.objects.filter(booking=booking).select_related('staff')
-        assigned_staff = [assignment.staff for assignment in staff_assignments]
-        booking.assigned_staff = assigned_staff
-        print(assigned_staff)
     return render(request, 'history_booking.html', context)
 
 @require_POST
@@ -299,7 +287,6 @@ def filter_history(request):
         # Lấy dữ liệu từ query params (GET)
         date_range = request.GET.get('dateRange', '')
         status = request.GET.get('status', '')
-        page = request.GET.get('page', 1)  # Lấy số trang từ query params, mặc định là 1
         print(date_range)
         print(status)
         # Khởi tạo queryset ban đầu
@@ -329,39 +316,27 @@ def filter_history(request):
                 bookings = bookings.filter(
                     booking_date__gte=three_months_ago
                 )
-        if status:
-            if status == 'pending':
-                bookings = bookings.filter(status='Đang chờ')
-            elif status == 'completed':
-                bookings = bookings.filter(status='Hoàn thành')
-            elif status == 'cancelled':
-                bookings = bookings.filter(status='Hủy bỏ')
-            elif status == 'confirmed':
-                bookings = bookings.filter(status='Đã xác nhận')
-            elif status == 'in-progress':
-                bookings = bookings.filter(status='Đang thực hiện')
-            elif status == 'all':
-                bookings = ServiceBooking.objects.filter(customer=request.user)
+        if status and status != 'all':
+            status_map = {
+                'pending': 'Đang chờ',
+                'completed': 'Hoàn thành',
+                'cancelled': 'Hủy bỏ',
+                'confirmed': 'Đã xác nhận',
+                'in-progress': 'Đang thực hiện'
+            }
+            if status in status_map:
+                bookings = bookings.filter(status=status_map[status])
         print(bookings)
-        # Phân trang
-        # paginator = Paginator(bookings, 5)  # 10 items per page
-        # bookings_page = paginator.get_page(page)
         
         # Render HTML template với dữ liệu đã lọc
         html = render_to_string('partials/booking_list.html', {
             'bookings': bookings,
-            # 'page_obj': bookings_page,
         }, request=request)
-        
-        # pagination_html = render_to_string('partials/pagination.html', {
-        #     'page_obj': bookings_page,
-        # }, request=request)
         
         return JsonResponse({
             'success': True,
             'html': html,
-            # 'pagination_html': pagination_html,
-            # 'total_count': paginator.count
+            
         })
         
     except Exception as e:

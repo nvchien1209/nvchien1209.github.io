@@ -12,4 +12,5 @@ urlpatterns = [
     path('booking/destroy-booking/<int:booking_id>', views.destroy_booking, name="destroy_booking"), 
     path('booking/rate', views.rate_booking, name="rate_booking"),
     path('booking/filter-booking', views.filter_history, name="filter_history"),
+    path('history/<int:page_number>/', views.booking_history, name='booking_history_page'),  # Lịch sử đặt dịch vụ với phân trang
 ]
