@@ -305,3 +305,14 @@ class StaffAssignment(models.Model):
             raise ValidationError(_(f"Nhân viên {self.staff.full_name} đã có lịch làm việc trùng với thời gian này."))
         
         super().clean()
+
+    def delete(self, using=None, keep_parents=False):
+        """Override delete method to update staff status when assignment is deleted"""
+        staff = self.staff
+        result = super().delete(using, keep_parents)
+        
+        # Cập nhật trạng thái nhân viên sau khi xóa phân công
+        if staff:
+            staff.update_status_on_booking_complete()
+        
+        return result

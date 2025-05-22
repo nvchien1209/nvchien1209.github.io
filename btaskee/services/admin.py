@@ -140,7 +140,7 @@ class FeedbackInline(admin.TabularInline):
 @admin.register(Staff)
 class StaffAdmin(admin.ModelAdmin):
     list_display = ('full_name', 'phone_number', 'status', 'gender', 'skills')
-    list_filter = ('status', 'gender', 'skills')
+    list_filter = ('status', 'gender', 'skills', )
     search_fields = ('full_name', 'phone_number', 'address')
     fieldsets = (
         ('Personal Information', {
@@ -172,6 +172,9 @@ class StaffAdmin(admin.ModelAdmin):
 class StaffAssignmentInline(admin.TabularInline):
     model = StaffAssignment
     extra = 1
+    can_delete = True
+    fields = ('staff', 'assigned_at')
+    readonly_fields = ('assigned_at',)
     
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         if db_field.name == "staff":
@@ -187,7 +190,7 @@ class StaffAssignmentInline(admin.TabularInline):
 class ServiceBookingAdmin(admin.ModelAdmin):
     list_display = ('id', 'created_at', 'customer', 'category', 'service', 'booking_date', 
                     'booking_time', 'status', 'payment_status', 'total_amount_after_discount', 'get_assigned_staff')
-    list_filter = ('status', 'payment_status', 'payment_method', 'category', 'service', 'booking_date')
+    list_filter = ('customer','status', 'payment_status', 'payment_method', 'category', 'service', 'booking_date')
     search_fields = ('customer__username', 'customer__email', 'customer__full_name', 
                      'address', 'promotion__promotion_code')
     readonly_fields = ('sub_total', 'discount_amount', 'total_amount_after_discount', 
@@ -223,7 +226,7 @@ class ServiceBookingAdmin(admin.ModelAdmin):
 
     inlines = [ServiceBookingDetailInline, FeedbackInline, StaffAssignmentInline]
 
-    actions = ['mark_as_confirmed', 'mark_as_completed', 'mark_as_cancelled']
+    actions = ['mark_as_confirmed', 'mark_as_completed', 'mark_as_cancelled', 'mark_as_in_progress']
     
 
     def mark_as_confirmed(self, request, queryset):
@@ -240,53 +243,75 @@ class ServiceBookingAdmin(admin.ModelAdmin):
                 assignment.staff.update_status_on_booking_complete()
     mark_as_completed.short_description = 'Đánh dấu là Hoàn thành'
     
+    def mark_as_in_progress(self, request, queryset):
+        updated = queryset.update(status='Đang thực hiện')
+        self.message_user(request, f'{updated} booking(s) đã được đánh dấu là Đang thực hiện.')
+    mark_as_in_progress.short_description = 'Đánh dấu là Đang thực hiện'
+
     def mark_as_cancelled(self, request, queryset):
         updated = queryset.update(status='Hủy bỏ')
         self.message_user(request, f'{updated} booking(s) đã bị hủy.')
     mark_as_cancelled.short_description = 'Đánh dấu là Hủy bỏ'
 
     def save_formset(self, request, form, formset, change):
-        """Xác thực phân công nhân viên trước khi lưu và xử lý ngoại lệ đúng cách"""
-        instances = formset.save(commit=False)
-        errors = []
-        
-        # Xác thực tất cả các phân công
-        for instance in instances:
-            if isinstance(instance, StaffAssignment):
-                try:
-                    # Đảm bảo instance có đủ thông tin trước khi clean
-                    if not hasattr(instance, 'staff') or not instance.staff:
-                        errors.append("Nhân viên không được để trống.")
-                        continue
-                    if not hasattr(instance, 'booking') or not instance.booking:
-                        errors.append("Booking không được để trống.")
-                        continue
-                    
-                    # Xác thực phân công
-                    instance.clean()
-                except ValidationError as e:
-                    if hasattr(instance, 'staff') and instance.staff:
-                        errors.append(f"Lỗi với nhân viên {instance.staff.full_name}: {e}")
-                    else:
-                        errors.append(f"Lỗi phân công: {e}")
-        
-        # Nếu có lỗi, hiển thị tất cả cùng một lúc
-        if errors:
-            error_message = "\n".join(errors)
-            raise ValidationError(error_message)
-        
-        # Lưu tất cả các instance đã được xác thực
-        for instance in instances:
-            if isinstance(instance, StaffAssignment):
-                # Cập nhật trạng thái nhân viên nếu cần
-                if instance.staff and instance.staff.status == 'Đang rảnh':
-                    instance.staff.status = 'Đang làm việc'
-                    instance.staff.save()
+        if formset.model == StaffAssignment:
+            # Lưu formset trước để có thể truy cập deleted_objects
+            instances = formset.save(commit=False)
+            for obj in formset.deleted_objects:
+                if isinstance(obj, StaffAssignment):
+                    # Cập nhật trạng thái nhân viên khi bị xóa khỏi booking
+                    if obj.staff:
+                        obj.staff.update_status_on_booking_complete()
+                    obj.delete()
+
+            """Xác thực phân công nhân viên trước khi lưu và xử lý ngoại lệ đúng cách"""
+            instances = formset.save(commit=False)
+            errors = []
             
-            instance.save()
-        
-        # Lưu các quan hệ many-to-many
-        formset.save_m2m()
+
+            # Xác thực tất cả các phân công
+            for instance in instances:
+                if isinstance(instance, StaffAssignment):
+                    try:
+                        # Đảm bảo instance có đủ thông tin trước khi clean
+                        if not hasattr(instance, 'staff') or not instance.staff:
+                            errors.append("Nhân viên không được để trống.")
+                            continue
+                        if not hasattr(instance, 'booking') or not instance.booking:
+                            errors.append("Booking không được để trống.")
+                            continue
+                        
+                        # Xác thực phân công
+                        instance.clean()
+                    except ValidationError as e:
+                        if hasattr(instance, 'staff') and instance.staff:
+                            errors.append(f"Lỗi với nhân viên {instance.staff.full_name}: {e}")
+                        else:
+                            errors.append(f"Lỗi phân công: {e}")
+            
+            # Nếu có lỗi, hiển thị tất cả cùng một lúc
+            if errors:
+                error_message = "\n".join(errors)
+                raise ValidationError(error_message)
+            
+            # Lưu tất cả các instance đã được xác thực
+            for instance in instances:
+                if isinstance(instance, StaffAssignment):
+                    # Cập nhật trạng thái nhân viên nếu cần
+                    if instance.staff and instance.staff.status == 'Đang rảnh':
+                        instance.staff.status = 'Đang làm việc'
+                        instance.staff.save()
+                
+                instance.save()
+            
+            # Lưu các quan hệ many-to-many
+            formset.save_m2m()
+        else:
+            # Xử lý các formset khác bình thường
+            super().save_formset(request, form, formset, change)
+
+    class Media:
+        js = ('admin/js/staff_assignment.js',)
 
 @admin.register(ServiceBookingDetail)
 class ServiceBookingDetailAdmin(admin.ModelAdmin):

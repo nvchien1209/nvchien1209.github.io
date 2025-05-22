@@ -11,8 +11,10 @@ document.addEventListener('DOMContentLoaded', function() {
             document.getElementById('modal-address').innerText = this.dataset.address || '';
             console.log(this.dataset.discountAmount)
             console.log(this.dataset.total)
+            
             document.getElementById('modal-total-amount').innerHTML = `<strong>${this.dataset.total || ''} VNĐ</strong>`;
             document.getElementById('modal-discount-amount').innerHTML = `<strong>${this.dataset.discountAmount || ''} VNĐ</strong>`;
+            
             
             if (this.dataset.paymentStatus === 'Chưa thanh toán') {
                 document.getElementById('modal-payment-status').innerText = 'Chưa thanh toán';
@@ -26,8 +28,20 @@ document.addEventListener('DOMContentLoaded', function() {
                 document.getElementById('modal-payment-code').innerText = this.dataset.paymentCode || '';
             }
             
-            
-            
+
+            // if(this.dataset.status === 'Hoàn thành' || this.dataset.status === 'Đã xác nhận') {
+            //     document.getElementById('modal-staff-name').innerText = this.dataset.staffName || '';
+            // }
+            const staffName = this.dataset.staffNames ? this.dataset.staffNames.split(',') : [];
+            const staffPhone = this.dataset.staffPhones ? this.dataset.staffPhones.split(',') : [];
+            let staffNameHtml = '';
+            //let staffPhoneHtml = '';
+            for (let i = 0; i < staffName.length; i++) {
+                staffNameHtml += `<div>${staffName[i]} (${staffPhone[i] || ''})</div>`;
+                //staffPhoneHtml += `<div>${staffPhone[i] || ''}</div>`;
+            }
+            document.getElementById('modal-staff-name').innerHTML = staffNameHtml;
+            //document.getElementById('modal-staff-phone').innerHTML = staffPhoneHtml;
             // Hiển thị thông tin gói dịch vụ và dịch vụ bổ sung nếu có
             const servicepackage = this.dataset.servicePackage
             const serviceAdds = this.dataset.serviceAdds ? this.dataset.serviceAdds.split(',') : [];

@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from .models import Category, Service, ServicePackage, AdditionalService, ServiceBooking, ServiceBookingDetail, Promotion, Feedback
+from .models import Category, Service, ServicePackage, AdditionalService, ServiceBooking, ServiceBookingDetail, Promotion, Feedback, Staff, StaffAssignment
 from django.http import JsonResponse
 from django.utils import timezone
 from django.contrib import messages
@@ -211,7 +211,7 @@ def create_booking(request):
     
 
 def booking_history(request):
-    bookings = ServiceBooking.objects.prefetch_related('details', 'feedbacks').filter(customer=request.user).order_by('-created_at')
+    bookings = ServiceBooking.objects.prefetch_related('details', 'feedbacks', 'staff_assignments').filter(customer=request.user).order_by('-created_at')
     AdditionalServices = AdditionalService.objects.all()
     context = {
         'bookings': bookings,
@@ -227,6 +227,12 @@ def booking_history(request):
                 print(f'{detail.package.name} ')
                 for additional_service in detail.additional_services.all():
                     print(f'{additional_service.name}: {additional_service.price_per_unit} VNĐ')
+    # Lấy danh sách nhân viên đã được gán cho từng booking
+    for booking in bookings:
+        staff_assignments = StaffAssignment.objects.filter(booking=booking).select_related('staff')
+        assigned_staff = [assignment.staff for assignment in staff_assignments]
+        booking.assigned_staff = assigned_staff
+        print(assigned_staff)
     return render(request, 'history_booking.html', context)
 
 @require_POST
@@ -292,7 +298,8 @@ def filter_history(request):
         # Lấy dữ liệu từ query params (GET)
         date_range = request.GET.get('dateRange', '')
         status = request.GET.get('status', '')
-
+        print(date_range)
+        print(status)
         # Khởi tạo queryset ban đầu
         bookings = ServiceBooking.objects.filter(customer=request.user)
 
@@ -306,6 +313,7 @@ def filter_history(request):
                     booking_date__year=this_year,
                     booking_date__month=this_month
                 )
+                
             elif date_range == 'last-month':
                 last_month = now.month - 1 if now.month > 1 else 12
                 last_year = now.year if last_month != 12 else now.year - 1
@@ -319,12 +327,22 @@ def filter_history(request):
                 bookings = bookings.filter(
                     booking_date__gte=three_months_ago
                 )
-
-        # Lọc theo status (nếu có)
         if status:
-            bookings = bookings.filter(status=status)
-
+            if status == 'pending':
+                bookings = bookings.filter(status='Đang chờ')
+            elif status == 'completed':
+                bookings = bookings.filter(status='Hoàn thành')
+            elif status == 'cancelled':
+                bookings = bookings.filter(status='Hủy bỏ')
+            elif status == 'confirmed':
+                bookings = bookings.filter(status='Đã xác nhận')
+            elif status == 'in-progress':
+                bookings = bookings.filter(status='Đang thực hiện')
+            elif status == 'all':
+                bookings = ServiceBooking.objects.filter(customer=request.user)
+               
         print(bookings)
+        
         return JsonResponse({'success': True, 'message': 'Lọc lịch sử thành công!'})
     except Exception as e:
         return JsonResponse({'success': False, 'error': str(e)})
