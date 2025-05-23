@@ -164,3 +164,12 @@ MEDIA_ROOT = BASE_DIR / "media"
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# VNPAY CONFIG
+VNPAY_SETTINGS = {
+    'PAYMENT_URL': 'https://sandbox.vnpayment.vn/paymentv2/vpcpay.html',  # Sandbox URL
+    'RETURN_URL': 'http://localhost:8000/payment_return',  # URL trả về sau khi thanh toán
+    'TMN_CODE': 'XM4C0NZX',  # Mã website merchant
+    'HASH_SECRET_KEY': '3YX46S1XOI1HC9FN1PQ2EETV64KK108R',  # Secret key
+}
+

@@ -11,6 +11,8 @@ from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST, require_GET
 from django.template.loader import render_to_string
 from django.core.paginator import Paginator
+from .vnpay import VNPay
+
 
 def home_view(request):
     user_data = None
@@ -341,3 +343,131 @@ def filter_history(request):
         
     except Exception as e:
         return JsonResponse({'success': False, 'error': str(e)})
+    
+
+
+@login_required
+def initiate_payment(request, booking_id):
+    print(booking_id)
+    """
+    Khởi tạo thanh toán VNPay
+    """
+    booking = get_object_or_404(ServiceBooking, id=booking_id, customer=request.user)
+    print(type(booking))
+    # Kiểm tra trạng thái booking
+    if booking.payment_status == 'Đã thanh toán':
+        messages.error(request, 'Đơn hàng này đã được thanh toán.')
+        return redirect('booking_history')
+    
+    if booking.status == 'Hủy bỏ':
+        messages.error(request, 'Không thể thanh toán cho đơn hàng đã hủy.')
+        return redirect('booking_history')
+
+    # Tạo VNPay instance
+    vnpay = VNPay()
+    print("check2")
+    # Thông tin đơn hàng
+    order_info = f"Thanh toan don hang #{booking.id}"
+    amount = booking.total_amount_after_discount
+    order_id = f"{booking.id}_{timezone.now().strftime('%Y%m%d%H%M%S')}"
+    
+    # Lấy IP address của client
+    ipaddr = get_client_ip(request)
+    print(order_id, order_info, amount, ipaddr)
+    # Tạo URL thanh toán
+    vnpay.get_payment_url(order_info, amount, order_id, ipaddr)
+    payment_url = vnpay.get_payment_url(order_info, amount, order_id, ipaddr)
+    
+    # print(payment_url)
+    return redirect(payment_url)
+
+@csrf_exempt
+def vnpay_return(request):
+    """
+    Xử lý kết quả trả về từ VNPay
+    """
+    if request.method == 'GET':
+        input_data = request.GET.dict()
+    
+        print("Dữ liệu nhận từ VNPay:", input_data)
+        # Xác thực response
+        vnpay = VNPay()
+        is_valid = vnpay.validate_response(request.GET)
+        vnp_params = vnpay.response_data
+        if is_valid:
+            # Lấy thông tin từ response
+            vnp_response_code = vnp_params.get('vnp_ResponseCode')
+            vnp_txn_ref = vnp_params.get('vnp_TxnRef')
+            vnp_amount = int(vnp_params.get('vnp_Amount', 0)) / 100
+            vnp_transaction_no = vnp_params.get('vnp_TransactionNo')
+            vnp_pay_date = vnp_params.get('vnp_PayDate')
+            
+            # Lấy booking ID từ vnp_TxnRef
+            try:
+                booking_id = int(vnp_txn_ref.split('_')[0])
+                booking = ServiceBooking.objects.get(id=booking_id)
+            except (ValueError, ServiceBooking.DoesNotExist):
+                messages.error(request, 'Không tìm thấy đơn hàng.')
+                return redirect('booking_history')
+            
+            # Kiểm tra kết quả thanh toán
+            if vnp_response_code == '00':
+                # Thanh toán thành công
+                booking.payment_status = 'Đã thanh toán'
+                booking.payment_method = 'Ví điện tử'
+                booking.payment_code = vnp_transaction_no
+                booking.date_paid = timezone.now().date()
+                booking.save()
+                
+                messages.success(request, 'Thanh toán thành công!')
+                
+                # Render trang thành công
+                context = {
+                    'booking': booking,
+                    'vnp_amount': vnp_amount,
+                    'vnp_transaction_no': vnp_transaction_no,
+                    'vnp_pay_date': vnp_pay_date,
+                    'success': True
+                }
+                return render(request, 'payment_result.html', context)
+            else:
+                # Thanh toán thất bại
+                error_messages = {
+                    '07': 'Trừ tiền thành công. Giao dịch bị nghi ngờ (liên quan tới lừa đảo, giao dịch bất thường).',
+                    '09': 'Giao dịch không thành công do: Thẻ/Tài khoản của khách hàng chưa đăng ký dịch vụ InternetBanking tại ngân hàng.',
+                    '10': 'Giao dịch không thành công do: Khách hàng xác thực thông tin thẻ/tài khoản không đúng quá 3 lần',
+                    '11': 'Giao dịch không thành công do: Đã hết hạn chờ thanh toán. Xin quý khách vui lòng thực hiện lại giao dịch.',
+                    '12': 'Giao dịch không thành công do: Thẻ/Tài khoản của khách hàng bị khóa.',
+                    '13': 'Giao dịch không thành công do Quý khách nhập sai mật khẩu xác thực giao dịch (OTP).',
+                    '24': 'Giao dịch không thành công do: Khách hàng hủy giao dịch',
+                    '51': 'Giao dịch không thành công do: Tài khoản của quý khách không đủ số dư để thực hiện giao dịch.',
+                    '65': 'Giao dịch không thành công do: Tài khoản của Quý khách đã vượt quá hạn mức giao dịch trong ngày.',
+                    '75': 'Ngân hàng thanh toán đang bảo trì.',
+                    '79': 'Giao dịch không thành công do: KH nhập sai mật khẩu thanh toán quá số lần quy định.',
+                }
+                
+                error_message = error_messages.get(vnp_response_code, 'Giao dịch thất bại.')
+                messages.error(request, f'Thanh toán thất bại: {error_message}')
+                
+                context = {
+                    'booking': booking,
+                    'error_message': error_message,
+                    'success': False
+                }
+                return render(request, 'payment_result.html', context)
+        else:
+            messages.error(request, 'Dữ liệu trả về không hợp lệ.')
+            return redirect('booking_history')
+    
+    return redirect('booking_history')
+
+def get_client_ip(request):
+    """
+    Lấy IP address của client
+    """
+    x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
+    if x_forwarded_for:
+        ip = x_forwarded_for.split(',')[0]
+    else:
+        ip = request.META.get('REMOTE_ADDR')
+    return ip

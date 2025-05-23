@@ -1,0 +1,116 @@
+<!-- templates/payment/payment_result.html -->
+{% load humanize %}
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kết quả thanh toán</title>
+    
+    <!-- Bootstrap CSS (nếu chưa có) -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Font Awesome cho icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <!-- CSS tùy chỉnh của bạn -->
+    <link rel="stylesheet" href="{% static 'css/payment_result.css' %}">
+</head>
+<body>
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header text-center">
+                    <h4>Kết quả thanh toán</h4>
+                </div>
+                <div class="card-body text-center">
+                    {% if success %}
+                        <!-- Thanh toán thành công -->
+                        <div class="alert alert-success">
+                            <i class="fas fa-check-circle fa-3x mb-3"></i>
+                            <h5>Thanh toán thành công!</h5>
+                            <p>Cảm ơn bạn đã sử dụng dịch vụ của chúng tôi.</p>
+                        </div>
+                        
+                        <div class="payment-details">
+                            <h6>Thông tin giao dịch:</h6>
+                            <table class="table table-bordered">
+                                <tr>
+                                    <td><strong>Mã đơn hàng:</strong></td>
+                                    <td>#{{ booking.id }}</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Dịch vụ:</strong></td>
+                                    <td>{{ booking.service.name }}</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Số tiền:</strong></td>
+                                    <td>{{ vnp_amount|floatformat:0|intcomma }} VNĐ</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Mã giao dịch VNPay:</strong></td>
+                                    <td>{{ vnp_transaction_no }}</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Thời gian thanh toán:</strong></td>
+                                    <td>
+                                        {% if vnp_pay_date %}
+                                            {{ vnp_pay_date|slice:":4" }}-{{ vnp_pay_date|slice:"4:6" }}-{{ vnp_pay_date|slice:"6:8" }} {{ vnp_pay_date|slice:"8:10" }}:{{ vnp_pay_date|slice:"10:12" }}:{{ vnp_pay_date|slice:"12:14" }}
+                                        {% else %}
+                                            -
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Phương thức thanh toán:</strong></td>
+                                    <td>VNPay</td>
+                                </tr>
+                            </table>
+                        </div>
+                    {% else %}
+                        <!-- Thanh toán thất bại -->
+                        <div class="alert alert-danger">
+                            <i class="fas fa-times-circle fa-3x mb-3"></i>
+                            <h5>Thanh toán thất bại!</h5>
+                            <p>{{ error_message }}</p>
+                        </div>
+                        
+                        <div class="payment-details">
+                            <h6>Thông tin đơn hàng:</h6>
+                            <table class="table table-bordered">
+                                <tr>
+                                    <td><strong>Mã đơn hàng:</strong></td>
+                                    <td>#{{ booking.id }}</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Dịch vụ:</strong></td>
+                                    <td>{{ booking.service.name }}</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Số tiền:</strong></td>
+                                    <td>{{ booking.total_amount_after_discount|intcomma }} VNĐ</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Trạng thái thanh toán:</strong></td>
+                                    <td><span class="badge bg-warning">{{ booking.payment_status }}</span></td>
+                                </tr>
+                            </table>
+                        </div>
+                    {% endif %}
+                    
+                    <div class="mt-4">
+                       
+                        {% if not success %}
+                            <a href="{% url 'payment:initiate_payment' booking.id %}" class="btn btn-warning">
+                                <i class="fas fa-redo me-1"></i>Thử lại thanh toán
+                            </a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
