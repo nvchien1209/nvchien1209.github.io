@@ -207,17 +207,21 @@ class Staff(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
     
     def __str__(self):
-        return f"{self.full_name} - {self.get_status_display()}"
+        return self.full_name
     
     class Meta:
         verbose_name = _('Staff')
         verbose_name_plural = _('Staffs')
         ordering = ['full_name']
 
-    def is_available(self, booking_date, booking_time, duration=3, exclude_booking_id=None):
+    def is_available(self, booking_date, booking_time, duration=None, exclude_booking_id=None):
         """Kiểm tra xem nhân viên có khả dụng cho một khung giờ booking với tùy chọn loại trừ booking hiện tại"""
         if self.status in ['Nghỉ phép', 'Không hoạt động']:
             return False
+        
+        # Nếu không truyền duration, sử dụng mặc định 3 giờ
+        if duration is None:
+            duration = 3
             
         # Chuyển đổi booking_time thành datetime để dễ so sánh
         if isinstance(booking_time, str):
@@ -257,13 +261,13 @@ class Staff(models.Model):
         return True
     def update_status_on_booking_complete(self):
         """
-        Update staff status to 'Đang rảnh' if all assigned bookings are completed.
+        Cập nhật trạng thái thành 'Đang rảnh' nếu booking đã hoàn thành.
         """
-        # Get all active assignments (not completed or cancelled)
+        # Lấy tất cả các phân công đang hoạt động (không hoàn thành hoặc hủy bỏ)
         active_assignments = self.assigned_bookings.exclude(
             booking__status__in=['Hoàn thành', 'Hủy bỏ']
         )
-        # If no active assignments, set status to 'Đang rảnh'
+        # Nếu không có phân công nào đang hoạt động, đặt trạng thái thành 'Đang rảnh'
         if not active_assignments.exists():
             self.status = 'Đang rảnh'
             self.save()
@@ -279,8 +283,8 @@ class StaffAssignment(models.Model):
         return f"{self.staff.full_name} - {self.booking}"
     
     class Meta:
-        verbose_name = _('Phân công nhân viên')
-        verbose_name_plural = _('Phân công nhân viên')
+        verbose_name = _('Staff Assignment')
+        verbose_name_plural = _('Staff Assignments')
         unique_together = ('booking', 'staff')
     
     def clean(self):
@@ -300,8 +304,17 @@ class StaffAssignment(models.Model):
         
         # Kiểm tra xem nhân viên có khả dụng tại thời điểm booking không
         # Truyền ID booking hiện tại để loại trừ nó khỏi kiểm tra khả năng làm việc khi chỉnh sửa
+        total_duration = 0
+        for detail in self.booking.details.all():
+            if detail.package.duration:
+                total_duration += detail.package.duration
+
+        # Nếu không có duration hoặc bằng 0, sử dụng mặc định 3 giờ
+        if total_duration == 0:
+            total_duration = 3
+
         exclude_id = self.booking.id if self.pk else None
-        if not self.staff.is_available(self.booking.booking_date, self.booking.booking_time, exclude_booking_id=exclude_id):
+        if not self.staff.is_available(self.booking.booking_date, self.booking.booking_time, duration=total_duration, exclude_booking_id=exclude_id):
             raise ValidationError(_(f"Nhân viên {self.staff.full_name} đã có lịch làm việc trùng với thời gian này."))
         
         super().clean()

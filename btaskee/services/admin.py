@@ -218,9 +218,7 @@ class ServiceBookingAdmin(admin.ModelAdmin):
             'fields': ('created_at', 'updated_at'),
             'classes': ('collapse',)
         }),
-        # ('Chi tiết dịch vụ', {
-        #     'fields': ('service_booking_details',)
-        # })
+        
     )
     
 

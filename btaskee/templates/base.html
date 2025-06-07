@@ -20,7 +20,7 @@
         localStorage.setItem('isLoggedIn', 'true');
         localStorage.setItem('userData', JSON.stringify({
             'name': '{{ user.username }}',
-            'avatar': '{% if user.avatar %}{{ user.avatar.url }}{% else %}{% static "images/avatar1.jpg" %}{% endif %}'
+            'avatar': '{% if user.avatar %}{{ user.avatar.url }}{% else %}{% static "images/avt_default.jpg" %}{% endif %}'
         }));
         {% else %}
         // Nếu không đăng nhập qua Django, kiểm tra để tránh xung đột
@@ -95,8 +95,8 @@
                         <ul class="dropdown-menu" aria-labelledby="userDropdown">
                             <li><a class="dropdown-item" href="{% url 'profile' %}"><i class="fas fa-user"></i> Tài khoản</a></li>
                             <li><a class="dropdown-item" href="{% url 'booking_history' %}"><i class="fas fa-history"></i> Lịch sử đặt dịch vụ</a></li>
-                            <li><a class="dropdown-item" href="#"><i class="fas fa-bell"></i> Thông báo</a></li>
-                            <li><a class="dropdown-item" href="#"><i class="fas fa-cog"></i> Cài đặt</a></li>
+                            <!-- <li><a class="dropdown-item" href="#"><i class="fas fa-bell"></i> Thông báo</a></li>
+                            <li><a class="dropdown-item" href="#"><i class="fas fa-cog"></i> Cài đặt</a></li> -->
                             <li><hr class="dropdown-divider"></li>
                             <li><a class="dropdown-item logout-btn" href="{% url 'logout' %}" id="logoutButton"><i class="fas fa-sign-out-alt"></i> Đăng xuất</a></li>
                         </ul>
