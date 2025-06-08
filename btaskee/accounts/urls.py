@@ -7,4 +7,6 @@ urlpatterns = [
     path('profile/', views.profile_view, name='profile'),  # Trang cá nhân
     path('profile/change-password/', views.change_password, name='change_password'),  # đổi mật khẩu
     path('profile/update-avatar/', views.update_avatar, name='update_avatar'),  # cập nhật avatar
+    path('forgot-password/', views.forgot_password, name='forgot_password'),  # quên mật khẩu
+    path('verify-password/', views.verify_password, name='verify_password'),  # xác nhận mật khẩu
 ]

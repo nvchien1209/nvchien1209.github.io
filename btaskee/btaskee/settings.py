@@ -173,3 +173,11 @@ VNPAY_SETTINGS = {
     'HASH_SECRET_KEY': '3YX46S1XOI1HC9FN1PQ2EETV64KK108R',  # Secret key
 }
 
+# Email configuration
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = 'nvchien1209@gmail.com'
+EMAIL_HOST_PASSWORD = 'anko bxzb mlew capt' 
+DEFAULT_FROM_EMAIL = 'nvchien1209@gmail.com'

@@ -1,0 +1,73 @@
+body {
+    background-color: #f8f9fa;
+    font-family: 'Arial', sans-serif;
+}
+
+.forgot-password-container {
+    max-width: 450px;
+    margin: 100px auto;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+    background-color: white;
+}
+
+.forgot-password-header {
+    text-align: center;
+    color: #fd7e14;
+    font-size: 32px;
+    margin-bottom: 20px;
+    font-weight: bold;
+}
+
+.form-label {
+    font-weight: 500;
+}
+
+.btn-reset {
+    background-color: #fd7e14;
+    border-color: #fd7e14;
+    color: white;
+    width: 100%;
+    padding: 10px;
+    font-size: 18px;
+    margin-top: 10px;
+}
+
+.btn-reset:hover {
+    background-color: #e86c0a;
+    border-color: #e86c0a;
+}
+
+.forgot-password-footer {
+    text-align: center;
+    margin-top: 20px;
+}
+
+.forgot-password-footer a {
+    color: #fd7e14;
+    text-decoration: none;
+}
+
+.forgot-password-footer a:hover {
+    text-decoration: underline;
+}
+
+.border-orange {
+    border: 2px solid #fd7e14;
+    border-radius: 5px;
+}
+
+.invalid-feedback {
+    color: #dc3545;
+    font-size: 14px;
+}
+
+.alert {
+    border-radius: 5px;
+    margin-bottom: 20px;
+}
+
+.text-muted {
+    color: #6c757d !important;
+}

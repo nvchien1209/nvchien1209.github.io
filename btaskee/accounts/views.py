@@ -7,6 +7,9 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import update_session_auth_hash
 from services.models import ServiceBooking
+from django.core.mail import send_mail
+from django.utils.crypto import get_random_string
+from django.conf import settings
 
 
 def login_view(request):
@@ -260,3 +263,66 @@ def update_total_booking(request):
     user.save()
     print(f"Tổng số booking đã được cập nhật cho user: {user.username}")
     return user.total_bookings
+
+def forgot_password(request):
+    if request.method == 'POST':
+        email = request.POST.get('email')
+        try:
+            user = User.objects.get(email=email)
+            # Tạo mã xác nhận ngẫu nhiên
+            verification_code = get_random_string(length=6, allowed_chars='0123456789')
+            request.session['verification_code'] = verification_code  # Lưu mã xác nhận vào session
+            request.session['email'] = email  # Lưu email vào session
+            # Gửi email chứa mã xác nhận
+            try:
+                send_mail(
+                    'Mã xác nhận quên mật khẩu BTaskee',
+                    f'Mã xác nhận của bạn là: {verification_code}',
+                    settings.DEFAULT_FROM_EMAIL,
+                    [email],
+                    fail_silently=False,
+                )
+                return redirect('verify_password')
+            except Exception as e:
+                messages.error(request, f'Lỗi khi gửi email: {str(e)}')
+                return render(request, 'forgotpw.html')
+        except User.DoesNotExist:
+            messages.error(request, 'Email không tồn tại trong hệ thống.')
+            return render(request, 'forgotpw.html')            
+    return render(request, 'forgotpw.html')
+
+def verify_password(request):
+    if request.method == 'POST':
+        verification_code = request.POST.get('verification_code')
+        new_password = request.POST.get('new_password')
+        confirm_password = request.POST.get('confirm_password')
+        email = request.session.get('email')  # Lấy email từ session
+        stored_code = request.session.get('verification_code')  # Lấy mã xác nhận từ session
+        print(f"Stored code: {stored_code}, Entered code: {verification_code}")
+        print(f"New password: {new_password}, Confirm password: {confirm_password}")
+        print(f"Email: {email}")
+        if not all([verification_code, new_password, confirm_password]):
+            messages.error(request, 'Vui lòng điền đầy đủ thông tin.')
+            return render(request, 'verifypw.html')
+        if verification_code != stored_code:
+            messages.error(request, 'Mã xác nhận không đúng.')
+            return render(request, 'verifypw.html')
+        if new_password != confirm_password:
+            messages.error(request, 'Mật khẩu mới và xác nhận mật khẩu không khớp.')
+            return render(request, 'verifypw.html')
+        if len(new_password) < 8:
+            messages.error(request, 'Mật khẩu phải có ít nhất 8 ký tự.')
+            return render(request, 'verifypw.html')
+        try:
+            user = User.objects.get(email=email)
+            user.set_password(new_password)
+            user.save()
+            messages.success(request, 'Mật khẩu đã được cập nhật thành công!')
+            # Xóa mã xác nhận và email khỏi session
+            del request.session['verification_code']
+            del request.session['email']
+            return redirect('login')
+        except Exception as e:
+            messages.error(request, f'Lỗi hệ thống: {str(e)}')
+            return render(request, 'verifypw.html')
+    return render(request, 'verifypw.html')
