@@ -1,0 +1,145 @@
+/* Màu sắc thương hiệu */
+.orange-primary { color: #ff6b35; }
+.bg-orange-primary { background-color: #ff6b35; }
+.btn-orange { 
+    background-color: #ff6b35; 
+    border-color: #ff6b35; 
+    color: white;
+}
+.btn-orange:hover { 
+    background-color: #e55a2b; 
+    border-color: #e55a2b; 
+    color: white;
+}
+
+/* Hero Banner và Article Header căn giữa, cùng độ rộng */
+.text-center.mb-5,
+.hero-banner,
+.col-lg-8 {
+    max-width: 800px;
+    margin-left: auto;
+    margin-right: auto;
+    width: 100%;
+    float: none;
+}
+
+/* Hero Banner */
+.hero-banner {
+    background: linear-gradient(135deg, #ff6b35 0%, #ff8f65 100%);
+    border-radius: 15px;
+    overflow: hidden;
+    position: relative;
+    padding: 20px 0;
+}
+.hero-banner img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 12px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+    display: inline-block;
+}
+.hero-content {
+    padding: 40px;
+    color: white;
+}
+
+/* Icon nổi bật */
+.feature-icon {
+    width: 60px;
+    height: 60px;
+    background: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 15px;
+}
+
+/* Các bước dịch vụ */
+.service-step {
+    background: white;
+    border-radius: 10px;
+    padding: 20px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    margin-bottom: 20px;
+}
+.service-step img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    border-radius: 8px;
+    display: block;
+    margin: 16px auto 0 auto;
+}
+
+/* Bảng giá */
+.pricing-table {
+    background: white;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 2px 20px rgba(0,0,0,0.1);
+}
+.pricing-table th {
+    background-color: #ff6b35;
+    color: white;
+    padding: 15px;
+    font-weight: 600;
+}
+.pricing-table td {
+    padding: 12px 15px;
+    border-bottom: 1px solid #eee;
+}
+
+/* Breadcrumb */
+.breadcrumb-item + .breadcrumb-item::before {
+    content: ">";
+}
+
+/* Tiêu đề section */
+.section-title {
+    color: #ff6b35;
+    font-weight: 700;
+    margin-bottom: 30px;
+}
+
+/* Box lưu ý */
+.note-box {
+    background: #f8f9fa;
+    border-left: 4px solid #ff6b35;
+    padding: 20px;
+    border-radius: 5px;
+    margin: 20px 0;
+}
+
+/* Căn giữa phần Introduction */
+.col-lg-8 > .mb-5:first-child {
+    text-align: center;
+}
+.col-lg-8 > .mb-5:first-child p {
+    text-align: center;
+    margin-left: auto;
+    margin-right: auto;
+    max-width: 700px;
+}
+
+/* Responsive cho ảnh các bước và content */
+@media (max-width: 820px) {
+    .col-lg-8,
+    .text-center.mb-5,
+    .hero-banner {
+        max-width: 100%;
+        padding-left: 0;
+        padding-right: 0;
+    }
+}
+@media (max-width: 768px) {
+    .service-step img {
+        max-width: 100%;
+        max-height: 160px;
+    }
+    .col-lg-8 > .mb-5:first-child p {
+        max-width: 100%;
+    }
+}
+
+/* ...existing code... */

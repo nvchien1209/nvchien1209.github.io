@@ -63,7 +63,7 @@ class Promotion(models.Model):
     promotion_code = models.CharField(max_length=50, unique=True)
     description = models.TextField(blank=True)
     discount_type = models.CharField(max_length=10, choices=DISCOUNT_TYPE_CHOICES, default='Phần trăm')
-    discount_value = models.DecimalField(max_digits=10, decimal_places=0)
+    discount_value = models.DecimalField(max_digits=10, decimal_places=1)
     start_date = models.DateTimeField()
     end_date = models.DateTimeField()
     usage_limit = models.IntegerField(default=1)  # Số lần sử dụng tối đa

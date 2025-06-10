@@ -1,8 +1,8 @@
 document.addEventListener('DOMContentLoaded', function() {
-    // Khởi tạo tất cả events khi trang load lần đầu
+    // Khởi tạo tất cả các sự kiện khi trang được tải lần đầu
     initAllEvents();
     
-    // ===== Hàm khởi tạo tất cả events =====
+    // ===== Hàm khởi tạo tất cả các sự kiện =====
     function initAllEvents() {
         initDetailModalEvents();
         initCancelBookingEvents();
@@ -15,14 +15,14 @@ document.addEventListener('DOMContentLoaded', function() {
     function initDetailModalEvents() {
         const detailButtons = document.querySelectorAll('.btn-detail');
         detailButtons.forEach(btn => {
-            // Xóa event listener cũ bằng cách clone
+            // Xóa event listener cũ bằng cách clone node
             const newBtn = btn.cloneNode(true);
             btn.parentNode.replaceChild(newBtn, btn);
             
             newBtn.addEventListener('click', function() {
-                console.log('Detail button clicked for booking:', this.dataset.id);
+                console.log('Đã nhấn nút xem chi tiết cho booking:', this.dataset.id);
                 
-                // Clear modal trước khi populate dữ liệu mới
+                // Xóa dữ liệu modal trước khi hiển thị dữ liệu mới
                 clearModalData();
                 
                 document.getElementById('modal-booking-id').innerText = this.dataset.id || '';
@@ -33,13 +33,13 @@ document.addEventListener('DOMContentLoaded', function() {
                 document.getElementById('modal-status').innerText = this.dataset.status || '';
                 document.getElementById('modal-address').innerText = this.dataset.address || '';
                 
-                console.log('Discount Amount:', this.dataset.discountAmount);
-                console.log('Total:', this.dataset.total);
+                console.log('Số tiền giảm giá:', this.dataset.discountAmount);
+                console.log('Tổng tiền:', this.dataset.total);
                 
                 document.getElementById('modal-total-amount').innerHTML = `<strong>${this.dataset.total || ''} VNĐ</strong>`;
                 document.getElementById('modal-discount-amount').innerHTML = `<strong>${this.dataset.discountAmount || ''} VNĐ</strong>`;
                 
-                // Xử lý payment status
+                // Xử lý trạng thái thanh toán
                 if (this.dataset.paymentStatus === 'Chưa thanh toán') {
                     document.getElementById('modal-payment-status').innerText = 'Chưa thanh toán';
                     document.getElementById('modal-payment-method').innerText = '';
@@ -52,7 +52,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     document.getElementById('modal-payment-code').innerText = this.dataset.paymentCode || '';
                 }
                 
-                // Xử lý staff information
+                // Xử lý thông tin nhân viên
                 const staffName = this.dataset.staffNames ? this.dataset.staffNames.split(',') : [];
                 const staffPhone = this.dataset.staffPhones ? this.dataset.staffPhones.split(',') : [];
                 let staffNameHtml = '';
@@ -61,13 +61,13 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
                 document.getElementById('modal-staff-name').innerHTML = staffNameHtml || 'Chưa phân công';
                 
-                // Xử lý service details table
+                // Xử lý bảng chi tiết dịch vụ
                 updateServiceDetailsTable(this.dataset);
             });
         });
     }
     
-    // ===== Hàm clear modal data =====
+    // ===== Hàm xóa dữ liệu modal =====
     function clearModalData() {
         const elementsToReset = [
             'modal-booking-id', 'modal-booking-date', 'modal-execute-date',
@@ -84,30 +84,30 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
         
-        // Clear service details table
+        // Xóa bảng chi tiết dịch vụ
         const tbody = document.querySelector('#modal-service-detail-table tbody');
         if (tbody) {
             tbody.innerHTML = '';
         }
     }
     
-    // ===== Hàm update service details table =====
+    // ===== Hàm cập nhật bảng chi tiết dịch vụ =====
     function updateServiceDetailsTable(dataset) {
         const servicepackage = dataset.servicePackage;
         const serviceAdds = dataset.serviceAdds ? dataset.serviceAdds.split(',') : [];
         const serviceAddsPrice = dataset.serviceAddprice ? dataset.serviceAddprice.split(',') : [];
         const subtotal = parseFloat(dataset.subtotal) || 0;
         
-        console.log('Service Package:', servicepackage);
-        console.log('Service Adds:', serviceAdds);
-        console.log('Service Adds Price:', serviceAddsPrice);
-        console.log('Subtotal:', subtotal);
+        console.log('Gói dịch vụ:', servicepackage);
+        console.log('Dịch vụ bổ sung:', serviceAdds);
+        console.log('Giá dịch vụ bổ sung:', serviceAddsPrice);
+        console.log('Tạm tính:', subtotal);
         
         const sumOfAddServicePrice = serviceAddsPrice
             .map(price => parseFloat(price) || 0)
             .reduce((acc, cur) => acc + cur, 0);
         
-        console.log('Sum of Additional Services:', sumOfAddServicePrice);
+        console.log('Tổng giá dịch vụ bổ sung:', sumOfAddServicePrice);
         
         const tbody = document.querySelector('#modal-service-detail-table tbody');
         if (!tbody) return;
@@ -150,14 +150,14 @@ document.addEventListener('DOMContentLoaded', function() {
     function initCancelBookingEvents() {
         const cancelButtons = document.querySelectorAll('.btn-outline-danger');
         cancelButtons.forEach(btn => {
-            // Xóa event listener cũ
+            // Xóa event listener cũ bằng cách clone node
             const newBtn = btn.cloneNode(true);
             btn.parentNode.replaceChild(newBtn, btn);
             
             newBtn.addEventListener('click', function (e) {
                 e.preventDefault();
                 if (confirm('Bạn có muốn hủy đơn này không?')) {
-                    console.log('Cancelling booking:', this.dataset.id);
+                    console.log('Đang hủy booking:', this.dataset.id);
                     
                     fetch(`/booking/destroy-booking/${this.dataset.id}`, {
                         method: 'POST',
@@ -184,7 +184,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
     
-    // ===== Đánh giá sao trong modal =====
+    // ===== Xử lý đánh giá sao trong modal =====
     function initRatingEvents() {
         const stars = document.querySelectorAll('#modal-rating-stars .star-select');
         const scoreSpan = document.getElementById('modal-rating-score');
@@ -234,10 +234,7 @@ document.addEventListener('DOMContentLoaded', function() {
         // Xử lý submit form đánh giá
         const ratingForm = document.getElementById('modal-rating-form');
         if (ratingForm) {
-            // Xóa event listener cũ
-            // const newForm = ratingForm.cloneNode(true);
-            // ratingForm.parentNode.replaceChild(newForm, ratingForm);
-            
+            // Không cần xóa event listener cũ vì chỉ có 1 form
             ratingForm.addEventListener('submit', function (e) {
                 e.preventDefault();
                 if (selectedRating === 0) {
@@ -294,7 +291,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const status = document.getElementById('status').value;
             
             
-            console.log('Applying filters:', { dateRange, status });
+            console.log('Đang áp dụng bộ lọc:', { dateRange, status });
             
             // Hiển thị loading
             showLoading();
@@ -319,25 +316,17 @@ document.addEventListener('DOMContentLoaded', function() {
                 if (data.success) {
                     // Cập nhật danh sách booking
                     historyList.innerHTML = data.html;
-                    
-                    // Cập nhật pagination 
-                    // const paginationContainer = document.querySelector('.pagination-container');
-                    // if (paginationContainer && data.pagination_html) {
-                    //     paginationContainer.innerHTML = data.pagination_html;
-                    // }
-
-                    
-                    
+                                        
                     console.log('Dữ liệu đã được lọc thành công. Tổng số:', data.total_count);
                 } else {
-                    console.log('Filter failed:', data);
-                    alert('Có lỗi xảy ra khi lọc dữ liệu: ' + (data.error || 'Unknown error'));
+                    console.log('Lọc thất bại:', data);
+                    alert('Có lỗi xảy ra khi lọc dữ liệu: ' + (data.error || 'Lỗi không xác định'));
                 }
             })
             .catch(error => {
                 hideLoading();
                 alert('Có lỗi xảy ra khi lọc dữ liệu!');
-                console.error('Filter error:', error);
+                console.error('Lỗi lọc:', error);
             });
         }
         
@@ -346,7 +335,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 historyList.innerHTML = `
                     <div class="text-center py-5">
                         <div class="spinner-border text-primary" role="status">
-                            <span class="visually-hidden">Loading...</span>
+                            <span class="visually-hidden">Đang tải...</span>
                         </div>
                         <p class="mt-2">Đang tải dữ liệu...</p>
                     </div>
@@ -355,73 +344,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         
         function hideLoading() {
-            console.log('Loading hidden');
+            console.log('Đã ẩn loading');
         }
     }
 });
-
-// ===== Xử lý sự kiện phân trang =====
-// function initPaginationEvents() {
-//     const paginationLinks = document.querySelectorAll('.pagination .page-link');
-    
-//     paginationLinks.forEach(link => {
-        
-//         const newLink = link.cloneNode(true);
-//         link.parentNode.replaceChild(newLink, link);
-        
-//         newLink.addEventListener('click', function(e) {
-//             e.preventDefault();
-            
-//             if (this.classList.contains('disabled') || this.parentNode.classList.contains('active')) {
-//                 return;
-//             }
-            
-//             const page = this.getAttribute('data-page');
-//             if (page) {
-//                 loadPage(page);
-//             }
-//         });
-//     });
-// }
-
-// function loadPage(page) {
-//     const dateRange = document.getElementById('dateRange').value;
-//     const status = document.getElementById('status').value;
-//     const historyList = document.querySelector('.history-list');
-    
-//     showLoading();
-    
-//     const params = new URLSearchParams({
-//         dateRange: dateRange,
-//         status: status,
-//         page: page
-//     });
-    
-//     fetch(`/booking/filter-booking?${params.toString()}`, {
-//         method: 'GET',
-//         headers: {
-//             'Content-Type': 'application/json',
-//             'X-Requested-With': 'XMLHttpRequest'
-//         }
-//     })
-//     .then(response => response.json())
-//     .then(data => {
-//         hideLoading();
-        
-//         if (data.success) {
-//             historyList.innerHTML = data.html;
-            
-//             const paginationContainer = document.querySelector('.pagination-container');
-//             if (paginationContainer && data.pagination_html) {
-//                 paginationContainer.innerHTML = data.pagination_html;
-//             }
-            
-//             initAllEvents();
-//             initPaginationEvents();
-//         }
-//     })
-//     .catch(error => {
-//         hideLoading();
-//         console.error('Pagination error:', error);
-//     });
-// }

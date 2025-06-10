@@ -35,6 +35,9 @@ def news_view(request):
     
     return render(request, 'news.html')
 
+def news1_detail(request):
+    return render(request, 'news1_detail.html')
+
 def job_view(request):
     
     return render(request, 'job.html')
@@ -47,8 +50,6 @@ def service_detail(request, service_id):
     
     # Truy vấn dịch vụ theo ID
     service = Service.objects.get(id=service_id)
-
-    
 
     #Kiểm tra xem dịch vụ tương ứng với temlate nào
 

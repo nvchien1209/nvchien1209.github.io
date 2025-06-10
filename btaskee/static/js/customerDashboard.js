@@ -1,5 +1,5 @@
 document.addEventListener('DOMContentLoaded', function() {
-    // Format date in input field for better display
+    // Định dạng ngày trong trường input để hiển thị đẹp hơn
     const formatDateInput = () => {
         const birthdateInput = document.getElementById('birthdate');
         if (birthdateInput && birthdateInput.value) {
@@ -11,78 +11,78 @@ document.addEventListener('DOMContentLoaded', function() {
     
     formatDateInput();
     
-    // Profile form submission
+    // Xử lý submit form thông tin cá nhân
     const profileForm = document.getElementById('profile-form');
     if (profileForm) {
         document.querySelector('.save-btn').addEventListener('click', function(e) {
             e.preventDefault(); // Ngăn hành vi mặc định của button
-            // Nếu là button save avatar thì bỏ qua
+            // Nếu là button lưu avatar thì bỏ qua
             if (e.target.id === 'save-avatar') {
                 return;
             }
             if (confirm('Bạn có chắc chắn muốn lưu thay đổi?')) {
-                profileForm.submit(); // Submit form để gửi dữ liệu
+                profileForm.submit(); // Gửi form để lưu dữ liệu
             }
         });
     }
     
-    // Password form submission
-document.addEventListener('DOMContentLoaded', function() {
-    const passwordForm = document.getElementById('password-form');
-    if (passwordForm) {
-        passwordForm.addEventListener('submit', function(e) {
-            e.preventDefault(); // Ngăn form submit mặc định
-           
-            const currentPass = document.getElementById('currentPassword').value;
-            const newPass = document.getElementById('newPassword').value;
-            const confirmPass = document.getElementById('confirmPassword').value;
-           
-            let errors = [];
-           
-            // Kiểm tra mật khẩu hiện tại
-            if (!currentPass) {
-                errors.push('Vui lòng nhập mật khẩu hiện tại');
-            }
-           
-            // Kiểm tra mật khẩu mới có được nhập hay không
-            if (!newPass) {
-                errors.push('Vui lòng nhập mật khẩu mới');
-            }
-           
-            // Kiểm tra xác nhận mật khẩu có được nhập hay không
-            if (!confirmPass) {
-                errors.push('Vui lòng xác nhận mật khẩu mới');
-            }
-           
-            // Kiểm tra độ dài mật khẩu mới (chỉ khi đã nhập)
-            if (newPass && newPass.length < 8) {
-                errors.push('Mật khẩu mới phải có ít nhất 8 ký tự');
-            }
-           
-            // Kiểm tra mật khẩu khớp nhau (chỉ khi cả hai đã được nhập)
-            if (newPass && confirmPass && newPass !== confirmPass) {
-                errors.push('Mật khẩu mới và xác nhận mật khẩu không khớp');
-            }
-           
-            // Nếu có lỗi, hiển thị lỗi đầu tiên
-            if (errors.length > 0) {
-                alert(errors[0]);
-                return;
-            }
-           
-            // Nếu không có lỗi, xác nhận submit form
-            if (confirm('Bạn có chắc chắn muốn cập nhật mật khẩu?')) {
-                console.log('Đang gửi form đến server...');
-                passwordForm.submit();
-            }
-            
-        });
-    } else {
-        console.error('Không tìm thấy form mật khẩu');
-    }
-});
+    // Xử lý submit form đổi mật khẩu
+    document.addEventListener('DOMContentLoaded', function() {
+        const passwordForm = document.getElementById('password-form');
+        if (passwordForm) {
+            passwordForm.addEventListener('submit', function(e) {
+                e.preventDefault(); // Ngăn không cho form submit mặc định
+               
+                const currentPass = document.getElementById('currentPassword').value;
+                const newPass = document.getElementById('newPassword').value;
+                const confirmPass = document.getElementById('confirmPassword').value;
+               
+                let errors = [];
+               
+                // Kiểm tra mật khẩu hiện tại
+                if (!currentPass) {
+                    errors.push('Vui lòng nhập mật khẩu hiện tại');
+                }
+               
+                // Kiểm tra mật khẩu mới đã nhập chưa
+                if (!newPass) {
+                    errors.push('Vui lòng nhập mật khẩu mới');
+                }
+               
+                // Kiểm tra xác nhận mật khẩu mới đã nhập chưa
+                if (!confirmPass) {
+                    errors.push('Vui lòng xác nhận mật khẩu mới');
+                }
+               
+                // Kiểm tra độ dài mật khẩu mới (chỉ khi đã nhập)
+                if (newPass && newPass.length < 8) {
+                    errors.push('Mật khẩu mới phải có ít nhất 8 ký tự');
+                }
+               
+                // Kiểm tra mật khẩu mới và xác nhận mật khẩu có khớp nhau không
+                if (newPass && confirmPass && newPass !== confirmPass) {
+                    errors.push('Mật khẩu mới và xác nhận mật khẩu không khớp');
+                }
+               
+                // Nếu có lỗi, hiển thị lỗi đầu tiên
+                if (errors.length > 0) {
+                    alert(errors[0]);
+                    return;
+                }
+               
+                // Nếu không có lỗi, xác nhận gửi form
+                if (confirm('Bạn có chắc chắn muốn cập nhật mật khẩu?')) {
+                    console.log('Đang gửi form đến server...');
+                    passwordForm.submit();
+                }
+                
+            });
+        } else {
+            console.error('Không tìm thấy form mật khẩu');
+        }
+    });
     
-    // Avatar change functionality
+    // Xử lý chức năng thay đổi avatar
     const avatarModal = document.getElementById('avatar-modal');
     const editAvatarBtn = document.getElementById('edit-avatar-btn');
     const closeAvatarModal = document.getElementById('close-avatar-modal');
@@ -93,12 +93,12 @@ document.addEventListener('DOMContentLoaded', function() {
     const avatarPreviewImg = document.getElementById('avatar-preview-img');
     const currentAvatar = document.getElementById('current-avatar');
     
-    // Open avatar modal
+    // Mở modal chọn avatar
     if (editAvatarBtn) {
         editAvatarBtn.addEventListener('click', function() {
             if (avatarModal) {
                 avatarModal.style.display = 'flex';
-                // Thêm dòng này để hiển thị ảnh hiện tại trong preview
+                // Hiển thị ảnh hiện tại trong phần xem trước
                 if (avatarPreviewImg && currentAvatar) {
                     avatarPreviewImg.src = currentAvatar.src || '';
                 }
@@ -106,7 +106,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
     
-    // Close avatar modal
+    // Đóng modal avatar
     const closeModal = () => {
         if (avatarModal) {
             avatarModal.style.display = 'none';
@@ -127,7 +127,7 @@ document.addEventListener('DOMContentLoaded', function() {
         cancelAvatar.addEventListener('click', closeModal);
     }
     
-    // Handle image preview when a file is selected
+    // Xem trước ảnh khi chọn file
     if (avatarUpload) {
         avatarUpload.addEventListener('change', function(e) {
             const file = e.target.files[0];
@@ -148,7 +148,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
     
-    // Save avatar
+    // Lưu avatar mới
     if (saveAvatar) {
         saveAvatar.addEventListener('click', function() {
             if (!avatarUpload || !avatarUpload.files.length) {
@@ -159,11 +159,11 @@ document.addEventListener('DOMContentLoaded', function() {
             if (confirm('Bạn có chắc chắn muốn lưu ảnh đại diện mới?')) {
                 avatarUploadForm.submit();  // ✅ Gửi form tới server
             }
-    });
-}
+        });
+    }
 
     
-    // Close modal when clicking outside
+    // Đóng modal khi click ra ngoài vùng modal
     if (avatarModal) {
         window.addEventListener('click', function(event) {
             if (event.target === avatarModal) {
@@ -184,17 +184,17 @@ document.addEventListener('DOMContentLoaded', function() {
     showErrors();
 });
 
-// Tự động tắt message sau 5 giây với hiệu ứng fade
+// Tự động tắt thông báo sau 5 giây với hiệu ứng mờ dần
 document.addEventListener('DOMContentLoaded', function() {
     const alert = document.querySelector('.alert');
     
     if (alert) {
         setTimeout(function() {
-            // Thêm hiệu ứng fade out
+            // Thêm hiệu ứng mờ dần
             alert.style.transition = 'opacity 0.5s ease';
             alert.style.opacity = '0';
             
-            // Xóa element sau khi fade xong
+            // Xóa element sau khi hiệu ứng kết thúc
             setTimeout(function() {
                 if (alert.parentNode) {
                     alert.parentNode.removeChild(alert);

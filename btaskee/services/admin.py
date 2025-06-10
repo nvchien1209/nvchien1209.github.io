@@ -114,7 +114,7 @@ class PromotionAdmin(admin.ModelAdmin):
         if obj.is_valid():
             return format_html('<span style="color: green;">✓ Hợp lệ</span>')
         return format_html('<span style="color: red;">✗ Không hợp lệ</span>')
-    is_valid_display.short_description = 'Trạng thái hợp lệ'
+    is_valid_display.short_description = 'Valid status'
 
 
 class ServiceBookingDetailInline(admin.TabularInline):
