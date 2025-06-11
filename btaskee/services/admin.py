@@ -394,7 +394,7 @@ class StaffAssignmentResource(resources.ModelResource):
 class StaffAssignmentAdmin(ExportMixin, admin.ModelAdmin):
     resource_class = StaffAssignmentResource
     list_display = ('id', 'booking', 'staff', 'assigned_at')
-    list_filter = ('staff', 'booking__status')
+    list_filter = ('staff', 'booking__status', 'assigned_at')
     search_fields = ('staff__full_name', 'booking__id')
     autocomplete_fields = ['staff', 'booking']
     readonly_fields = ('assigned_at',)

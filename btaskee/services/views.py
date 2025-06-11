@@ -87,6 +87,33 @@ def check_promotion_code(request):
                     'message': 'Mã giảm giá đã hết hạn hoặc không còn hiệu lực.'
                 })
 
+            # Đếm số lần user đã dùng mã này
+            used_count = ServiceBooking.objects.filter(
+            customer=request.user,
+            promotion=promo
+            ).count()
+            if used_count >= promo.usage_limit:
+                return JsonResponse({
+                    'valid': False,
+                    'message': 'Bạn đã sử dụng hết số lần cho phép của mã này.'
+                })
+
+            if promo.promotion_code == 'TVB' and request.user.membership != 'Bạc':
+                return JsonResponse({
+                    'valid': False,
+                    'message': 'Mã giảm giá này chỉ áp dụng cho thành viên Vàng.'
+                })
+            if promo.promotion_code == 'TVV' and request.user.membership != 'Vàng':
+                return JsonResponse({
+                    'valid': False,
+                    'message': 'Mã giảm giá này chỉ áp dụng cho thành viên Vàng.'
+                })
+            if promo.promotion_code == 'TVKC' and request.user.membership != 'Kim cương':
+                return JsonResponse({
+                    'valid': False,
+                    'message': 'Mã giảm giá này chỉ áp dụng cho thành viên Kim cương.'
+                })
+
             # Tính số tiền giảm
             if promo.discount_type == 'Phần trăm':
                 discount_amount = (promo.discount_value / Decimal(100)) * total
