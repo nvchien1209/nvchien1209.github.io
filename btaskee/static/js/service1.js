@@ -250,7 +250,7 @@ document.getElementById('proceed-booking').addEventListener('click', function ()
 
     // Xử lý xác nhận đặt dịch vụ
     modal.querySelector('#confirm-booking-btn').addEventListener('click', function () {
-        // Gửi dữ liệu đặt dịch vụ lên server tại đây
+        // Gửi dữ liệu đặt dịch vụ lên server
         const bookingData = {
             packageId: selectedPackage,
             additionalServices: selectedAdditional,
@@ -281,7 +281,7 @@ document.getElementById('proceed-booking').addEventListener('click', function ()
         });
         console.log(bookingData['sub_total'])
         bsModal.hide();
-        //alert('Đặt dịch vụ thành công!');
+        
     });
 
 });

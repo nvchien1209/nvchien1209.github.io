@@ -5,7 +5,7 @@ from django.utils.translation import gettext_lazy as _
 import datetime
 from django.utils import timezone
 
-# Create your models here.
+# Định nghĩa các model cho hệ thống dịch vụ
 class Category(models.Model):
     name = models.CharField(max_length=255, unique=True)  # Tên danh mục
     description = models.TextField()
@@ -19,38 +19,38 @@ class Category(models.Model):
 
 class Service(models.Model):
     name = models.CharField(max_length=255, unique=True)  # Tên dịch vụ
-    description = models.TextField(blank=True)
-    category = models.ForeignKey(Category, on_delete=models.CASCADE, related_name='services')
-    is_active = models.BooleanField(default=True)
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
+    description = models.TextField(blank=True)  # Mô tả dịch vụ
+    category = models.ForeignKey(Category, on_delete=models.CASCADE, related_name='services')  # Danh mục dịch vụ
+    is_active = models.BooleanField(default=True)  # Trạng thái hoạt động
+    created_at = models.DateTimeField(auto_now_add=True)  # Ngày tạo
+    updated_at = models.DateTimeField(auto_now=True)  # Ngày cập nhật
     
     def __str__(self):
         return self.name
     
 
 class ServicePackage(models.Model):
-    service = models.ForeignKey(Service, on_delete=models.CASCADE, related_name='packages')
-    name = models.CharField(max_length=255, unique=True) #tên gói dịch vụ
-    description = models.TextField(blank=True) #mô tả gói dịch vụ
+    service = models.ForeignKey(Service, on_delete=models.CASCADE, related_name='packages')  # Dịch vụ
+    name = models.CharField(max_length=255, unique=True) # Tên gói dịch vụ
+    description = models.TextField(blank=True) # Mô tả gói dịch vụ
     duration = models.IntegerField(null=True, blank=True)  # Thời gian thực hiện (giờ)
     price_min = models.DecimalField(max_digits=10, decimal_places=0)  # Giá tối thiểu
-    price_max = models.DecimalField(max_digits=10, decimal_places=0) 
-    is_active = models.BooleanField(default=True)
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
+    price_max = models.DecimalField(max_digits=10, decimal_places=0)  # Giá tối đa
+    is_active = models.BooleanField(default=True)  # Trạng thái hoạt động
+    created_at = models.DateTimeField(auto_now_add=True)  # Ngày tạo
+    updated_at = models.DateTimeField(auto_now=True)  # Ngày cập nhật
 
     def __str__(self):
         return f"{self.name} - {self.service.name}"
 
 
 class AdditionalService(models.Model):
-    name = models.CharField(max_length=255, unique=True)  # Ví dụ: "Nấu ăn", "Giặt đồ"
-    description = models.TextField(blank=True)
-    price_per_unit = models.DecimalField(max_digits=10, decimal_places=0)
-    is_active = models.BooleanField(default=True)
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
+    name = models.CharField(max_length=255, unique=True)  # Tên dịch vụ bổ sung (VD: "Nấu ăn", "Giặt đồ")
+    description = models.TextField(blank=True)  # Mô tả dịch vụ bổ sung
+    price_per_unit = models.DecimalField(max_digits=10, decimal_places=0)  # Giá mỗi đơn vị
+    is_active = models.BooleanField(default=True)  # Trạng thái hoạt động
+    created_at = models.DateTimeField(auto_now_add=True)  # Ngày tạo
+    updated_at = models.DateTimeField(auto_now=True)  # Ngày cập nhật
     
     def __str__(self):
         return self.name
@@ -60,16 +60,16 @@ class Promotion(models.Model):
         ('Phần trăm', 'Phần trăm'),
         ('Số tiền', 'Số tiền'),
     )
-    promotion_code = models.CharField(max_length=50, unique=True)
-    description = models.TextField(blank=True)
-    discount_type = models.CharField(max_length=10, choices=DISCOUNT_TYPE_CHOICES, default='Phần trăm')
-    discount_value = models.DecimalField(max_digits=10, decimal_places=1)
-    start_date = models.DateTimeField()
-    end_date = models.DateTimeField()
+    promotion_code = models.CharField(max_length=50, unique=True)  # Mã khuyến mãi
+    description = models.TextField(blank=True)  # Mô tả khuyến mãi
+    discount_type = models.CharField(max_length=10, choices=DISCOUNT_TYPE_CHOICES, default='Phần trăm')  # Loại giảm giá
+    discount_value = models.DecimalField(max_digits=10, decimal_places=1)  # Giá trị giảm giá
+    start_date = models.DateTimeField()  # Ngày bắt đầu
+    end_date = models.DateTimeField()  # Ngày kết thúc
     usage_limit = models.IntegerField(default=1)  # Số lần sử dụng tối đa
-    is_active = models.BooleanField(default=True)
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
+    is_active = models.BooleanField(default=True)  # Trạng thái hoạt động
+    created_at = models.DateTimeField(auto_now_add=True)  # Ngày tạo
+    updated_at = models.DateTimeField(auto_now=True)  # Ngày cập nhật
 
     def is_valid(self):
         now = timezone.now()
@@ -87,24 +87,23 @@ class Promotion(models.Model):
 
 
 class ServiceBooking(models.Model):
-    
-    # Thông tin tổng thể của booking
-    customer = models.ForeignKey('accounts.CustomUser', on_delete=models.CASCADE, related_name='bookings')  
-    category = models.ForeignKey(Category, on_delete=models.CASCADE, related_name='bookings')
-    service = models.ForeignKey(Service, on_delete=models.CASCADE, related_name='bookings')
+    # Thông tin tổng thể của đơn đặt dịch vụ
+    customer = models.ForeignKey('accounts.CustomUser', on_delete=models.CASCADE, related_name='bookings')  # Khách hàng
+    category = models.ForeignKey(Category, on_delete=models.CASCADE, related_name='bookings')  # Danh mục
+    service = models.ForeignKey(Service, on_delete=models.CASCADE, related_name='bookings')  # Dịch vụ
 
-    #Thời gian và địa điểm
-    booking_date = models.DateField()
-    booking_time = models.TimeField()
-    address = models.TextField()
+    # Thời gian và địa điểm
+    booking_date = models.DateField()  # Ngày đặt
+    booking_time = models.TimeField()  # Giờ đặt
+    address = models.TextField()  # Địa chỉ
 
-    #Tổng tiền và thanh toán
-    sub_total = models.DecimalField(max_digits=10, decimal_places=0)
-    promotion = models.ForeignKey(Promotion, on_delete=models.SET_NULL, null=True, blank=True)
-    discount_amount = models.DecimalField(max_digits=10, decimal_places=0, default=0)
-    total_amount_after_discount = models.DecimalField(max_digits=10, decimal_places=0)
+    # Tổng tiền và thanh toán
+    sub_total = models.DecimalField(max_digits=10, decimal_places=0)  # Tổng tiền trước giảm giá
+    promotion = models.ForeignKey(Promotion, on_delete=models.SET_NULL, null=True, blank=True)  # Khuyến mãi áp dụng
+    discount_amount = models.DecimalField(max_digits=10, decimal_places=0, default=0)  # Số tiền giảm giá
+    total_amount_after_discount = models.DecimalField(max_digits=10, decimal_places=0)  # Tổng tiền sau giảm giá
 
-    #Trạng thái booking
+    # Trạng thái đơn đặt dịch vụ
     STATUS_CHOICES = (
         ('Đang chờ', 'Đang chờ'),
         ('Đã xác nhận', 'Đã xác nhận'),
@@ -121,15 +120,15 @@ class ServiceBooking(models.Model):
         ('Chuyển khoản', 'Chuyển khoản'),
         ('Ví điện tử', 'Ví điện tử'),
     )
-    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='Đang chờ')
-    payment_status = models.CharField(max_length=20, choices=PAYMENT_STATUS_CHOICES, default='Chưa thanh toán')
-    payment_method = models.CharField(max_length=20, choices=PAYMENT_METHOD_CHOICES, default='Tiền mặt')
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='Đang chờ')  # Trạng thái
+    payment_status = models.CharField(max_length=20, choices=PAYMENT_STATUS_CHOICES, default='Chưa thanh toán')  # Trạng thái thanh toán
+    payment_method = models.CharField(max_length=20, choices=PAYMENT_METHOD_CHOICES, default='Tiền mặt')  # Phương thức thanh toán
     payment_code = models.CharField(max_length=50, blank=True)  # Mã thanh toán (nếu có)
     date_paid = models.DateField(null=True, blank=True)  # Ngày thanh toán
 
-    #Thông tin hệ thống
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
+    # Thông tin hệ thống
+    created_at = models.DateTimeField(auto_now_add=True)  # Ngày tạo
+    updated_at = models.DateTimeField(auto_now=True)  # Ngày cập nhật
 
     class Meta:
         ordering = ['-created_at']
@@ -138,18 +137,18 @@ class ServiceBooking(models.Model):
         return f'Booking {self.id}'
     
     def get_assigned_staff(self):
-        """Return list of assigned staff names"""
+        # Lấy danh sách nhân viên đã được phân công cho booking này
         return ", ".join([assignment.staff.full_name for assignment in self.staff_assignments.all()])
-    get_assigned_staff.short_description = "Staff Assigned"
+    get_assigned_staff.short_description = "Nhân viên được phân công"
 
 
 
 class ServiceBookingDetail(models.Model):
-    booking = models.ForeignKey(ServiceBooking, on_delete=models.CASCADE, related_name='details')
-    package = models.ForeignKey(ServicePackage, on_delete=models.CASCADE, related_name='booking_details')
-    additional_services = models.ManyToManyField(AdditionalService, blank=True, related_name='booking_details')
-    total_price = models.DecimalField(max_digits=10, decimal_places=0)
-    note = models.TextField(blank=True)
+    booking = models.ForeignKey(ServiceBooking, on_delete=models.CASCADE, related_name='details')  # Đơn đặt dịch vụ
+    package = models.ForeignKey(ServicePackage, on_delete=models.CASCADE, related_name='booking_details')  # Gói dịch vụ
+    additional_services = models.ManyToManyField(AdditionalService, blank=True, related_name='booking_details')  # Dịch vụ bổ sung
+    total_price = models.DecimalField(max_digits=10, decimal_places=0)  # Tổng giá
+    note = models.TextField(blank=True)  # Ghi chú
     
     def __str__(self):
         return f'ServiceBookingDetail for {self.booking.id}'
@@ -161,12 +160,12 @@ class ServiceBookingDetail(models.Model):
 
 class Feedback(models.Model):
     # Thông tin phản hồi
-    customer = models.ForeignKey('accounts.CustomUser', on_delete=models.CASCADE, related_name='feedbacks')
-    booking = models.ForeignKey(ServiceBooking, on_delete=models.CASCADE, related_name='feedbacks')
+    customer = models.ForeignKey('accounts.CustomUser', on_delete=models.CASCADE, related_name='feedbacks')  # Khách hàng
+    booking = models.ForeignKey(ServiceBooking, on_delete=models.CASCADE, related_name='feedbacks')  # Đơn đặt dịch vụ
     rating = models.IntegerField(default=0)  # Đánh giá từ 1 đến 5
-    comment = models.TextField(blank=True)
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
+    comment = models.TextField(blank=True)  # Bình luận
+    created_at = models.DateTimeField(auto_now_add=True)  # Ngày tạo
+    updated_at = models.DateTimeField(auto_now=True)  # Ngày cập nhật
 
     def __str__(self):
         return f'Feedback for {self.booking.id}'
@@ -178,10 +177,10 @@ class Feedback(models.Model):
 
 class Staff(models.Model):
     # Thông tin nhân viên
-    full_name = models.CharField('Full Name', max_length=100)
-    date_of_birth = models.DateField('Date of Birth')
-    phone_number = models.CharField('Phone Number', max_length=15)
-    address = models.TextField('Address')
+    full_name = models.CharField('Họ tên', max_length=100)
+    date_of_birth = models.DateField('Ngày sinh')
+    phone_number = models.CharField('Số điện thoại', max_length=15)
+    address = models.TextField('Địa chỉ')
 
     # Giới tính
     GENDER_CHOICES = (
@@ -189,7 +188,7 @@ class Staff(models.Model):
         ('Nữ', 'Nữ'),
         ('Khác', 'Khác'),
     )
-    gender = models.CharField('Sex', max_length=10, choices=GENDER_CHOICES)
+    gender = models.CharField('Gender', max_length=10, choices=GENDER_CHOICES)
     
     # Trạng thái làm việc
     STATUS_CHOICES = (
@@ -202,9 +201,9 @@ class Staff(models.Model):
 
     skills = models.CharField('Skills', max_length=255)
 
-    # System fields
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
+    # Thông tin hệ thống
+    created_at = models.DateTimeField(auto_now_add=True)  # Ngày tạo
+    updated_at = models.DateTimeField(auto_now=True)  # Ngày cập nhật
     
     def __str__(self):
         return self.full_name
@@ -215,7 +214,9 @@ class Staff(models.Model):
         ordering = ['full_name']
 
     def is_available(self, booking_date, booking_time, duration=None, exclude_booking_id=None):
-        """Kiểm tra xem nhân viên có khả dụng cho một khung giờ booking với tùy chọn loại trừ booking hiện tại"""
+        """
+        Kiểm tra xem nhân viên có khả dụng cho một khung giờ booking với tùy chọn loại trừ booking hiện tại
+        """
         if self.status in ['Nghỉ phép', 'Không hoạt động']:
             return False
         
@@ -259,6 +260,7 @@ class Staff(models.Model):
                 return False
                 
         return True
+
     def update_status_on_booking_complete(self):
         """
         Cập nhật trạng thái thành 'Đang rảnh' nếu booking đã hoàn thành.
@@ -274,17 +276,19 @@ class Staff(models.Model):
 
 
 class StaffAssignment(models.Model):
-    """Model to manage staff assignments to bookings"""
-    booking = models.ForeignKey('ServiceBooking', on_delete=models.CASCADE, related_name='staff_assignments')
-    staff = models.ForeignKey(Staff, on_delete=models.CASCADE, related_name='assigned_bookings')
-    assigned_at = models.DateTimeField(auto_now_add=True)
+    """
+    Model quản lý việc phân công nhân viên cho các đơn đặt dịch vụ
+    """
+    booking = models.ForeignKey('ServiceBooking', on_delete=models.CASCADE, related_name='staff_assignments')  # Đơn đặt dịch vụ
+    staff = models.ForeignKey(Staff, on_delete=models.CASCADE, related_name='assigned_bookings')  # Nhân viên
+    assigned_at = models.DateTimeField(auto_now_add=True)  # Thời gian phân công
     
     def __str__(self):
         return f"{self.staff.full_name} - {self.booking}"
     
     class Meta:
-        verbose_name = _('Staff Assignment')
-        verbose_name_plural = _('Staff Assignments')
+        verbose_name = _('Phân công nhân viên')
+        verbose_name_plural = _('Phân công nhân viên')
         unique_together = ('booking', 'staff')
     
     def clean(self):
@@ -320,7 +324,9 @@ class StaffAssignment(models.Model):
         super().clean()
 
     def delete(self, using=None, keep_parents=False):
-        """Override delete method to update staff status when assignment is deleted"""
+        """
+        Ghi đè phương thức xóa để cập nhật trạng thái nhân viên khi phân công bị xóa
+        """
         staff = self.staff
         result = super().delete(using, keep_parents)
         
@@ -329,3 +335,9 @@ class StaffAssignment(models.Model):
             staff.update_status_on_booking_complete()
         
         return result
+    
+    class Meta:
+        verbose_name = _('Staff Assignments')
+        verbose_name_plural = _('Staff Assignments')
+        ordering = ['-assigned_at']
+        unique_together = ('booking', 'staff')

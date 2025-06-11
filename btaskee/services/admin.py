@@ -2,6 +2,10 @@ from django.contrib import admin
 from .models import Category, Service, ServicePackage, AdditionalService, Promotion, ServiceBooking, ServiceBookingDetail, Feedback, StaffAssignment, Staff
 from django.utils.html import format_html
 from django.core.exceptions import ValidationError
+from import_export import resources
+from import_export.admin import ExportMixin
+from django.core.mail import send_mail
+from django.contrib import messages
 
 class ServiceInline(admin.TabularInline):
     model = Service
@@ -186,6 +190,7 @@ class StaffAssignmentInline(admin.TabularInline):
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
 
+
 @admin.register(ServiceBooking)
 class ServiceBookingAdmin(admin.ModelAdmin):
     list_display = ('id', 'created_at', 'customer', 'category', 'service', 'booking_date', 
@@ -224,8 +229,37 @@ class ServiceBookingAdmin(admin.ModelAdmin):
 
     inlines = [ServiceBookingDetailInline, FeedbackInline, StaffAssignmentInline]
 
-    actions = ['mark_as_confirmed', 'mark_as_completed', 'mark_as_cancelled', 'mark_as_in_progress']
+    actions = ['mark_as_confirmed', 'mark_as_completed', 'mark_as_cancelled', 'mark_as_in_progress', 'send_confirmed_booking_email']
     
+
+    def send_confirmed_booking_email(self, request, queryset):
+        count = 0
+        for booking in queryset:
+            if booking.status == 'Đã xác nhận' and booking.customer.email:
+                staff_names = ", ".join([assignment.staff.full_name for assignment in booking.staff_assignments.all()])
+                message = (
+                    f"Chào {booking.customer.username},\n"
+                    f"Booking của bạn với mã #{booking.id} đã được xác nhận.\n"
+                    f"Thông tin chi tiết:\n"
+                    f"Dịch vụ: {booking.service.name}\n"
+                    f"Ngày đặt: {booking.booking_date}\n"
+                    f"Thời gian: {booking.booking_time}\n"
+                    f"Nhân viên phụ trách: {staff_names}\n"
+                    f"Cảm ơn bạn đã sử dụng dịch vụ của chúng tôi!"
+                )
+                send_mail(
+                    subject='Xác nhận đơn dịch vụ',
+                    message=message,
+                    from_email='noreply@mydomain.com',
+                    recipient_list=[booking.customer.email],
+                    fail_silently=False,
+                )
+                count += 1
+        if count:
+            self.message_user(request, f"Đã gửi email xác nhận cho {count} khách hàng.", level=messages.SUCCESS)
+        else:
+            self.message_user(request, "Không có đơn nào ở trạng thái 'Đã xác nhận' hoặc không có email.", level=messages.WARNING)
+    send_confirmed_booking_email.short_description = "Gửi email xác nhận cho khách hàng (chỉ đơn đã xác nhận)"
 
     def mark_as_confirmed(self, request, queryset):
         updated = queryset.update(status='Đã xác nhận')
@@ -349,4 +383,19 @@ class FeedbackAdmin(admin.ModelAdmin):
         return format_html('⭐' * obj.rating)
     rating_stars.short_description = 'Đánh giá'
 
+
+class StaffAssignmentResource(resources.ModelResource):
+    class Meta:
+        model = StaffAssignment
+        fields = ('id', 'staff__full_name', 'booking__id', 'booking__booking_date', 'assigned_at')
+
+
+@admin.register(StaffAssignment)
+class StaffAssignmentAdmin(ExportMixin, admin.ModelAdmin):
+    resource_class = StaffAssignmentResource
+    list_display = ('id', 'booking', 'staff', 'assigned_at')
+    list_filter = ('staff', 'booking__status')
+    search_fields = ('staff__full_name', 'booking__id')
+    autocomplete_fields = ['staff', 'booking']
+    readonly_fields = ('assigned_at',)
 

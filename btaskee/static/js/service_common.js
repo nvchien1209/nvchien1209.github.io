@@ -1,11 +1,3 @@
-/**
- * common-service-booking.js
- * File chứa các chức năng chung cho việc đặt dịch vụ:
- * - Xử lý date picker
- * - Xử lý time slots
- * - Xử lý mã giảm giá
- * - Quản lý bản đồ và địa điểm
- */
 
 // Khởi tạo các thành phần chung khi trang tải xong
 document.addEventListener('DOMContentLoaded', function() {
@@ -55,7 +47,7 @@ function initDatePicker() {
             // Cập nhật trạng thái của button đặt dịch vụ
             updateBookingButton();
             
-            // Có thể thêm logic kiểm tra khả dụng của khung giờ dựa trên ngày đã chọn
+            // Kiểm tra khả dụng của khung giờ dựa trên ngày đã chọn
             checkTimeSlotAvailability(this.value);
         });
     });
@@ -65,8 +57,8 @@ function initDatePicker() {
 
 // Hàm kiểm tra khả dụng của time slot dựa trên ngày đã chọn
 function checkTimeSlotAvailability(selectedDate) {
-    // Đây là nơi bạn có thể gọi API để kiểm tra khả dụng của khung giờ
-    // Ví dụ: Nếu là cuối tuần, một số khung giờ có thể không khả dụng
+    // Gọi API để kiểm tra khả dụng của khung giờ
+    // Nếu là cuối tuần, một số khung giờ có thể không khả dụng
     
     const date = new Date(selectedDate);
     const isWeekend = date.getDay() === 0 || date.getDay() === 6;
@@ -83,7 +75,7 @@ function checkTimeSlotAvailability(selectedDate) {
         
         if (!input || !label) return;
         
-        // Ví dụ: Vào cuối tuần, khung giờ sớm (8h, 9h) không khả dụng
+        // Vào cuối tuần, khung giờ sớm (8h, 9h) không khả dụng
         if (isWeekend && (time === '08:00' || time === '09:00')) {
             input.disabled = true;
             label.classList.add('disabled');
@@ -174,7 +166,7 @@ function initMapbox() {
     let marker;
     let currentLocationMarker;
 
-    // Thêm control tìm kiếm nếu MapboxGeocoder có sẵn
+    // Thêm control tìm kiếm MapboxGeocoder có sẵn
     if (typeof MapboxGeocoder !== 'undefined') {
         const geocoder = new MapboxGeocoder({
             accessToken: mapboxgl.accessToken,

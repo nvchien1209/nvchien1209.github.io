@@ -10,9 +10,11 @@ from services.models import ServiceBooking
 from django.core.mail import send_mail
 from django.utils.crypto import get_random_string
 from django.conf import settings
+from django.utils import timezone
 
 
 def login_view(request):
+    # Lấy dữ liệu từ request
     if request.method == 'POST':
         username = request.POST.get('username')
         password = request.POST.get('password')
@@ -91,7 +93,6 @@ def register_view(request):
                 phone=phone,
                 password=password
             )
-            #user.save()  # Lưu user vào cơ sở dữ liệu
             messages.success(request, 'Đăng ký thành công!')
             return redirect('login') 
         except Exception as e:
@@ -130,8 +131,7 @@ def profile_view(request):
         phone = request.POST.get('phone')
         date_of_birth = request.POST.get('birthdate')
         sex = request.POST.get('gender')
-        # avatar = request.FILES.get('avatar') if request.FILES.get('avatar') else user.avatar
-
+        
         # Validate các trường bắt buộc
         errors = {}
         if not all([first_name, last_name, email, phone]):

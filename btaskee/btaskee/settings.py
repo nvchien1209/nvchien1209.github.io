@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'django.contrib.humanize',
     'accounts',
     'services',
+    'import_export',
 ]
 
 JAZZMIN_SETTINGS = {

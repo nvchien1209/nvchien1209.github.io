@@ -31,20 +31,6 @@ def home_view(request):
     
     return render(request, 'home.html', context)
 
-def news_view(request):
-    
-    return render(request, 'news.html')
-
-def news1_detail(request):
-    return render(request, 'news1_detail.html')
-
-def job_view(request):
-    
-    return render(request, 'job.html')
-
-def about_view(request):
-    
-    return render(request, 'about.html')
 
 def service_detail(request, service_id):
     
@@ -472,3 +458,18 @@ def get_client_ip(request):
     else:
         ip = request.META.get('REMOTE_ADDR')
     return ip
+
+def news_view(request):
+    
+    return render(request, 'news.html')
+
+def news1_detail(request):
+    return render(request, 'news1_detail.html')
+
+def job_view(request):
+    
+    return render(request, 'job.html')
+
+def about_view(request):
+    
+    return render(request, 'about.html')
