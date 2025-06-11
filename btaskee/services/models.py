@@ -139,7 +139,7 @@ class ServiceBooking(models.Model):
     def get_assigned_staff(self):
         # Lấy danh sách nhân viên đã được phân công cho booking này
         return ", ".join([assignment.staff.full_name for assignment in self.staff_assignments.all()])
-    get_assigned_staff.short_description = "Nhân viên được phân công"
+    get_assigned_staff.short_description = "Staff Assigned"
 
 
 
@@ -154,7 +154,7 @@ class ServiceBookingDetail(models.Model):
         return f'ServiceBookingDetail for {self.booking.id}'
 
     class Meta:
-        verbose_name = _('Chi tiết đặt dịch vụ')
+        verbose_name = _('Service Booking Details')
         verbose_name_plural = _('Service Booking Details')
         ordering = ['-booking__created_at']
 
@@ -177,10 +177,10 @@ class Feedback(models.Model):
 
 class Staff(models.Model):
     # Thông tin nhân viên
-    full_name = models.CharField('Họ tên', max_length=100)
-    date_of_birth = models.DateField('Ngày sinh')
-    phone_number = models.CharField('Số điện thoại', max_length=15)
-    address = models.TextField('Địa chỉ')
+    full_name = models.CharField('Name', max_length=100)
+    date_of_birth = models.DateField('Date of Birth')
+    phone_number = models.CharField('Phone Number', max_length=15)
+    address = models.TextField('Address')
 
     # Giới tính
     GENDER_CHOICES = (

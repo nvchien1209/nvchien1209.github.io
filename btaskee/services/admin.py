@@ -27,7 +27,7 @@ class CategoryAdmin(admin.ModelAdmin):
     
     def get_services_count(self, obj):
         return obj.services.count()
-    get_services_count.short_description = 'Số dịch vụ'
+    get_services_count.short_description = 'Number of Services'
 
 @admin.register(Service)
 class ServiceAdmin(admin.ModelAdmin):
@@ -39,7 +39,7 @@ class ServiceAdmin(admin.ModelAdmin):
     
     def get_packages_count(self, obj):
         return obj.packages.count()
-    get_packages_count.short_description = 'Số gói dịch vụ'
+    get_packages_count.short_description = 'Number of Packages'
 
 @admin.register(ServicePackage)
 class ServicePackageAdmin(admin.ModelAdmin):
@@ -355,7 +355,7 @@ class ServiceBookingDetailAdmin(admin.ModelAdmin):
     
     def get_additional_services(self, obj):
         return ", ".join([service.name for service in obj.additional_services.all()])
-    get_additional_services.short_description = 'Dịch vụ bổ sung'
+    get_additional_services.short_description = 'Additional Services'
 
 
 @admin.register(Feedback)
@@ -381,7 +381,7 @@ class FeedbackAdmin(admin.ModelAdmin):
     )
     def rating_stars(self, obj):
         return format_html('⭐' * obj.rating)
-    rating_stars.short_description = 'Đánh giá'
+    rating_stars.short_description = 'Feedback'
 
 
 class StaffAssignmentResource(resources.ModelResource):

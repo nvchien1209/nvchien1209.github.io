@@ -43,11 +43,25 @@ def service_detail(request, service_id):
     packages = service.packages.all()
     if service.id == 1:
         additional_services = AdditionalService.objects.filter(id__in=[1, 2])
-    context = {
-        'service': service,
-        'packages': packages,
-        'additional_services': additional_services,
-    }
+        context = {
+            'service': service,
+            'packages': packages,
+            'additional_services': additional_services,
+        }
+    elif service.id == 2:
+        additional_services = AdditionalService.objects.filter(id__in=[3, 4])
+        context = {
+            'service': service,
+            'packages': packages,
+            'additional_services': additional_services,
+        }
+    else:
+        additional_services = AdditionalService.objects.none()
+        context = {
+            'service': service,
+            'packages': packages,
+            'additional_services': additional_services,
+        }
     return render(request, template_name, context)
     
 
