@@ -55,6 +55,20 @@ def service_detail(request, service_id):
             'packages': packages,
             'additional_services': additional_services,
         }
+    elif service.id == 6:
+        additional_services = AdditionalService.objects.filter(id__in=[5, 6])
+        context = {
+            'service': service,
+            'packages': packages,
+            'additional_services': additional_services,
+        }
+    elif service.id == 3:
+        additional_services = AdditionalService.objects.filter(id__in=[7, 8])
+        context = {
+            'service': service,
+            'packages': packages,
+            'additional_services': additional_services,
+        }
     else:
         additional_services = AdditionalService.objects.none()
         context = {

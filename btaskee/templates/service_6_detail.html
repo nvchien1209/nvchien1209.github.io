@@ -1,0 +1,393 @@
+
+{% extends "base.html" %}
+
+{% load static %}
+{% load humanize %}
+
+{% block title %}Đi chợ{% endblock %}
+
+{% block extra_head %}
+    <link rel="stylesheet" href="{% static 'css/service1.css' %}">
+    <script src="{% static 'js/service1.js' %}"></script>
+    <script src="{% static 'js/service_common.js' %}"></script>
+    <!-- Thẻ script cho Mapbox -->
+    <script src="https://api.mapbox.com/mapbox-gl-js/v2.14.1/mapbox-gl.js"></script>
+    <link href="https://api.mapbox.com/mapbox-gl-js/v2.14.1/mapbox-gl.css" rel="stylesheet">
+    <script src="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v5.0.0/mapbox-gl-geocoder.min.js"></script>
+    <link rel="stylesheet" href="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v5.0.0/mapbox-gl-geocoder.css" type="text/css">
+{% endblock %}
+
+{% block content %}
+    <!-- Section 1: Giải pháp giúp việc theo giờ -->
+    <section class="solution-section py-4">
+        <div class="container">
+            <h1 class="section-title fw-bold mb-4">Dịch vụ của bTaskee có gì khác biệt?</h1>
+            
+            <div class="row">
+                <div class="col-lg-12">
+                    <p class="section-text">
+                        Bạn chỉ cần 60 giây đặt dịch vụ trên ứng dụng. Ngay 1 giờ sau khi đặt dịch vụ, phụ tá đi chợ sẽ mua hàng và giao hàng tận nhà cho bạn.
+                    </p>
+                    
+                    <p class="section-text">
+                        Phụ tá đi chợ của bTaskee là các bà nội trợ lâu năm, họ không chỉ đến và lấy thực phẩm rồi giao đến cho bạn mà sẽ chính tay lựa từng món hàng, đảm bảo hàng hóa luôn được tươi ngon, chất lượng.
+                    </p>
+                    
+                    <p class="section-text">
+                        Cần món hàng nào, chỉ cần ghi tên, số lượng cùng những lưu ý và đặt dịch vụ. Bạn không cần tìm từng món hàng đã được liệt kê, không bị phụ thuộc vào danh sách hàng hóa có sẵn trên ứng dụng.
+                    </p>
+                    <p class="section-text">
+                        Khi có tình huống phát sinh: Nhu cầu mua hàng thay đổi, địa điểm đi chợ hết hàng,... bạn có thể trao đổi trực tiếp với phụ tá đi chợ thông qua tính năng gọi điện và nhắn tin miễn phí ngay trên ứng dụng bTaskee.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Section 2: Lý do chọn giúp việc theo giờ bTaskee -->
+    <section class="reasons-section py-4">
+        <div class="container">
+            <h1 class="section-title fw-bold mb-4">Lý do chọn dịch vụ đi chợ bTaskee</h1>
+            
+            <div class="image-container mb-5">
+                <img src="{% static 'images/dichopage.png' %}" alt="đi chợ btakee" class="img-fluid rounded w-100">
+            </div>
+            
+            <!-- Features Grid -->
+<!-- Features Section -->
+    <section class="features-section">
+        <div class="container">
+            <div class="row g-4">
+                <!-- Feature 1: Tiết kiệm thời gian -->
+                <div class="col-lg-3 col-md-6">
+                    <div class="card feature-card h-100">
+                        <div class="card-body">
+                            <div class="feature-icon icon-time">
+                                <i class="fas fa-clock"></i>
+                            </div>
+                            <h3 class="feature-title">Tiết kiệm thời gian</h3>
+                            <p class="feature-description">
+                                Bạn không phải tốn hàng giờ đồng hồ để chuyển, lưa thúc phẩm và chờ đợi tính tiền tại các chợ siêu thị. Tất cả đã có phụ ta đi chợ thực hiện thay bạn.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Feature 2: Phù hợp mua sắm trong mọi hoàn cảnh -->
+                <div class="col-lg-3 col-md-6">
+                    <div class="card feature-card h-100">
+                        <div class="card-body">
+                            <div class="feature-icon icon-delivery">
+                                <i class="fas fa-truck"></i>
+                            </div>
+                            <h3 class="feature-title">Phù hợp mua sắm trong mọi hoàn cảnh</h3>
+                            <p class="feature-description">
+                                Với dịch vụ đi chợ hộ của bTaskee bạn có thể chủ động được nguồn thực phẩm của gia đình. Dù ở công sở, bệnh viện, trường học hay nơi cách ly tế bạn đều có thể mua lượng thực, thực phẩm phục vụ đời sống.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Feature 3: An tâm về chất lượng -->
+                <div class="col-lg-3 col-md-6">
+                    <div class="card feature-card h-100">
+                        <div class="card-body">
+                            <div class="feature-icon icon-quality">
+                                <i class="fas fa-star"></i>
+                            </div>
+                            <h3 class="feature-title">An tâm về chất lượng</h3>
+                            <p class="feature-description">
+                                Phụ ta đi chợ đều là người giới nội trợ, hiểu biết sâu sắc về thực phẩm. Trực tiếp lựa chọn từng loại thực phẩm, hàng hóa chất lượng và giao hàng tận nơi cho bạn.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Feature 4: Giá cả minh bạch -->
+                <div class="col-lg-3 col-md-6">
+                    <div class="card feature-card h-100">
+                        <div class="card-body">
+                            <div class="feature-icon icon-price">
+                                <i class="fas fa-tag"></i>
+                            </div>
+                            <h3 class="feature-title">Giá cả minh bạch</h3>
+                            <p class="feature-description">
+                                Bạn chỉ cần thanh toán đúng chi phí ghi trên hóa đơn mua hàng và phí dịch vụ được hiển thị trên ứng dụng.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+        </div>
+    </section>
+
+    <!-- Section 3: Giá giúp việc theo giờ -->
+    <section class="pricing-section py-4">
+        <div class="container">
+            <h1 class="section-title fw-bold mb-4">Chọn gói giúp việc</h1>
+            
+            <div class="row mb-4">
+                {% for item in packages %}
+                <div class="col-md-4 mb-4 mb-md-0">
+                    <div class="pricing-card shadow-sm h-100" data-package="2" id="package-{{ item.id }}">
+                        <div class="select-indicator">
+                            <div class="radio-button"></div>
+                        </div>
+                        <h3 class="fw-bold mb-2">{{ item.name }}</h3>
+                        <p class="room-size text-muted">{{ item.description }}</p>
+                        <div class="divider my-3"></div>
+                        <p class="price fw-bold">{{ item.price_min|intcomma }}<sup>đ</sup> - {{ item.price_max|intcomma}}<sup>đ</sup></p>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            
+            <div class="pricing-notes bg-light rounded p-4 mt-5">
+                <div class="note-header d-flex align-items-center mb-3">
+                    <i class="fas fa-info-circle me-2"></i>
+                    <h3 class="fw-bold m-0">Lưu ý</h3>
+                </div>
+                
+                <ul class="notes-list ps-0">
+                    <li class="mb-2">* Bảng giá giúp việc theo giờ trên mang tính chất tham khảo ở thời điểm hiện tại.</li>
+                    <li class="mb-2">* Giá dịch vụ có thể tự động điều chỉnh tùy vào khu vực, cuối tuần, giờ cao điểm (trước 8h và sau 17h) hay lễ tết.</li>
+                    <li class="mb-2">* Nếu thời gian thực hiện công việc nhiều hơn 4 giờ, bạn nên đặt Dịch vụ Tổng vệ sinh.</li>
+                    <li class="mb-2">* Để chủ động lựa chọn người làm, quý khách có thể sử dụng tính năng tự chọn người làm với chi phí là 20.000 vnđ/lần. Hoặc trải nghiệm miễn phí tiện ích này với <a href="#" class="text-success text-decoration-none">Dịch vụ giúp việc nhà theo gói</a>.</li>
+                </ul>
+            </div>
+        </div>
+    </section>
+
+    <!-- Section 4: Dịch vụ thêm -->
+<section class="additional-services-section py-4">
+    <div class="container">
+        <h1 class="section-title fw-bold mb-4">Dịch vụ thêm</h1>
+        <p class="section-text mb-4">Bạn có thể lựa chọn các dịch vụ bổ sung để trải nghiệm dịch vụ đầy đủ hơn:</p>
+        
+        <div class="row g-4">
+            {% for item in additional_services %}
+            <div class="col-md-6">
+                <div class="add-service-card shadow-sm" data-service=" add-service-{{ item.id }}">
+                    <div class="service-checkbox">
+                        <input type="checkbox" id=" add-service-{{ item.id }}" class="service-checkbox-input">
+                        <label for=" add-service-{{ item.id }}" class="service-checkbox-label"></label>
+                    </div>
+                    <div class="service-content d-flex">
+                        <div class="service-icon">
+                            <i class="fas fa-utensils"></i>
+                        </div>
+                        <div class="service-details ms-3">
+                            <h3 class="fw-bold fs-5">{{ item.name }}</h3>
+                            <p class="text-muted mb-2">( {{ item.description }} )</p>
+                            <p class="service-price fw-bold">{{ item.price_per_unit|intcomma }}<sup>đ</sup>/giờ</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+            
+        </div>
+    </div>
+</section>
+
+<!-- Section 5: Chi tiết dịch vụ -->
+<section class="service-details-section py-4">
+    <div class="container">
+        <h1 class="section-title fw-bold mb-4">Chi tiết dịch vụ</h1>
+        
+        <div class="row">
+            <div class="col-lg-6">
+                <div class="service-details-card shadow-sm p-4 mb-4">
+                    <h3 class="fw-bold fs-5 mb-3">
+                        <i class="fas fa-check-circle text-success me-2"></i>
+                        Dịch vụ bao gồm
+                    </h3>
+                    <ul class="service-included-list">
+                        <li><i class="fas fa-check me-2"></i>Quét dọn sàn nhà, lau sàn</li>
+                        <li><i class="fas fa-check me-2"></i>Lau chùi bàn ghế, tủ kệ</li>
+                        <li><i class="fas fa-check me-2"></i>Dọn dẹp, sắp xếp đồ đạc gọn gàng</li>
+                        <li><i class="fas fa-check me-2"></i>Lau chùi bồn rửa, bếp</li>
+                        <li><i class="fas fa-check me-2"></i>Vệ sinh phòng tắm, bồn cầu</li>
+                        <li><i class="fas fa-check me-2"></i>Lau gương, cửa kính, cửa sổ</li>
+                        <li><i class="fas fa-check me-2"></i>Đổ rác, vệ sinh thùng rác</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="col-lg-6">
+                <div class="service-details-card shadow-sm p-4 mb-4">
+                    <h3 class="fw-bold fs-5 mb-3">
+                        <i class="fas fa-times-circle text-danger me-2"></i>
+                        Dịch vụ không bao gồm
+                    </h3>
+                    <ul class="service-excluded-list">
+                        <li><i class="fas fa-times me-2"></i>Lau chùi tường, trần nhà</li>
+                        <li><i class="fas fa-times me-2"></i>Vệ sinh điều hòa, máy lạnh</li>
+                        <li><i class="fas fa-times me-2"></i>Giặt thảm, rèm cửa, ghế sofa</li>
+                        <li><i class="fas fa-times me-2"></i>Vệ sinh bên ngoài nhà</li>
+                        <li><i class="fas fa-times me-2"></i>Di chuyển đồ nặng, tủ lạnh, tủ quần áo</li>
+                        <li><i class="fas fa-times me-2"></i>Vệ sinh khu vực quá bẩn, nguy hiểm</li>
+                        <li><i class="fas fa-times me-2"></i>Lau chùi đồ dễ vỡ, có giá trị cao</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        
+       
+    </div>
+</section>
+
+<!-- Section: Chọn ngày, giờ và địa chỉ -->
+<section class="booking-details-section py-4">
+    <div class="container">
+        <h1 class="section-title fw-bold mb-4">Thông tin đặt dịch vụ</h1>
+        
+        <div class="row g-4">
+            <!-- Chọn ngày và giờ -->
+            <div class="col-lg-6">
+                <div class="booking-card shadow-sm p-4 mb-4">
+                    <h3 class="fw-bold fs-5 mb-3">
+                        <i class="fas fa-calendar-alt me-2 text-primary"></i>
+                        Chọn ngày và giờ
+                    </h3>
+                    
+                    <div class="row g-3">
+                        <!-- Chọn ngày -->
+                        <div class="col-md-12">
+                            <label for="service-date" class="form-label">Ngày thực hiện</label>
+                            <div class="date-picker-container">
+                                <input type="date" class="form-control" id="service-date" required>
+                            </div>
+                        </div>
+                        
+                        <!-- Chọn khung giờ -->
+                        <div class="col-md-12">
+                            <label class="form-label">Khung giờ</label>
+                            <div class="time-slots-container">
+                                <div class="row g-2">
+                                    <div class="col-4 col-md-3">
+                                        <div class="time-slot-item" data-time="08:00">
+                                            <input type="radio" name="timeSlot" id="time-8" class="time-slot-input" value="08:00">
+                                            <label for="time-8" class="time-slot-label">08:00</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-4 col-md-3">
+                                        <div class="time-slot-item" data-time="09:00">
+                                            <input type="radio" name="timeSlot" id="time-9" class="time-slot-input" value="09:00">
+                                            <label for="time-9" class="time-slot-label">09:00</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-4 col-md-3">
+                                        <div class="time-slot-item" data-time="10:00">
+                                            <input type="radio" name="timeSlot" id="time-10" class="time-slot-input" value="10:00">
+                                            <label for="time-10" class="time-slot-label">10:00</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-4 col-md-3">
+                                        <div class="time-slot-item" data-time="11:00">
+                                            <input type="radio" name="timeSlot" id="time-11" class="time-slot-input" value="11:00">
+                                            <label for="time-11" class="time-slot-label">11:00</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-4 col-md-3">
+                                        <div class="time-slot-item" data-time="13:00">
+                                            <input type="radio" name="timeSlot" id="time-13" class="time-slot-input" value="13:00">
+                                            <label for="time-13" class="time-slot-label">13:00</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-4 col-md-3">
+                                        <div class="time-slot-item" data-time="14:00">
+                                            <input type="radio" name="timeSlot" id="time-14" class="time-slot-input" value="14:00">
+                                            <label for="time-14" class="time-slot-label">14:00</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-4 col-md-3">
+                                        <div class="time-slot-item" data-time="15:00">
+                                            <input type="radio" name="timeSlot" id="time-15" class="time-slot-input" value="15:00">
+                                            <label for="time-15" class="time-slot-label">15:00</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-4 col-md-3">
+                                        <div class="time-slot-item" data-time="16:00">
+                                            <input type="radio" name="timeSlot" id="time-16" class="time-slot-input" value="16:00">
+                                            <label for="time-16" class="time-slot-label">16:00</label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Chọn địa chỉ -->
+            <div class="col-lg-6">
+                <div class="booking-card shadow-sm p-4 mb-4">
+                    <h3 class="fw-bold fs-5 mb-3">
+                        <i class="fas fa-map-marker-alt me-2 text-primary"></i>
+                        Chọn địa chỉ
+                    </h3>
+                    
+                    <!-- Bản đồ Mapbox -->
+                    <div id="map" class="map-container mb-3"></div>
+                    <p id="coordinates">Bấm vào bản đồ để lấy thông tin.</p>
+                    <!-- Địa chỉ cụ thể -->
+                    <div class="mb-1">
+                        <label for="detailed-address" class="form-label">Địa chỉ cụ thể</label>
+                        <textarea id="detailed-address" class="form-control" rows="2" placeholder="Số nhà, tầng, tòa nhà, đường, phường/xã..."></textarea>
+                    </div>
+                    
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<!-- Section 6: Tổng giá và Đặt dịch vụ -->
+<section class="booking-section py-4 sticky-bottom bg-white shadow-lg">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-md-6">
+                <div class="total-price-container">
+                    <h3 class="fw-bold mb-2">Tổng cộng:</h3>
+                    <div class="price-details mb-2">
+                        <div class="price-item d-flex justify-content-between">
+                            <span>Gói dịch vụ cơ bản:</span>
+                            <span class="package-price fw-bold">0<sup>đ</sup></span>
+                        </div>
+                        <div class="price-item d-flex justify-content-between">
+                            <span>Dịch vụ thêm:</span>
+                            <span class="additional-price fw-bold">0<sup>đ</sup></span>
+                        </div>
+                        <!-- Phần mã giảm giá -->
+                        <div class="price-item d-flex justify-content-between discount-item">
+                            <span>Giảm giá:</span>
+                            <span class="discount-amount fw-bold text-success">0<sup>đ</sup></span>
+                        </div>
+                    </div>
+                    <div class="total-amount d-flex justify-content-between border-top pt-2">
+                        <span class="fw-bold">Tổng tiền:</span>
+                        <span class="total-price fw-bold fs-4">0<sup>đ</sup></span>
+                    </div>
+                    <!-- Form nhập mã giảm giá -->
+                    <div class="coupon-container mt-3">
+                        <div class="input-group">
+                            <input type="text" id="coupon-code" class="form-control" placeholder="Nhập mã giảm giá">
+                            <button id="apply-coupon" class="btn btn-outline-primary" >Áp dụng</button>
+                        </div>
+                        <div id="coupon-message" class="coupon-message mt-1"></div>
+                    </div>
+                </div>
+            </div>
+           
+            <div class="col-md-6 text-end">
+                <button id="proceed-booking" class="btn btn-lg btn-primary px-5 py-3" disabled>
+                    <i class="fas fa-calendar-check me-2"></i>
+                    Đặt dịch vụ ngay
+                </button>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

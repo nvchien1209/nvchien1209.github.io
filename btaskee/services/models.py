@@ -206,7 +206,7 @@ class Staff(models.Model):
     updated_at = models.DateTimeField(auto_now=True)  # Ngày cập nhật
     
     def __str__(self):
-        return self.full_name
+        return f'{self.full_name} - {self.skills}'
     
     class Meta:
         verbose_name = _('Staff')
