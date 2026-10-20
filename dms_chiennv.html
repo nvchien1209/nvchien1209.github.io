@@ -1,0 +1,1414 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SandboxVN · Sale DMS Mockup</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<style>
+:root{
+  --brand:#1a5276;--brand-dark:#0e3556;--brand-light:#2e86c1;--accent:#d4ac0d;
+  --bg:#f3f6fa;--card:#fff;--text:#0d1f35;--muted:#64748b;--border:#e2e8f0;--soft:#f8fafc;
+  --ok:#16a34a;--warn:#d97706;--bad:#dc2626;--info:#2563eb;--purple:#7c3aed;--gray:#94a3b8;
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{font-family:'Be Vietnam Pro',system-ui,-apple-system,'Segoe UI',sans-serif;background:var(--bg);color:var(--text);font-size:14px;line-height:1.45}
+button{font:inherit;color:inherit}
+.app{display:grid;grid-template-columns:240px 1fr;min-height:100vh}
+/* sidebar */
+.side{background:var(--brand-dark);color:#c6d8e8;position:sticky;top:0;height:100vh;overflow:auto;padding:16px 12px;display:flex;flex-direction:column;gap:4px}
+.logo{display:flex;align-items:center;gap:10px;padding:4px 8px 16px;color:#fff}
+.logo .mark{width:34px;height:34px;border-radius:9px;background:linear-gradient(135deg,var(--brand-light),var(--accent));display:grid;place-items:center;font-weight:700;font-size:15px}
+.logo b{display:block;font-size:15px}.logo small{font-size:11.5px;opacity:.7}
+.nav-sec{font-size:10.5px;text-transform:uppercase;letter-spacing:.08em;opacity:.5;padding:12px 10px 4px}
+.nav a{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:8px;color:inherit;text-decoration:none;cursor:pointer;font-size:13.5px}
+.nav a:hover{background:rgba(255,255,255,.06)}
+.nav a.on{background:rgba(255,255,255,.14);color:#fff;font-weight:500}
+.nav .num{font-size:11px;opacity:.55;width:16px}
+.nav .tag{margin-left:auto;font-size:9.5px;padding:1px 6px;border-radius:10px;background:rgba(255,255,255,.1);opacity:.85}
+.side-foot{margin-top:auto;font-size:11.5px;opacity:.6;padding:12px 10px 0;border-top:1px solid rgba(255,255,255,.1)}
+/* main */
+.main{min-width:0;display:flex;flex-direction:column}
+.top{height:60px;background:#fff;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:14px;padding:0 20px;position:sticky;top:0;z-index:1000}
+.top h1{font-size:17px;margin:0;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.top .clock{color:var(--muted);font-size:12.5px;white-space:nowrap}
+.top .sp{flex:1}
+.seg{display:inline-flex;background:#eef2f7;border-radius:9px;padding:3px}
+.seg button{border:0;background:transparent;padding:5px 11px;border-radius:7px;font-size:12.5px;cursor:pointer;color:var(--muted);white-space:nowrap}
+.seg button.on{background:#fff;color:var(--brand);font-weight:600;box-shadow:0 1px 2px rgba(0,0,0,.08)}
+.bell{position:relative;border:1px solid var(--border);background:#fff;width:38px;height:38px;border-radius:10px;display:grid;place-items:center;cursor:pointer}
+.bell em{position:absolute;top:-5px;right:-5px;background:var(--bad);color:#fff;font-style:normal;font-size:10.5px;min-width:18px;height:18px;border-radius:9px;display:grid;place-items:center;padding:0 4px}
+.user{display:flex;align-items:center;gap:8px;font-size:12.5px}
+.av{width:32px;height:32px;border-radius:50%;display:grid;place-items:center;color:#fff;font-weight:600;font-size:12px;flex:none}
+.content{padding:20px;flex:1;min-width:0}
+/* generic */
+.card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px;min-width:0}
+.card h3{margin:0 0 12px;font-size:14.5px;font-weight:600;display:flex;align-items:center;gap:8px}
+.card h3 .sub{font-weight:400;color:var(--muted);font-size:12.5px;margin-left:auto}
+.qhead{display:flex;align-items:baseline;gap:10px;margin:22px 0 10px}
+.qhead:first-child{margin-top:0}
+.qhead h2{font-size:15.5px;margin:0}
+.qhead span{color:var(--muted);font-size:12.5px}
+.g2{display:grid;grid-template-columns:1.6fr 1fr;gap:16px}
+.g2e{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(165px,1fr));gap:12px}
+.kpi{background:#fff;border:1px solid var(--border);border-radius:12px;padding:14px 16px;position:relative;overflow:hidden}
+.kpi:before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--c,var(--brand-light))}
+.kpi .l{color:var(--muted);font-size:12.5px}
+.kpi .v{font-size:26px;font-weight:700;margin-top:2px;letter-spacing:-.01em}
+.kpi .v small{font-size:13px;font-weight:500;color:var(--muted)}
+.kpi .d{font-size:12px;color:var(--muted);margin-top:2px}
+.kpi.click{cursor:pointer}.kpi.click:hover{border-color:var(--brand-light)}
+.pill{display:inline-flex;align-items:center;gap:5px;padding:2px 8px;border-radius:999px;font-size:11.5px;font-weight:500;white-space:nowrap}
+.pill .dot{width:7px;height:7px;border-radius:50%}
+.schip{display:inline-flex;align-items:center;gap:6px;white-space:nowrap}
+.schip i{width:9px;height:9px;border-radius:3px;display:inline-block}
+.muted{color:var(--muted)}.small{font-size:12px}.b{font-weight:600}
+.tbl{overflow:auto;border:1px solid var(--border);border-radius:10px;background:#fff}
+table.t{width:100%;border-collapse:collapse;font-size:13px}
+.t th{text-align:left;font-size:11.5px;color:var(--muted);font-weight:600;padding:9px 10px;border-bottom:1px solid var(--border);background:var(--soft);position:sticky;top:0;z-index:1;white-space:nowrap}
+.t td{padding:9px 10px;border-bottom:1px solid #eef2f7;vertical-align:middle}
+.t tr:last-child td{border-bottom:0}
+.t tr.click:hover td{background:#f4f9fe;cursor:pointer}
+.t td.num,.t th.num{text-align:right;font-variant-numeric:tabular-nums}
+.btn{border:1px solid var(--border);background:#fff;padding:7px 12px;border-radius:8px;font-size:13px;cursor:pointer;display:inline-flex;align-items:center;gap:6px;white-space:nowrap;text-decoration:none;color:var(--text)}
+.btn:hover{border-color:#b9c8d8}
+.btn.p{background:var(--brand);color:#fff;border-color:var(--brand)}
+.btn.p:hover{background:var(--brand-dark)}
+.btn.ok{background:var(--ok);border-color:var(--ok);color:#fff}
+.btn.bad{background:#fff;border-color:#fecaca;color:var(--bad)}
+.btn.sm{padding:4px 9px;font-size:12px;border-radius:7px}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+select,input,textarea{font:inherit;font-size:13px;padding:7px 9px;border:1px solid var(--border);border-radius:8px;background:#fff;color:inherit;min-width:0}
+textarea{resize:vertical;width:100%}
+label.f{display:flex;flex-direction:column;gap:4px;font-size:12px;color:var(--muted)}
+label.f>select,label.f>input,label.f>textarea{color:var(--text)}
+.row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.bar{height:8px;background:#eef2f7;border-radius:6px;overflow:hidden;min-width:60px}
+.bar>i{display:block;height:100%;border-radius:6px}
+.hbar{display:grid;grid-template-columns:150px 1fr 60px;gap:10px;align-items:center;margin:7px 0;font-size:12.5px}
+.hbar .bar{height:12px}
+.list{display:flex;flex-direction:column}
+.li{display:flex;gap:10px;padding:9px 0;border-bottom:1px solid #eef2f7;align-items:flex-start;font-size:13px}
+.li:last-child{border-bottom:0}
+.li.click{cursor:pointer}.li.click:hover{background:#f7fafd}
+.li .ic{width:28px;height:28px;border-radius:8px;display:grid;place-items:center;flex:none}
+.tabs{display:flex;gap:4px;border-bottom:1px solid var(--border);margin-bottom:14px;overflow-x:auto}
+.tabs button{border:0;background:none;padding:9px 12px;cursor:pointer;color:var(--muted);border-bottom:2px solid transparent;white-space:nowrap;font-size:13px}
+.tabs button.on{color:var(--brand);border-bottom-color:var(--brand);font-weight:600}
+.tip{background:#eef6fd;border:1px solid #cfe3f5;color:#174a74;padding:10px 14px;border-radius:10px;font-size:12.5px;margin-bottom:16px;display:flex;gap:10px;align-items:center}
+.empty{padding:30px;text-align:center;color:var(--muted)}
+.flag{display:inline-flex;align-items:center;gap:4px;font-size:11px;padding:1px 7px;border-radius:6px;background:#fef2f2;color:var(--bad);border:1px solid #fecaca;white-space:nowrap}
+.okb{display:inline-flex;align-items:center;gap:4px;font-size:11px;padding:1px 7px;border-radius:6px;background:#f0fdf4;color:var(--ok);border:1px solid #bbf7d0;white-space:nowrap}
+/* map */
+.mapwrap{display:grid;grid-template-columns:260px 1fr;gap:14px;height:calc(100vh - 100px);min-height:520px}
+.filters{overflow:auto;display:flex;flex-direction:column;gap:10px}
+.filters h4{margin:6px 0 0;font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
+.mapbox{position:relative;border-radius:12px;overflow:hidden;border:1px solid var(--border);background:#e8eef4}
+#map{position:absolute;inset:0}
+.legend{position:absolute;right:12px;bottom:12px;z-index:500;background:#fff;border-radius:10px;padding:10px 12px;box-shadow:0 2px 10px rgba(0,0,0,.12);font-size:12px;max-width:220px}
+.legend div{display:flex;align-items:center;gap:7px;margin:3px 0}
+.legend i{width:11px;height:11px;border-radius:50%;flex:none;border:2px solid #fff;box-shadow:0 0 0 1px rgba(0,0,0,.2)}
+.mapstat{position:absolute;left:12px;top:12px;z-index:500;background:#fff;border-radius:10px;padding:8px 12px;box-shadow:0 2px 10px rgba(0,0,0,.12);font-size:12.5px;display:flex;gap:14px;flex-wrap:wrap;max-width:calc(100% - 80px)}
+.mapstat b{font-size:14px}
+.mk{position:relative;width:14px;height:14px}
+.mk b{display:block;width:14px;height:14px;border-radius:50%;background:var(--c);border:2px solid #fff;box-shadow:0 0 0 1px rgba(0,0,0,.3)}
+.mk.un b{border:2px dashed #fff;box-shadow:0 0 0 1.5px var(--bad)}
+.mk span{position:absolute;left:14px;top:-4px;font-size:10px;font-weight:600;background:#fff;border:1px solid #cbd5e1;border-left:3px solid var(--s);padding:0 4px;border-radius:4px;white-space:nowrap;color:#0f172a;line-height:15px}
+.nolabels .mk span{display:none}
+.salepin{width:30px;height:30px;border-radius:50%;background:var(--c);color:#fff;font-size:11px;font-weight:700;display:grid;place-items:center;border:3px solid #fff;box-shadow:0 0 0 2px var(--c),0 3px 8px rgba(0,0,0,.3);position:relative}
+.salepin:after{content:"";position:absolute;inset:-9px;border-radius:50%;border:2px solid var(--c);opacity:.5;animation:pulse 1.8s infinite}
+@keyframes pulse{from{transform:scale(.6);opacity:.7}to{transform:scale(1.3);opacity:0}}
+.stopnum{width:20px;height:20px;border-radius:50%;background:var(--brand);color:#fff;font-size:10.5px;font-weight:700;display:grid;place-items:center;border:2px solid #fff;box-shadow:0 1px 4px rgba(0,0,0,.3)}
+.leaflet-popup-content{margin:12px 14px;font-family:'Be Vietnam Pro',sans-serif;font-size:12.5px;line-height:1.5}
+.pop h5{margin:0 0 4px;font-size:14px}
+.pop .kv{display:grid;grid-template-columns:92px 1fr;gap:2px 8px;margin:8px 0}
+.pop .kv span{color:var(--muted)}
+/* drawer & modal */
+.ov{position:fixed;inset:0;background:rgba(13,31,53,.35);z-index:2000;display:none}
+.ov.on{display:block}
+.drawer{position:fixed;top:0;right:0;bottom:0;width:min(600px,100%);background:#fff;z-index:2001;transform:translateX(100%);transition:transform .22s;display:flex;flex-direction:column;box-shadow:-10px 0 30px rgba(0,0,0,.12)}
+.drawer.on{transform:none}
+.dh{padding:18px 20px 12px;border-bottom:1px solid var(--border)}
+.dh h2{margin:0;font-size:18px}
+.db{padding:16px 20px;overflow:auto;flex:1}
+.x{border:0;background:#f1f5f9;width:32px;height:32px;border-radius:8px;cursor:pointer;font-size:18px;line-height:1;flex:none}
+.modal{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);width:min(560px,calc(100% - 24px));max-height:calc(100vh - 40px);background:#fff;border-radius:14px;z-index:2101;display:none;flex-direction:column;box-shadow:0 20px 50px rgba(0,0,0,.25)}
+.modal.on{display:flex}
+.modal .mh{padding:16px 18px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px}
+.modal .mh h3{margin:0;font-size:16px;flex:1}
+.modal .mb{padding:16px 18px;overflow:auto;display:flex;flex-direction:column;gap:12px}
+.modal .mf{padding:12px 18px;border-top:1px solid var(--border);display:flex;justify-content:flex-end;gap:8px}
+#mov{z-index:2100}
+.kvg{display:grid;grid-template-columns:130px 1fr;gap:8px 12px;font-size:13px}
+.kvg>span:nth-child(odd){color:var(--muted)}
+/* timeline */
+.tl-month{font-size:11.5px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin:16px 0 8px}
+.ev{border:1px solid var(--border);border-radius:10px;padding:10px 12px;margin-bottom:10px;background:#fff;position:relative}
+.ev-h{display:flex;gap:8px;align-items:center;flex-wrap:wrap;font-size:12.5px;margin-bottom:6px}
+.ev-h .dt{margin-left:auto;color:var(--muted);font-size:12px}
+.log{display:flex;flex-direction:column;gap:4px;font-size:12.5px}
+.log div{display:grid;grid-template-columns:44px 84px 1fr;gap:6px;align-items:baseline}
+.log .tm{color:var(--muted);font-variant-numeric:tabular-nums}
+.log .k{font-weight:600}
+.ev.sys{background:var(--soft)}
+.ev.sys .ev-h{margin:0}
+/* toast */
+#toasts{position:fixed;right:16px;bottom:16px;z-index:3000;display:flex;flex-direction:column;gap:8px;max-width:360px}
+.toast{background:var(--brand-dark);color:#fff;padding:10px 14px;border-radius:10px;font-size:12.5px;box-shadow:0 8px 20px rgba(0,0,0,.2);animation:tin .25s}
+@keyframes tin{from{transform:translateY(10px);opacity:0}}
+.notif-panel{position:absolute;right:20px;top:56px;width:380px;max-height:70vh;overflow:auto;background:#fff;border:1px solid var(--border);border-radius:12px;box-shadow:0 12px 30px rgba(0,0,0,.15);display:none;z-index:1100}
+.notif-panel.on{display:block}
+.notif-panel .nh{padding:12px 14px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;background:#fff}
+.nitem{padding:10px 14px;border-bottom:1px solid #f1f5f9;font-size:12.5px;cursor:pointer;display:flex;gap:10px}
+.nitem:hover{background:#f7fafd}
+.nitem.unread{background:#f0f7ff}
+/* routes */
+.rgrid{display:grid;grid-template-columns:320px 1fr;gap:16px}
+.rcard{border:1px solid var(--border);border-radius:10px;padding:11px 12px;cursor:pointer;background:#fff;margin-bottom:8px}
+.rcard:hover{border-color:#b9c8d8}
+.rcard.on{border-color:var(--brand);box-shadow:0 0 0 2px #1a527622}
+.days{display:inline-flex;gap:3px}
+.days i{font-style:normal;font-size:10.5px;width:24px;text-align:center;padding:1px 0;border-radius:5px;background:#eef2f7;color:#94a3b8}
+.days i.on{background:var(--brand);color:#fff}
+.stops .li{align-items:center}
+.sn{width:24px;height:24px;border-radius:50%;background:var(--brand);color:#fff;font-size:11px;font-weight:700;display:grid;place-items:center;flex:none}
+#routeMap{height:280px;border-radius:10px;border:1px solid var(--border)}
+/* calendar */
+.cal{display:grid;grid-template-columns:180px repeat(7,minmax(110px,1fr));border:1px solid var(--border);border-radius:10px;overflow:auto;background:#fff}
+.cal>div{padding:8px;border-right:1px solid #eef2f7;border-bottom:1px solid #eef2f7;min-height:74px;font-size:12px}
+.cal .ch{min-height:auto;background:var(--soft);font-weight:600;font-size:12px;color:var(--muted)}
+.cal .ch.today{color:var(--brand);background:#e8f2fb}
+.cal .cc{cursor:pointer}.cal .cc:hover{background:#f7fafd}
+.cal .today-col{background:#f5faff}
+.cblk{border-radius:7px;padding:5px 7px;margin-bottom:4px;border-left:3px solid var(--c);background:#f8fafc}
+.cblk b{display:block;font-size:12px}
+/* mobile */
+.mob{display:grid;grid-template-columns:1fr 380px 1fr;gap:20px;align-items:start}
+.phone{width:360px;height:740px;border-radius:44px;border:11px solid #111827;background:#f3f6fa;overflow:hidden;position:relative;box-shadow:0 20px 50px rgba(0,0,0,.25);margin:0 auto;display:flex;flex-direction:column}
+.phone .notch{position:absolute;top:0;left:50%;transform:translateX(-50%);width:120px;height:24px;background:#111827;border-radius:0 0 14px 14px;z-index:5}
+.pbar{background:var(--brand);color:#fff;padding:32px 16px 14px;flex:none}
+.pbar .t{font-size:16px;font-weight:600}
+.pbar .s{font-size:12px;opacity:.8}
+.pbar .back{background:rgba(255,255,255,.18);border:0;color:#fff;border-radius:8px;padding:4px 10px;font-size:12px;cursor:pointer;margin-bottom:8px}
+.pbody{flex:1;overflow:auto;padding:12px}
+.pcard{background:#fff;border-radius:12px;padding:12px;margin-bottom:10px;box-shadow:0 1px 2px rgba(0,0,0,.05)}
+.pbtn{width:100%;border:0;border-radius:11px;padding:12px;font-weight:600;cursor:pointer;font-size:14px;background:var(--brand);color:#fff}
+.pbtn.alt{background:#fff;color:var(--brand);border:1px solid #cfe0ee}
+.pbtn.ok{background:var(--ok)}
+.pbtn:disabled{opacity:.5;cursor:not-allowed}
+.stop{display:flex;gap:10px;align-items:center;padding:10px 4px;border-bottom:1px solid #f1f5f9;cursor:pointer;font-size:13px}
+.stop:last-child{border-bottom:0}
+.stop .st{width:26px;height:26px;border-radius:50%;display:grid;place-items:center;font-size:12px;font-weight:700;flex:none;border:2px solid #cbd5e1;color:#64748b;background:#fff}
+.stop.done .st{background:var(--ok);border-color:var(--ok);color:#fff}
+.stop.skip .st{background:#fee2e2;border-color:#fca5a5;color:var(--bad)}
+.stop.next .st{border-color:var(--brand);color:var(--brand);box-shadow:0 0 0 3px #1a527625}
+.stop.prog .st{background:var(--warn);border-color:var(--warn);color:#fff}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{border:1px solid var(--border);background:#fff;border-radius:999px;padding:5px 10px;font-size:12px;cursor:pointer}
+.chip.on{background:var(--brand);color:#fff;border-color:var(--brand)}
+.gpsbox{border-radius:10px;padding:10px 12px;font-size:12.5px;margin:8px 0}
+.gpsbox.ok{background:#f0fdf4;color:#166534;border:1px solid #bbf7d0}
+.gpsbox.warn{background:#fffbeb;color:#92400e;border:1px solid #fde68a}
+.gpsbox.bad{background:#fef2f2;color:#991b1b;border:1px solid #fecaca}
+.timer{font-size:34px;font-weight:700;text-align:center;font-variant-numeric:tabular-nums;color:var(--brand)}
+.steps{counter-reset:s}
+.steps li{list-style:none;position:relative;padding:0 0 14px 36px;font-size:13px}
+.steps li:before{counter-increment:s;content:counter(s);position:absolute;left:0;top:0;width:24px;height:24px;border-radius:50%;background:#e8f2fb;color:var(--brand);font-weight:700;display:grid;place-items:center;font-size:12px}
+.steps li b{display:block}
+.feed .nitem{cursor:pointer;border-radius:8px;border:1px solid #eef2f7;margin-bottom:6px;background:#fff}
+/* settings */
+.set-row{display:grid;grid-template-columns:240px 1fr;gap:16px;padding:14px 0;border-bottom:1px solid #eef2f7;align-items:center}
+.set-row:last-child{border-bottom:0}
+.set-row .h b{display:block;font-size:13.5px}.set-row .h span{font-size:12px;color:var(--muted)}
+input[type=range]{padding:0;border:0;accent-color:var(--brand)}
+input[type=checkbox]{accent-color:var(--brand);width:16px;height:16px}
+/* arch */
+.flow{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.flow span{background:#e8f2fb;color:var(--brand-dark);border-radius:8px;padding:6px 10px;font-size:12.5px;font-weight:500}
+.flow em{color:var(--muted);font-style:normal}
+.erd{width:100%;height:auto;background:#fff}
+.phase{display:inline-block;font-size:11px;font-weight:600;padding:2px 8px;border-radius:6px;color:#fff}
+@media (max-width:1200px){.mob{grid-template-columns:1fr}.mob>.side-col{order:2}.g2{grid-template-columns:1fr}}
+@media (max-width:900px){
+  .app{grid-template-columns:1fr}
+  .side{position:static;height:auto;flex-direction:row;overflow-x:auto;padding:8px;gap:2px}
+  .logo,.nav-sec,.side-foot{display:none}
+  .nav{display:flex;gap:2px}.nav a{white-space:nowrap}.nav .tag,.nav .num{display:none}
+  .top{flex-wrap:wrap;height:auto;padding:10px 16px;gap:8px}
+  .top .clock,.user .nm{display:none}
+  .content{padding:14px 16px}
+  .mapwrap{grid-template-columns:1fr;height:auto}.mapbox{height:520px}
+  .rgrid,.g2e{grid-template-columns:1fr}
+  .set-row{grid-template-columns:1fr}
+  .phone{width:100%;max-width:360px}
+  .notif-panel{right:8px;left:8px;width:auto}
+  .hbar{grid-template-columns:100px 1fr 50px}
+}
+</style>
+</head>
+<body>
+<div class="app">
+  <aside class="side">
+    <div class="logo"><div class="mark">S</div><div><b>SandboxVN</b><small>Module Sale DMS · Mockup</small></div></div>
+    <nav class="nav" id="nav"></nav>
+    <div class="side-foot">Dữ liệu mô phỏng · Hà Nội<br>Ngày demo: 25/09/2026</div>
+  </aside>
+  <div class="main">
+    <header class="top">
+      <h1 id="title">Tổng quan</h1>
+      <span class="clock" id="clock"></span>
+      <span class="sp"></span>
+      <div class="seg" id="roleSeg">
+        <button data-r="sale">Sale</button><button data-r="lead">Trưởng nhóm</button><button data-r="admin" class="on">Quản lý / Admin</button>
+      </div>
+      <button class="bell" id="bellBtn" title="Thông báo"></button>
+      <div class="user" id="user"></div>
+      <div class="notif-panel" id="notifPanel"></div>
+    </header>
+    <main class="content" id="content"></main>
+  </div>
+</div>
+<div class="ov" id="dov"></div>
+<aside class="drawer" id="drawer"></aside>
+<div class="ov" id="mov"></div>
+<div class="modal" id="modal"></div>
+<div id="toasts"></div>
+
+<script>
+/* ============================================================
+   UTIL
+   ============================================================ */
+const $=s=>document.querySelector(s);
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const pad=n=>String(n).padStart(2,'0');
+const TODAY=new Date(2026,8,25);
+const DAY=864e5;
+const dAdd=(d,n)=>new Date(d.getFullYear(),d.getMonth(),d.getDate()+n);
+const sameDay=(a,b)=>a.getFullYear()===b.getFullYear()&&a.getMonth()===b.getMonth()&&a.getDate()===b.getDate();
+const fmtD=d=>`${pad(d.getDate())}/${pad(d.getMonth()+1)}`;
+const fmtDY=d=>`${fmtD(d)}/${d.getFullYear()}`;
+const fmtT=m=>`${pad(Math.floor(m/60))}:${pad(Math.round(m)%60)}`;
+const daysAgo=d=>Math.round((TODAY-new Date(d.getFullYear(),d.getMonth(),d.getDate()))/DAY);
+const WD=['CN','T2','T3','T4','T5','T6','T7'];
+const WDL=['Chủ nhật','Thứ Hai','Thứ Ba','Thứ Tư','Thứ Năm','Thứ Sáu','Thứ Bảy'];
+const money=n=>n.toLocaleString('vi-VN')+' đ';
+function mulberry32(a){return function(){a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
+const rnd=mulberry32(20260925);
+const pick=a=>a[Math.floor(rnd()*a.length)];
+const rint=(a,b)=>a+Math.floor(rnd()*(b-a+1));
+function wpick(obj){let s=0;for(const k in obj)s+=obj[k];let r=rnd()*s;for(const k in obj){r-=obj[k];if(r<=0)return k}return Object.keys(obj)[0]}
+function hav(a,b){const R=6371e3,t=Math.PI/180,dl=(b[0]-a[0])*t,dn=(b[1]-a[1])*t;const x=Math.sin(dl/2)**2+Math.cos(a[0]*t)*Math.cos(b[0]*t)*Math.sin(dn/2)**2;return 2*R*Math.asin(Math.sqrt(x))}
+const fmtDist=m=>m<1000?Math.round(m)+' m':(m/1000).toFixed(1)+' km';
+
+const ICONS={
+grid:'M3 3h7v7H3zM14 3h7v7h-7zM14 14h7v7h-7zM3 14h7v7H3z',
+map:'M1 6v16l7-4 8 4 7-4V2l-7 4-8-4-7 4zM8 2v16M16 6v16',
+route:'M6 21a2 2 0 1 0 0-4 2 2 0 0 0 0 4zM18 7a2 2 0 1 0 0-4 2 2 0 0 0 0 4zM6 17V11a4 4 0 0 1 4-4h6',
+cal:'M3 5h18v16H3zM16 3v4M8 3v4M3 10h18',
+store:'M3 9l2-5h14l2 5M3 9h18v1a3 3 0 0 1-6 0 3 3 0 0 1-6 0 3 3 0 0 1-6 0zM5 13v8h14v-8M10 21v-5h4v5',
+list:'M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01',
+chart:'M18 20V10M12 20V4M6 20v-6',
+phone:'M7 2h10a2 2 0 0 1 2 2v16a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2zM12 18h.01',
+gear:'M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6zM19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z',
+layers:'M12 2 2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5',
+bell:'M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9M13.7 21a2 2 0 0 1-3.4 0',
+pin:'M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0zM12 13a3 3 0 1 0 0-6 3 3 0 0 0 0 6z',
+check:'M20 6 9 17l-5-5',
+alert:'M12 9v4M12 17h.01M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z',
+clock:'M12 22a10 10 0 1 0 0-20 10 10 0 0 0 0 20zM12 6v6l4 2',
+user:'M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2M12 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8z',
+plus:'M12 5v14M5 12h14',
+dl:'M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3',
+swap:'M16 3l4 4-4 4M20 7H4M8 21l-4-4 4-4M4 17h16',
+x:'M18 6 6 18M6 6l12 12',
+};
+const ic=(n,s=17,c='currentColor')=>`<svg width="${s}" height="${s}" viewBox="0 0 24 24" fill="none" stroke="${c}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex:none"><path d="${ICONS[n]}"/></svg>`;
+const pill=(c,t,dot=true)=>`<span class="pill" style="background:${c}1c;color:${c}">${dot?`<i class="dot" style="background:${c}"></i>`:''}${t}</span>`;
+
+/* ============================================================
+   MASTER DATA
+   ============================================================ */
+const SALES=[
+ {id:'s1',name:'Nguyễn Văn An',short:'An',team:'tay',color:'#2563eb',districts:['Cầu Giấy','Nam Từ Liêm'],phone:'0912 345 101'},
+ {id:'s2',name:'Trần Thị Bình',short:'Bình',team:'tay',color:'#db2777',districts:['Thanh Xuân','Hà Đông'],phone:'0912 345 102'},
+ {id:'s3',name:'Lê Minh Cường',short:'Cường',team:'tay',color:'#0f766e',districts:['Đống Đa'],phone:'0912 345 103'},
+ {id:'s4',name:'Phạm Thu Dung',short:'Dung',team:'dong',color:'#7c3aed',districts:['Hai Bà Trưng','Hoàng Mai'],phone:'0912 345 104'},
+ {id:'s5',name:'Hoàng Đức Hải',short:'Hải',team:'dong',color:'#b45309',districts:['Ba Đình','Tây Hồ'],phone:'0912 345 105'},
+ {id:'s6',name:'Vũ Thị Lan',short:'Lan',team:'dong',color:'#0891b2',districts:['Long Biên'],phone:'0912 345 106'},
+ {id:'s0',name:'Trịnh Văn Khoa',short:'Khoa',team:'tay',color:'#64748b',districts:[],inactive:true,phone:'—'},
+];
+const TEAMS={tay:{name:'Team Hà Nội Tây',lead:'Đỗ Quang Huy'},dong:{name:'Team Hà Nội Đông',lead:'Ngô Thanh Mai'}};
+const ROLES={sale:{name:'Nguyễn Văn An',title:'Sale · Team Tây',color:'#2563eb',ini:'An'},lead:{name:'Đỗ Quang Huy',title:'Trưởng nhóm · Team Tây',color:'#0f766e',ini:'Hu'},admin:{name:'Trần Quốc Việt',title:'Quản lý kinh doanh',color:'#1a5276',ini:'Vi'}};
+const SALE=id=>SALES.find(s=>s.id===id);
+const activeSales=()=>SALES.filter(s=>!s.inactive);
+const DIST={
+ 'Cầu Giấy':{c:[21.0335,105.7945],n:11,st:['Xuân Thủy','Trần Duy Hưng','Cầu Giấy','Nguyễn Khánh Toàn','Hoàng Quốc Việt','Trần Thái Tông']},
+ 'Nam Từ Liêm':{c:[21.0170,105.7640],n:9,st:['Mỹ Đình','Lê Đức Thọ','Hàm Nghi','Phạm Hùng','Nguyễn Hoàng']},
+ 'Thanh Xuân':{c:[20.9960,105.8110],n:10,st:['Nguyễn Trãi','Khuất Duy Tiến','Vũ Trọng Phụng','Lê Văn Lương','Nguyễn Tuân']},
+ 'Hà Đông':{c:[20.9710,105.7760],n:9,st:['Quang Trung','Tô Hiệu','Nguyễn Văn Lộc','Lê Trọng Tấn','Văn Phú']},
+ 'Đống Đa':{c:[21.0175,105.8285],n:13,st:['Tây Sơn','Chùa Bộc','Thái Hà','Xã Đàn','Nguyễn Lương Bằng','Láng']},
+ 'Hai Bà Trưng':{c:[21.0070,105.8570],n:9,st:['Bạch Mai','Minh Khai','Lò Đúc','Trần Khát Chân','Đại La']},
+ 'Hoàng Mai':{c:[20.9780,105.8520],n:9,st:['Giải Phóng','Tam Trinh','Nguyễn Hữu Thọ','Kim Giang','Lĩnh Nam']},
+ 'Ba Đình':{c:[21.0355,105.8185],n:9,st:['Kim Mã','Đội Cấn','Liễu Giai','Giảng Võ','Ngọc Hà']},
+ 'Tây Hồ':{c:[21.0680,105.8200],n:8,st:['Lạc Long Quân','Âu Cơ','Xuân Diệu','Thụy Khuê','Võ Chí Công']},
+ 'Long Biên':{c:[21.0450,105.8880],n:12,st:['Nguyễn Văn Cừ','Ngọc Lâm','Nguyễn Sơn','Cổ Linh','Ngô Gia Tự']},
+};
+const TEAM_OF_DIST=d=>{const s=SALES.find(s=>s.districts.includes(d));return s?s.team:''};
+const STATUS={active:{l:'Đang hoạt động',c:'#16a34a'},new:{l:'Khách mới',c:'#2563eb'},potential:{l:'Tiềm năng',c:'#7c3aed'},care:{l:'Cần chăm sóc',c:'#d97706'},inactive:{l:'Ngừng nhập hàng',c:'#94a3b8'}};
+const CARE={ok:{l:'Đúng tần suất',c:'#16a34a'},due:{l:'Sắp đến hạn ghé',c:'#d97706'},overdue:{l:'Lâu chưa ghé',c:'#dc2626'},never:{l:'Chưa từng ghé',c:'#64748b'}};
+const TYPES=[['Tạp hóa','Tạp hóa'],['Siêu thị mini','Mini mart'],['Đại lý cấp 2','Đại lý'],['Cửa hàng tiện lợi','Cửa hàng'],['Quán cafe','Cafe'],['Nhà hàng','Nhà hàng']];
+const NM=['Hương Lan','Thành Công','Hoa Mai','Phúc Lộc','Bình An','Hồng Nhung','Tuấn Hưng','Kim Ngân','Thu Hà','Quang Minh','Ngọc Diệp','Hải Yến','Đức Thịnh','Mai Linh','Tân Phát','Hòa Bình','Vạn Xuân','Thanh Tâm','Gia Huy','Bảo Ngọc','Việt Hương','Hưng Thịnh','An Khang','Phương Nam','Trung Kiên','Lộc Phát','Minh Châu','Hạnh Dung','Sơn Hà','Thái Hòa','Kim Oanh','Thắng Lợi','Hoàng Long','Tú Anh','Ngọc Hà'];
+const CONTACT=['Chị Hương','Anh Tuấn','Cô Lan','Anh Minh','Chị Thảo','Chú Hùng','Chị Ngọc','Anh Dũng','Cô Hạnh','Anh Phong'];
+const OUTCOMES=['Đặt hàng','Cần báo giá','Hẹn ghé lại','Trưng bày / POSM','Thu công nợ','Không gặp chủ','Từ chối'];
+const OUT_C={'Đặt hàng':'#16a34a','Cần báo giá':'#2563eb','Hẹn ghé lại':'#7c3aed','Trưng bày / POSM':'#0891b2','Thu công nợ':'#b45309','Không gặp chủ':'#94a3b8','Từ chối':'#dc2626'};
+const PRODUCTS=['dòng X','nước giải khát Y','sản phẩm mới Z','combo tháng 10','dòng X chai 1.5L'];
+const NOTES={
+ 'Đặt hàng':['Khách nhập bổ sung {p}, thanh toán tiền mặt.','Chốt đơn tuần, khách muốn tăng số lượng {p}.','Đặt hàng theo chương trình khuyến mãi tháng 9.','Kiểm tồn kho, khách nhập lại {p} và combo trưng bày.'],
+ 'Cần báo giá':['Trao đổi chính sách nhập hàng tháng 10; khách quan tâm {p}.','Khách hỏi giá sỉ {p} cho số lượng lớn, cần báo giá.','So sánh giá với đối thủ, đề nghị gửi bảng giá mới.'],
+ 'Hẹn ghé lại':['Chủ cửa hàng bận, hẹn ghé lại đầu tuần.','Khách còn tồn kho, hẹn kiểm tra lại sau 1 tuần.','Giới thiệu {p}, khách hẹn cân nhắc thêm.'],
+ 'Trưng bày / POSM':['Kiểm tra trưng bày, kệ bị đối thủ lấn chỗ; cần bổ sung POSM.','Sắp xếp lại quầy kệ {p}, đã chụp ảnh trưng bày.','Khách đồng ý đặt standee khuyến mãi.'],
+ 'Thu công nợ':['Thu công nợ kỳ trước, còn lại một phần hẹn tuần sau.','Đối soát công nợ, khách xác nhận số dư.'],
+ 'Không gặp chủ':['Cửa hàng chỉ có nhân viên, không quyết định được.','Chủ đi vắng, để lại catalogue và danh thiếp.'],
+ 'Từ chối':['Khách đang dùng hàng đối thủ, chưa có nhu cầu.','Khách phản ánh giá cao, tạm dừng nhập.'],
+};
+const ACTION_OF={'Cần báo giá':'Gửi báo giá','Hẹn ghé lại':'Ghé lại theo lịch hẹn','Trưng bày / POSM':'Giao bộ POSM / kệ trưng bày','Thu công nợ':'Đối soát & thu công nợ còn lại','Không gặp chủ':'Gọi điện hẹn gặp chủ cửa hàng'};
+const SKIP_REASONS=['Cửa hàng đóng cửa','Chủ vắng, hẹn ghé lại','Hết thời gian trong ngày','Đường ngập / không tiếp cận được','Khách yêu cầu dời lịch'];
+const FAR_REASONS=['GPS lệch do cửa hàng trong ngõ sâu','Gặp khách tại kho, không phải tại cửa hàng','Điện thoại mất tín hiệu GPS'];
+
+/* ============================================================
+   GENERATE DATA
+   ============================================================ */
+const outlets=[],customers=[],routes=[],visits=[],skips=[],actions=[],handovers=[],orders=[];
+let oi=0,vid=0,aid=0,kid=0,cid=0,ordN=0;
+const usedNames=new Set();
+Object.entries(DIST).forEach(([dn,d])=>{
+  const owner=SALES.find(s=>s.districts.includes(dn));
+  for(let i=0;i<d.n;i++){
+    const [type,pre]=pick(TYPES);
+    let name=`${pre} ${pick(NM)}`; while(usedNames.has(name)) name=`${pre} ${pick(NM)}`; usedNames.add(name);
+    const st=wpick({active:45,care:14,new:12,potential:16,inactive:10});
+    const sale=(st==='potential'?rnd()<0.35:rnd()<0.07)?null:owner.id;
+    const created=st==='new'?dAdd(TODAY,-rint(4,55)):dAdd(TODAY,-rint(90,720));
+    const cu={id:'c'+(++cid),name:name.replace(pre,'Hộ KD'),kind:'Hộ kinh doanh',group:type==='Đại lý cấp 2'?'Đại lý':'Bán lẻ',contact:pick(CONTACT),phone:'09'+rint(10,99)+' '+rint(100,999)+' '+rint(100,999)};
+    customers.push(cu);
+    outlets.push({id:'o'+(++oi),code:'OL'+String(oi).padStart(4,'0'),name,type,district:dn,
+      addr:`${rint(1,320)} ${pick(d.st)}, ${dn}, Hà Nội`,lat:d.c[0]+(rnd()-.5)*0.024,lng:d.c[1]+(rnd()-.5)*0.028,
+      status:st,saleId:sale,created,cid:cu.id,phone:cu.phone,contact:cu.contact,
+      source:st==='new'&&sale&&rnd()<0.7?'field':'import',createdBy:sale});
+  }
+});
+const OUT=id=>outlets.find(o=>o.id===id);
+const CUS=id=>customers.find(c=>c.id===id);
+// chuỗi khách hàng có nhiều điểm bán
+(function(){
+  const ma={id:'c'+(++cid),name:'Công ty TNHH Thương mại Minh Anh',kind:'Doanh nghiệp',group:'Chuỗi bán lẻ',contact:'Anh Minh (Giám đốc)',phone:'0243 555 1234'};
+  const pl={id:'c'+(++cid),name:'Hệ thống Tạp hóa Phúc Lộc',kind:'Doanh nghiệp',group:'Chuỗi bán lẻ',contact:'Chị Phúc (Chủ)',phone:'0243 555 8899'};
+  customers.push(ma,pl);
+  const setC=(o,c,n)=>{o.cid=c.id;o.name=n;o.status='active';o.contact=c.contact};
+  const find=(d,skip=0)=>outlets.filter(o=>o.district===d&&o.saleId)[skip];
+  setC(find('Cầu Giấy',2),ma,'Cửa hàng Minh Anh');
+  setC(find('Nam Từ Liêm',1),ma,'Minh Anh Mart – Mỹ Đình');
+  setC(find('Thanh Xuân',3),ma,'Minh Anh Mart – Nguyễn Trãi');
+  setC(find('Hai Bà Trưng',1),pl,'Tạp hóa Phúc Lộc – Bạch Mai');
+  setC(find('Hoàng Mai',2),pl,'Tạp hóa Phúc Lộc – Giải Phóng');
+  setC(find('Đống Đa',4),pl,'Tạp hóa Phúc Lộc – Tây Sơn');
+})();
+function nnOrder(arr){
+  if(!arr.length) return [];
+  const rest=[...arr].sort((a,b)=>a.lng-b.lng),out=[rest.shift()];
+  while(rest.length){const l=out[out.length-1];let bi=0,bd=1e9;rest.forEach((o,i)=>{const d=hav([l.lat,l.lng],[o.lat,o.lng]);if(d<bd){bd=d;bi=i}});out.push(rest.splice(bi,1)[0])}
+  return out;
+}
+activeSales().forEach(s=>{
+  const mine=outlets.filter(o=>o.saleId===s.id&&o.status!=='inactive'&&o.status!=='potential');
+  let groups;
+  if(s.districts.length===2) groups=s.districts.map(d=>mine.filter(o=>o.district===d));
+  else{const srt=[...mine].sort((a,b)=>a.lng-b.lng),h=Math.ceil(srt.length/2);groups=[srt.slice(0,h),srt.slice(h)]}
+  groups.forEach((g,i)=>{
+    const dn=s.districts.length===2?s.districts[i]:s.districts[0];
+    const num=s.districts.length===2?'01':'0'+(i+1);
+    routes.push({id:'r'+(routes.length+1),name:`${dn} ${num}`,saleId:s.id,days:i===0?[1,3,5]:[2,4,6],
+      stops:nnOrder(g).map(o=>({oid:o.id,req:rnd()<0.75})),created:dAdd(TODAY,-150)});
+  });
+});
+const ROUTE=id=>routes.find(r=>r.id===id);
+// một phần điểm ngoài tuyến bị "bỏ quên": chưa từng ghé hoặc ghé lần cuối đã lâu
+outlets.forEach(o=>{if(!routes.some(r=>r.stops.some(s=>s.oid===o.id))&&o.source!=='field'&&rnd()<0.5)o.neglect=true});
+const HANDOVER_DAY=dAdd(TODAY,-35);
+const pickOutcome=st=>wpick(st==='active'?{'Đặt hàng':55,'Trưng bày / POSM':12,'Thu công nợ':10,'Hẹn ghé lại':8,'Cần báo giá':8,'Không gặp chủ':7}
+  :st==='care'?{'Đặt hàng':25,'Hẹn ghé lại':20,'Cần báo giá':20,'Thu công nợ':15,'Không gặp chủ':10,'Từ chối':10}
+  :st==='new'?{'Đặt hàng':35,'Cần báo giá':25,'Trưng bày / POSM':20,'Hẹn ghé lại':20}
+  :st==='potential'?{'Cần báo giá':35,'Hẹn ghé lại':30,'Từ chối':20,'Không gặp chủ':15}
+  :{'Từ chối':40,'Hẹn ghé lại':30,'Không gặp chủ':30});
+function mkVisit(o,sid,rid,day,inM,outM,opt={}){
+  const far=opt.far||rnd()<0.035;
+  const dist=far?rint(140,420):rint(4,70),acc=rint(5,28);
+  const open=outM==null;
+  const outcome=open?null:pickOutcome(o.status);
+  const note=open?'':pick(NOTES[outcome]).replace('{p}',pick(PRODUCTS));
+  const flags=[];if(far)flags.push('Ngoài bán kính');
+  const v={id:'v'+(++vid),oid:o.id,sid,rid,date:day,inM,outM,dist,acc,flags,farReason:far?pick(FAR_REASONS):'',outcome,note,lat:o.lat,lng:o.lng};
+  if(outM!=null&&outM-inM<5)v.flags.push('Visit quá ngắn');
+  if(outcome&&ACTION_OF[outcome]){
+    const due=dAdd(day,rint(2,6));
+    const done=due<TODAY?rnd()<0.8:(rnd()<0.25);
+    actions.push({id:'a'+(++aid),oid:o.id,vid:v.id,sid,title:ACTION_OF[outcome],due,status:done?'done':'open',created:day,doneAt:done?dAdd(due,-rint(0,2)):null});
+    v.aid='a'+aid;
+  }
+  if(outcome==='Đặt hàng'){
+    orders.push({id:'SO-'+pad(day.getMonth()+1)+pad(day.getDate())+'-'+String(++ordN).padStart(4,'0'),oid:o.id,vid:v.id,sid,date:day,amount:rint(18,260)*100000,items:rint(3,14),status:sameDay(day,TODAY)?'Chờ duyệt':'Đã giao'});
+  }
+  visits.push(v);return v;
+}
+for(let back=42;back>=1;back--){
+  const day=dAdd(TODAY,-back),wd=day.getDay();if(wd===0)continue;
+  activeSales().forEach(s=>{
+    const who=(s.id==='s3'&&day<HANDOVER_DAY)?'s0':s.id;
+    const r=routes.find(r=>r.saleId===s.id&&r.days.includes(wd));
+    let t=8*60+rint(0,25);
+    if(r) r.stops.forEach(st=>{
+      if(rnd()<(s.id==='s6'?0.2:0.11)){skips.push({id:'k'+(++kid),date:day,rid:r.id,oid:st.oid,sid:who,reason:pick(SKIP_REASONS),atM:t});return}
+      t+=rint(8,22);const dur=rint(9,42);mkVisit(OUT(st.oid),who,r.id,day,t,t+dur);t+=dur;
+    });
+    const pool=outlets.filter(o=>s.districts.includes(o.district)&&!o.neglect&&(o.status==='potential'||o.status==='inactive'||!o.saleId)&&o.created<=day);
+    const n=rnd()<0.3?1:0;
+    for(let i=0;i<n&&pool.length;i++){t+=rint(10,25);const dur=rint(10,30);mkVisit(pick(pool),who,null,day,t,t+dur);t+=dur}
+  });
+}
+outlets.filter(o=>o.neglect&&o.saleId&&rnd()<0.6).forEach(o=>{const d=dAdd(TODAY,-rint(45,80));if(d.getDay()&&o.created<d)mkVisit(o,o.saleId==='s3'?'s0':o.saleId,null,d,14*60+rint(0,60),14*60+rint(75,100))});
+// visit đầu tiên của điểm mới do Sale tạo ngoài thị trường
+outlets.filter(o=>o.source==='field').forEach(o=>{if(o.created<TODAY)mkVisit(o,o.saleId,null,o.created,15*60+rint(0,90),15*60+rint(100,130))});
+// hôm nay (T6 25/09) – tiến độ đến 14:20
+const TODAY_PLAN={s1:4,s2:6,s3:5,s4:3,s5:7,s6:0};
+activeSales().forEach(s=>{
+  const r=routes.find(r=>r.saleId===s.id&&r.days.includes(5));if(!r)return;
+  let t=s.id==='s4'?12*60+5:8*60+rint(0,10);
+  const n=Math.min(TODAY_PLAN[s.id],r.stops.length);
+  for(let i=0;i<n;i++){
+    const st=r.stops[i];
+    if(s.id==='s2'&&i===2){skips.push({id:'k'+(++kid),date:TODAY,rid:r.id,oid:st.oid,sid:s.id,reason:'Cửa hàng đóng cửa',atM:t+10});t+=15;continue}
+    t+=rint(8,18);const dur=rint(14,34);const open=s.id==='s4'&&i===n-1;
+    mkVisit(OUT(st.oid),s.id,r.id,TODAY,t,open?null:t+dur,{far:s.id==='s5'&&i===3});t+=dur;
+  }
+});
+// bàn giao: Sale cũ nghỉ việc → Cường nhận khu Đống Đa
+outlets.filter(o=>o.saleId==='s3').forEach(o=>handovers.push({oid:o.id,from:'s0',to:'s3',date:HANDOVER_DAY,by:'Đỗ Quang Huy',reason:'Sale Trịnh Văn Khoa nghỉ việc – bàn giao toàn bộ khu Đống Đa'}));
+(function(){const o=outlets.find(o=>o.district==='Hoàng Mai'&&o.saleId==='s4'&&o.status==='active');if(o)handovers.push({oid:o.id,from:'s2',to:'s4',date:dAdd(TODAY,-80),by:'Trần Quốc Việt',reason:'Điều chỉnh địa bàn: Hoàng Mai chuyển sang Team Đông'})})();
+actions.filter(a=>a.sid==='s0'&&a.status==='open').forEach(a=>a.sid='s3');
+
+/* ============================================================
+   STATE & DERIVED
+   ============================================================ */
+const S={
+  role:'admin',screen:'overview',
+  mf:{sale:'',area:'',route:'',age:'',status:'',last:'',assigned:'',q:'',colorBy:'status',labels:true,showSales:true},
+  of:{q:'',status:'',sale:'',area:'',care:'',tab:'outlets'},sel:new Set(),
+  jf:{sale:'',type:'',range:'7',area:'',flag:false,limit:40},
+  rp:{tab:'sale',period:30,cov:'visited'},calWeek:0,routeSel:null,
+  notifs:[],nid:0,simMin:14*60+20,
+  cfg:{radius:100,acc:50,policy:'flag',minDur:5,freq:{active:7,new:7,potential:14,care:7,inactive:30},outcomes:[...OUTCOMES],
+    notif:{checkin:{inapp:true,email:false,zalo:false},checkout:{inapp:true,email:false,zalo:false},note:{inapp:true,email:false,zalo:false},
+      skip:{inapp:true,email:true,zalo:false},overdue:{inapp:true,email:true,zalo:true},newoutlet:{inapp:true,email:false,zalo:false},gps:{inapp:true,email:true,zalo:false},handover:{inapp:true,email:true,zalo:false}}},
+  m:{view:'home',oid:null,dist:35,acc:12,vid:null,start:0,bonus:0,na:true,naTitle:'',naDue:'',skipReason:SKIP_REASONS[0],farReason:'',outcome:''},
+};
+const vTs=v=>v.date.getTime()+v.inM*60000;
+function careOf(o){
+  if(!o.last) return 'never';
+  const ds=daysAgo(o.last.date),f=S.cfg.freq[o.status]||14;
+  return ds<=f?'ok':ds<=f*1.5?'due':'overdue';
+}
+function reindex(){
+  const by={};visits.forEach(v=>(by[v.oid]??=[]).push(v));
+  const abo={};actions.forEach(a=>{if(a.status==='open')(abo[a.oid]??=[]).push(a)});
+  outlets.forEach(o=>{
+    const vs=(by[o.id]||[]).sort((a,b)=>vTs(a)-vTs(b));
+    o.visits=vs;o.visitCount=vs.length;o.last=vs[vs.length-1]||null;
+    o.routeIds=routes.filter(r=>r.stops.some(s=>s.oid===o.id)).map(r=>r.id);
+    o.open=(abo[o.id]||[]).sort((a,b)=>a.due-b.due);
+    o.care=careOf(o);
+  });
+}
+reindex();
+function scopeSales(){if(S.role==='sale')return['s1'];if(S.role==='lead')return SALES.filter(s=>s.team==='tay').map(s=>s.id);return SALES.map(s=>s.id)}
+function scopeActive(){return scopeSales().filter(id=>!SALE(id).inactive)}
+function scopeOutlets(){if(S.role==='admin')return outlets;const ss=scopeSales();return outlets.filter(o=>ss.includes(o.saleId))}
+function inScopeSale(sid){return S.role==='admin'||scopeSales().includes(sid)}
+const canManage=()=>S.role!=='sale';
+const todayRoute=sid=>routes.find(r=>r.saleId===sid&&r.days.includes(TODAY.getDay()));
+const schip=sid=>{const s=SALE(sid);return s?`<span class="schip"><i style="background:${s.color}"></i>${esc(s.name)}${s.inactive?' <span class="muted small">(đã nghỉ)</span>':''}</span>`:`<span class="flag">Chưa có Sale</span>`};
+const stPill=o=>pill(STATUS[o.status].c,STATUS[o.status].l);
+const carePill=o=>pill(CARE[o.care].c,CARE[o.care].l);
+const lastTxt=o=>o.last?`${fmtD(o.last.date)} <span class="muted small">(${daysAgo(o.last.date)===0?'hôm nay':daysAgo(o.last.date)+' ngày'})</span>`:'<span class="muted">—</span>';
+const routeNames=o=>o.routeIds.map(id=>ROUTE(id).name).join(', ')||'<span class="muted">Ngoài tuyến</span>';
+const isNewCus=o=>daysAgo(o.created)<=60;
+
+/* ============================================================
+   NAV / SHELL
+   ============================================================ */
+const NAV=[
+ ['overview','01','Tổng quan','MVP3','grid'],
+ ['map','02','Bản đồ thị trường','MVP1','map'],
+ ['routes','03','Tuyến bán hàng','MVP2','route'],
+ ['calendar','04','Lịch Sale','MVP2','cal'],
+ ['outlets','05','Khách hàng / Điểm bán','MVP1','store'],
+ ['journal','06','Nhật ký thị trường','MVP1','list'],
+ ['reports','07','Báo cáo','MVP3','chart'],
+ ['-','Ứng dụng & hệ thống'],
+ ['mobile','','App Sale (Mobile)','MVP1','phone'],
+ ['settings','','Cấu hình DMS','MVP1','gear'],
+ ['arch','','Kiến trúc & MVP','','layers'],
+];
+function renderNav(){
+  $('#nav').innerHTML=NAV.map(n=>n[0]==='-'?`<div class="nav-sec">${n[1]}</div>`:
+    `<a class="${S.screen===n[0]?'on':''}" onclick="go('${n[0]}')"><span class="num">${n[1]}</span>${ic(n[4])}<span>${n[2]}</span>${n[3]?`<span class="tag">${n[3]}</span>`:''}</a>`).join('');
+}
+function renderUser(){
+  const r=ROLES[S.role];
+  $('#user').innerHTML=`<div class="av" style="background:${r.color}">${r.ini}</div><div class="nm"><b>${r.name}</b><div class="muted small">${r.title}</div></div>`;
+  document.querySelectorAll('#roleSeg button').forEach(b=>b.classList.toggle('on',b.dataset.r===S.role));
+}
+function renderClock(){$('#clock').innerHTML=`${WDL[TODAY.getDay()]}, ${fmtDY(TODAY)} · ${fmtT(S.simMin)}`}
+let MAP=null,routeMap=null,timerInt=null;
+function go(scr){
+  S.screen=scr;renderNav();closeNotif();
+  const n=NAV.find(n=>n[0]===scr);$('#title').textContent=n?n[2]:'';
+  if(MAP){MAP.remove();MAP=null}
+  if(routeMap){routeMap.remove();routeMap=null}
+  if(timerInt&&scr!=='mobile'){clearInterval(timerInt);timerInt=null}
+  const c=$('#content');
+  ({overview:rOverview,map:rMap,routes:rRoutes,calendar:rCalendar,outlets:rOutlets,journal:rJournal,reports:rReports,mobile:rMobile,settings:rSettings,arch:rArch})[scr](c);
+  window.scrollTo(0,0);
+}
+function refresh(){reindex();renderClock();updateBell();if(S.screen==='mobile'){renderPhone();renderMobileFeed()}else if(S.screen!=='map')go(S.screen);else updateMapLayers()}
+document.querySelectorAll('#roleSeg button').forEach(b=>b.onclick=()=>{S.role=b.dataset.r;S.sel.clear();S.routeSel=null;S.mf.sale=S.mf.route='';S.of.sale='';S.jf.sale='';renderUser();updateBell();go(S.screen)});
+
+/* ============================================================
+   NOTIFICATIONS
+   ============================================================ */
+const NT={checkin:['#2563eb','pin'],checkout:['#16a34a','check'],note:['#0891b2','list'],skip:['#dc2626','x'],overdue:['#dc2626','alert'],newoutlet:['#7c3aed','plus'],gps:['#d97706','alert'],handover:['#1a5276','swap']};
+function notify(type,text,oid,sid,silent){
+  const rule=S.cfg.notif[type]||{inapp:true};
+  const n={id:++S.nid,type,text,oid,sid,t:fmtT(S.simMin),read:!!silent,ch:rule};
+  S.notifs.unshift(n);
+  if(!silent&&rule.inapp){toast(text)}
+  updateBell();
+}
+function seedNotifs(){
+  const ev=[];
+  visits.filter(v=>sameDay(v.date,TODAY)).forEach(v=>{
+    const o=OUT(v.oid),s=SALE(v.sid);
+    ev.push([v.inM,'checkin',`${s.short} vừa check-in tại ${o.name} – ${fmtT(v.inM)} – ${o.district}`,v]);
+    if(v.flags.length)ev.push([v.inM+1,'gps',`Check-in của ${s.short} tại ${o.name} lệch ${v.dist}m – vượt bán kính, cần duyệt`,v]);
+    if(v.outM!=null)ev.push([v.outM,'checkout',`${s.short} hoàn thành visit ${o.name} – ${v.outM-v.inM} phút · ${v.outcome}`,v]);
+  });
+  skips.filter(k=>sameDay(k.date,TODAY)).forEach(k=>ev.push([k.atM,'skip',`Điểm ${OUT(k.oid).name} bị bỏ qua trên tuyến ${ROUTE(k.rid).name} – lý do: ${k.reason}`,k]));
+  ev.sort((a,b)=>a[0]-b[0]).forEach(e=>{S.notifs.unshift({id:++S.nid,type:e[1],text:e[2],oid:e[3].oid,sid:e[3].sid,t:fmtT(e[0]),read:true,ch:S.cfg.notif[e[1]]})});
+  const od=actions.filter(a=>a.status==='open'&&a.due<TODAY).sort((a,b)=>a.due-b.due).slice(0,4);
+  od.forEach(a=>S.notifs.unshift({id:++S.nid,type:'overdue',text:`Khách ${OUT(a.oid).name} có việc “${a.title}” quá hạn ${daysAgo(a.due)} ngày`,oid:a.oid,sid:a.sid,t:'07:00',read:false,ch:S.cfg.notif.overdue}));
+  S.notifs.slice(0,3).forEach(n=>n.read=false);
+}
+const visibleNotifs=()=>S.notifs.filter(n=>inScopeSale(n.sid));
+function updateBell(){
+  const u=visibleNotifs().filter(n=>!n.read).length;
+  $('#bellBtn').innerHTML=ic('bell',18)+(u?`<em>${u}</em>`:'');
+}
+function renderNotifPanel(){
+  const list=visibleNotifs().slice(0,40);
+  $('#notifPanel').innerHTML=`<div class="nh"><b>Thông báo</b><button class="btn sm" onclick="markAll()">Đánh dấu đã đọc</button></div>`+
+   (list.length?list.map(nitem).join(''):'<div class="empty">Không có thông báo</div>');
+}
+function nitem(n){
+  const [c,i]=NT[n.type]||['#64748b','bell'];
+  const chs=n.ch?[n.ch.email?'Email':'',n.ch.zalo?'Zalo':''].filter(Boolean):[];
+  return `<div class="nitem ${n.read?'':'unread'}" onclick="openNotif(${n.id})"><div class="li-ic" style="width:28px;height:28px;border-radius:8px;display:grid;place-items:center;background:${c}18;flex:none">${ic(i,15,c)}</div><div style="flex:1"><div>${esc(n.text)}</div><div class="muted small">${n.t} hôm nay${chs.length?' · đã gửi thêm qua '+chs.join(', '):''}</div></div></div>`;
+}
+function openNotif(id){const n=S.notifs.find(n=>n.id===id);if(!n)return;n.read=true;updateBell();closeNotif();if(n.oid)openOutlet(n.oid)}
+function markAll(){visibleNotifs().forEach(n=>n.read=true);updateBell();renderNotifPanel()}
+$('#bellBtn').onclick=e=>{e.stopPropagation();const p=$('#notifPanel');if(p.classList.contains('on'))closeNotif();else{renderNotifPanel();p.classList.add('on')}};
+function closeNotif(){$('#notifPanel').classList.remove('on')}
+document.addEventListener('click',e=>{if(!e.target.closest('#notifPanel')&&!e.target.closest('#bellBtn'))closeNotif()});
+function toast(t){const d=document.createElement('div');d.className='toast';d.textContent='🔔 '+t;$('#toasts').appendChild(d);setTimeout(()=>d.remove(),4200)}
+
+/* ============================================================
+   01 · TỔNG QUAN
+   ============================================================ */
+function todayStats(sids){
+  return sids.map(id=>{
+    const s=SALE(id),r=todayRoute(id);
+    const vs=visits.filter(v=>v.sid===id&&sameDay(v.date,TODAY)).sort((a,b)=>a.inM-b.inM);
+    const sk=skips.filter(k=>k.sid===id&&sameDay(k.date,TODAY));
+    const planned=r?r.stops.length:0;
+    const done=r?vs.filter(v=>v.rid===r.id&&v.outM!=null).length:0;
+    const open=vs.find(v=>v.outM==null);
+    const free=vs.filter(v=>!v.rid).length;
+    const remain=Math.max(0,planned-done-sk.length-(open&&open.rid?1:0));
+    const last=vs[vs.length-1];
+    const state=open?['Đang visit','#d97706']:vs.length?['Đang di chuyển','#2563eb']:['Chưa check-in','#dc2626'];
+    return {s,r,vs,sk,planned,done,open,free,remain,last,state};
+  });
+}
+function rOverview(c){
+  const sids=scopeActive(),outs=scopeOutlets(),st=todayStats(sids);
+  const tv=st.flatMap(x=>x.vs),activeN=st.filter(x=>x.vs.length).length;
+  const done=tv.filter(v=>v.outM!=null).length,unfinished=st.reduce((a,x)=>a+x.remain+(x.open?1:0),0);
+  const gpsOk=tv.length?Math.round(tv.filter(v=>!v.flags.length).length/tv.length*100):100;
+  const total=outs.length,withSale=outs.filter(o=>o.saleId).length,noSale=total-withSale;
+  const v30=outs.filter(o=>o.last&&daysAgo(o.last.date)<=30).length;
+  const forgot=outs.filter(o=>o.care==='overdue'||(o.care==='never'&&o.status!=='inactive'));
+  const od=actions.filter(a=>a.status==='open'&&a.due<TODAY&&inScopeSale(a.sid)).sort((a,b)=>a.due-b.due);
+  const skT=skips.filter(k=>sameDay(k.date,TODAY)&&inScopeSale(k.sid));
+  const flagged=visits.filter(v=>v.flags.length&&daysAgo(v.date)<=7&&inScopeSale(v.sid)).sort((a,b)=>vTs(b)-vTs(a));
+  const scopeTxt=S.role==='sale'?'Dữ liệu của bạn':S.role==='lead'?'Phạm vi: Team Hà Nội Tây':'Phạm vi: toàn bộ thị trường';
+  const areas=[...new Set(outs.map(o=>o.district))];
+  c.innerHTML=`
+  <div class="tip">${ic('layers',16)}<span><b>Mockup tương tác.</b> Đổi vai trò ở góc trên bên phải để xem phân quyền dữ liệu. Vào <a href="#" onclick="go('mobile');return false">App Sale</a> để chạy thử quy trình Check-in GPS → Note → Check-out → Next Action; mọi thao tác cập nhật ngay vào bản đồ, nhật ký và thông báo. <span class="muted">${scopeTxt}.</span></span></div>
+  <div class="qhead"><h2>① Sale đang hoạt động thế nào?</h2><span>Hôm nay ${fmtD(TODAY)}, cập nhật ${fmtT(S.simMin)}</span></div>
+  <div class="kpis">
+    ${kpi('Sale hoạt động',`${activeN}<small> / ${sids.length}</small>`,'Đã có ít nhất 1 check-in','#2563eb')}
+    ${kpi('Check-in hôm nay',tv.length,`${tv.filter(v=>!v.rid).length} ngoài tuyến`,'#0891b2')}
+    ${kpi('Visit hoàn thành',done,'Đã check-out','#16a34a')}
+    ${kpi('Visit chưa hoàn thành',unfinished,'Còn lại trên tuyến + đang mở','#d97706')}
+    ${kpi('GPS hợp lệ',gpsOk+'%',`Bán kính ${S.cfg.radius}m`,gpsOk<95?'#dc2626':'#16a34a')}
+  </div>
+  <div class="g2" style="margin-top:16px">
+    <div class="card"><h3>Tiến độ tuyến hôm nay <span class="sub">${WDL[TODAY.getDay()]}</span></h3>
+      <div class="tbl"><table class="t"><thead><tr><th>Sale</th><th>Tuyến</th><th style="width:28%">Hoàn thành</th><th class="num">Bỏ qua</th><th>Check-in gần nhất</th><th>Trạng thái</th></tr></thead><tbody>
+      ${st.map(x=>`<tr class="click" onclick="gotoMap({sale:'${x.s.id}',route:'${x.r?x.r.id:''}'})"><td>${schip(x.s.id)}</td><td>${x.r?esc(x.r.name):'—'}${x.free?` <span class="muted small">+${x.free} tự do</span>`:''}</td>
+        <td><div class="row" style="flex-wrap:nowrap"><div class="bar" style="flex:1"><i style="width:${x.planned?x.done/x.planned*100:0}%;background:${x.s.color}"></i></div><span class="small b">${x.done}/${x.planned}</span></div></td>
+        <td class="num">${x.sk.length?`<span style="color:var(--bad)">${x.sk.length}</span>`:'0'}</td>
+        <td>${x.last?`${fmtT(x.last.inM)} · ${esc(OUT(x.last.oid).name)}`:'<span class="muted">—</span>'}</td><td>${pill(x.state[1],x.state[0])}</td></tr>`).join('')}
+      </tbody></table></div></div>
+    <div class="card"><h3>Hoạt động realtime <span class="sub"><a href="#" onclick="go('journal');return false">Xem nhật ký</a></span></h3>
+      <div class="list">${visibleNotifs().filter(n=>n.type!=='overdue').slice(0,8).map(n=>{const [cc,i]=NT[n.type];return `<div class="li click" onclick="openOutlet('${n.oid}')"><div class="ic" style="background:${cc}18">${ic(i,14,cc)}</div><div style="flex:1">${esc(n.text)}</div><span class="muted small">${n.t}</span></div>`}).join('')||'<div class="empty">Chưa có hoạt động</div>'}</div></div>
+  </div>
+  <div class="qhead"><h2>② Thị trường đang được phủ đến đâu?</h2><span>Kỳ 30 ngày gần nhất</span></div>
+  <div class="kpis">
+    ${kpi('Tổng điểm bán',total,`${outs.filter(isNewCus).length} khách mới trong 60 ngày`,'#1a5276',"gotoMap({})")}
+    ${kpi('Đã có Sale phụ trách',withSale,Math.round(withSale/Math.max(1,total)*100)+'% tổng điểm','#16a34a',"gotoMap({assigned:'yes'})")}
+    ${kpi('Chưa có Sale',noSale,S.role==='admin'?'Cần phân bổ':'Chỉ Admin thấy điểm chưa phân bổ','#dc2626',"gotoMap({assigned:'no'})")}
+    ${kpi('Đã ghé trong kỳ',v30,Math.round(v30/Math.max(1,total)*100)+'% độ phủ viếng thăm','#0891b2',"gotoMap({last:'30'})")}
+    ${kpi('Chưa ghé / quá hạn',forgot.length,'Theo tần suất cấu hình','#d97706',"gotoMap({last:'over'})")}
+  </div>
+  <div class="card" style="margin-top:16px"><h3>Độ phủ theo khu vực <span class="sub">% điểm được chăm sóc đúng tần suất</span></h3>
+    <div class="g2e">${[0,1].map(h=>`<div>${areas.filter((_,i)=>i%2===h).map(a=>{const ao=outs.filter(o=>o.district===a),ok=ao.filter(o=>o.care==='ok').length,p=Math.round(ok/Math.max(1,ao.length)*100);return `<div class="hbar"><span>${a}</span><div class="bar"><i style="width:${p}%;background:${p>=70?'#16a34a':p>=50?'#d97706':'#dc2626'}"></i></div><span class="small b">${p}% <span class="muted">(${ok}/${ao.length})</span></span></div>`}).join('')}</div>`).join('')}</div></div>
+  <div class="qhead"><h2>③ Khách hàng nào đang bị bỏ quên?</h2><span>Cảnh báo cần xử lý</span></div>
+  <div class="g2e">
+    <div class="card"><h3>${ic('alert',16,'#dc2626')} Next Action quá hạn <span class="sub">${od.length} việc</span></h3>
+      <div class="list">${od.slice(0,6).map(a=>{const o=OUT(a.oid);return `<div class="li click" onclick="openOutlet('${o.id}')"><div style="flex:1"><b>${esc(o.name)}</b> – ${esc(a.title)}<div class="muted small">${SALE(a.sid).name} · hạn ${fmtD(a.due)}</div></div>${pill('#dc2626','Quá '+daysAgo(a.due)+' ngày',false)}</div>`}).join('')||'<div class="empty">Không có</div>'}</div></div>
+    <div class="card"><h3>${ic('clock',16,'#d97706')} Lâu chưa ghé <span class="sub">${forgot.length} điểm</span></h3>
+      <div class="list">${forgot.sort((a,b)=>(b.last?daysAgo(b.last.date):999)-(a.last?daysAgo(a.last.date):999)).slice(0,6).map(o=>`<div class="li click" onclick="openOutlet('${o.id}')"><div style="flex:1"><b>${esc(o.name)}</b> ${stPill(o)}<div class="muted small">${o.district} · ${o.saleId?SALE(o.saleId).name:'Chưa có Sale'}</div></div><span class="small ${o.last?'':'muted'}">${o.last?daysAgo(o.last.date)+' ngày':'Chưa từng ghé'}</span></div>`).join('')}</div></div>
+    <div class="card"><h3>${ic('x',16,'#dc2626')} Điểm bị bỏ qua trên tuyến hôm nay</h3>
+      <div class="list">${skT.map(k=>`<div class="li click" onclick="openOutlet('${k.oid}')"><div style="flex:1"><b>${esc(OUT(k.oid).name)}</b><div class="muted small">${ROUTE(k.rid).name} · ${SALE(k.sid).name}</div></div><span class="small">${esc(k.reason)}</span></div>`).join('')||'<div class="empty">Không có điểm bị bỏ qua</div>'}</div></div>
+    <div class="card"><h3>${ic('pin',16,'#d97706')} Check-in cần duyệt (7 ngày) <span class="sub">${flagged.length}</span></h3>
+      <div class="list">${flagged.slice(0,6).map(v=>`<div class="li click" onclick="openOutlet('${v.oid}')"><div style="flex:1"><b>${esc(OUT(v.oid).name)}</b><div class="muted small">${SALE(v.sid).name} · ${fmtD(v.date)} ${fmtT(v.inM)} · ${esc(v.farReason||'')}</div></div>${v.flags.map(f=>`<span class="flag">${f}${f==='Ngoài bán kính'?' '+v.dist+'m':''}</span>`).join(' ')}</div>`).join('')||'<div class="empty">Không có</div>'}</div></div>
+  </div>`;
+}
+function kpi(l,v,d,c,click){return `<div class="kpi ${click?'click':''}" style="--c:${c}" ${click?`onclick="${click}"`:''}><div class="l">${l}</div><div class="v">${v}</div><div class="d">${d}</div></div>`}
+
+/* ============================================================
+   02 · BẢN ĐỒ THỊ TRƯỜNG
+   ============================================================ */
+let mapLayer=null;
+function gotoMap(f){Object.assign(S.mf,{sale:'',area:'',route:'',age:'',status:'',last:'',assigned:'',q:''},f);go('map')}
+function mapFiltered(){
+  const f=S.mf;let list=scopeOutlets();
+  if(f.sale)list=list.filter(o=>o.saleId===f.sale);
+  if(f.area)list=list.filter(o=>o.district===f.area);
+  if(f.route)list=list.filter(o=>o.routeIds.includes(f.route));
+  if(f.age)list=list.filter(o=>f.age==='new'?isNewCus(o):!isNewCus(o));
+  if(f.status)list=list.filter(o=>o.status===f.status);
+  if(f.assigned)list=list.filter(o=>f.assigned==='yes'?!!o.saleId:!o.saleId);
+  if(f.last){list=list.filter(o=>{const d=o.last?daysAgo(o.last.date):9999;return f.last==='7'?d<=7:f.last==='30'?d<=30:f.last==='gt30'?d>30&&o.last:f.last==='never'?!o.last:(o.care==='overdue'||(o.care==='never'&&o.status!=='inactive'))})}
+  if(f.q){const q=f.q.toLowerCase();list=list.filter(o=>(o.name+o.addr+o.code).toLowerCase().includes(q))}
+  return list;
+}
+function colorFor(o){const b=S.mf.colorBy;if(b==='care')return CARE[o.care].c;if(b==='sale')return o.saleId?SALE(o.saleId).color:'#dc2626';return STATUS[o.status].c}
+function rMap(c){
+  const outs=scopeOutlets(),ss=scopeSales().map(SALE).filter(s=>!s.inactive);
+  const rs=routes.filter(r=>inScopeSale(r.saleId)),areas=[...new Set(outs.map(o=>o.district))];
+  const opt=(k,arr)=>arr.map(([v,l])=>`<option value="${v}" ${S.mf[k]===v?'selected':''}>${l}</option>`).join('');
+  c.innerHTML=`<div class="mapwrap">
+   <aside class="card filters">
+     <input placeholder="Tìm điểm bán, địa chỉ, mã…" value="${esc(S.mf.q)}" oninput="S.mf.q=this.value;updateMapLayers()">
+     <h4>Bộ lọc</h4>
+     <label class="f">Sale phụ trách<select onchange="setMF('sale',this.value,1)"><option value="">Tất cả Sale</option>${opt('sale',ss.map(s=>[s.id,s.name]))}</select></label>
+     <label class="f">Khu vực<select onchange="setMF('area',this.value,1)"><option value="">Tất cả khu vực</option>${opt('area',areas.map(a=>[a,a]))}</select></label>
+     <label class="f">Tuyến<select onchange="setMF('route',this.value,1)"><option value="">Tất cả tuyến</option>${opt('route',rs.map(r=>[r.id,r.name+' · '+SALE(r.saleId).short]))}</select></label>
+     <label class="f">Khách cũ / mới<select onchange="setMF('age',this.value)"><option value="">Tất cả</option>${opt('age',[['new','Khách mới (≤ 60 ngày)'],['old','Khách cũ']])}</select></label>
+     <label class="f">Trạng thái khách hàng<select onchange="setMF('status',this.value)"><option value="">Tất cả trạng thái</option>${opt('status',Object.entries(STATUS).map(([k,v])=>[k,v.l]))}</select></label>
+     <label class="f">Lần ghé gần nhất<select onchange="setMF('last',this.value)"><option value="">Bất kỳ</option>${opt('last',[['7','Trong 7 ngày'],['30','Trong 30 ngày'],['gt30','Trên 30 ngày'],['never','Chưa từng ghé'],['over','Quá hạn theo tần suất']])}</select></label>
+     ${S.role==='admin'?`<label class="f">Sale phụ trách (có/không)<select onchange="setMF('assigned',this.value)"><option value="">Tất cả</option>${opt('assigned',[['yes','Đã có Sale'],['no','Chưa có Sale']])}</select></label>`:''}
+     <h4>Hiển thị</h4>
+     <label class="f">Tô màu điểm theo<select onchange="setMF('colorBy',this.value)">${opt('colorBy',[['status','Trạng thái khách hàng'],['care','Tình trạng chăm sóc'],['sale','Sale phụ trách']])}</select></label>
+     <label class="row small"><input type="checkbox" ${S.mf.labels?'checked':''} onchange="setMF('labels',this.checked)"> Nhãn tên Sale cạnh điểm</label>
+     <label class="row small"><input type="checkbox" ${S.mf.showSales?'checked':''} onchange="setMF('showSales',this.checked)"> Vị trí Sale hôm nay</label>
+     <button class="btn sm" onclick="gotoMap({})">Xóa bộ lọc</button>
+     <p class="muted small" style="margin:4px 0 0">Chọn một tuyến để xem thứ tự điểm và đường đi.</p>
+   </aside>
+   <div class="mapbox"><div id="map"></div><div class="mapstat" id="mapstat"></div><div class="legend" id="legend"></div></div>
+  </div>`;
+  if(!window.L){$('#map').innerHTML='<div class="empty" style="padding-top:120px">Không tải được thư viện bản đồ (cần kết nối Internet).<br>Các màn hình khác vẫn hoạt động bình thường.</div>';updateMapStat();return}
+  MAP=L.map('map',{zoomControl:true}).setView([21.02,105.82],12);
+  addBaseLayer(MAP);
+  MAP.on('zoomend',()=>$('#map').classList.toggle('nolabels',!S.mf.labels||MAP.getZoom()<13));
+  updateMapLayers(true);
+}
+// Nền bản đồ không cần API key: CARTO Voyager (rõ, có màu); nếu bị chặn/lỗi nhiều thì tự chuyển sang OSM chuẩn
+function addBaseLayer(m){
+  const voyager=L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png',{attribution:'&copy; OpenStreetMap, &copy; CARTO',subdomains:'abcd',maxZoom:19});
+  let errs=0,ok=0,switched=false;
+  voyager.on('tileload',()=>ok++);
+  voyager.on('tileerror',()=>{
+    if(switched||++errs<4||ok>errs)return;
+    switched=true;m.removeLayer(voyager);
+    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png',{attribution:'&copy; OpenStreetMap',maxZoom:19}).addTo(m);
+  });
+  voyager.addTo(m);
+  // Khung chứa có thể đổi kích thước sau khi render → tránh mảng xám thiếu ô bản đồ
+  const fix=()=>{try{if(m.getContainer().isConnected)m.invalidateSize()}catch(e){}};
+  setTimeout(fix,0);setTimeout(fix,300);
+  if(window.ResizeObserver)new ResizeObserver(fix).observe(m.getContainer());
+  return voyager;
+}
+function setMF(k,v,fit){S.mf[k]=v;if(k==='sale'&&v&&S.mf.route&&ROUTE(S.mf.route).saleId!==v)S.mf.route='';updateMapLayers(fit)}
+function updateMapStat(){
+  const l=mapFiltered();
+  $('#mapstat').innerHTML=`<span><b>${l.length}</b> điểm</span><span><b style="color:#dc2626">${l.filter(o=>!o.saleId).length}</b> chưa có Sale</span><span><b style="color:#d97706">${l.filter(o=>o.care==='overdue').length}</b> lâu chưa ghé</span><span><b style="color:#16a34a">${l.filter(o=>o.last&&daysAgo(o.last.date)===0).length}</b> đã ghé hôm nay</span>`;
+}
+function updateMapLayers(fit){
+  if(!$('#mapstat'))return;
+  updateMapStat();
+  const lg=S.mf.colorBy==='care'?Object.values(CARE):S.mf.colorBy==='sale'?scopeActive().map(id=>({l:SALE(id).name,c:SALE(id).color})).concat(S.role==='admin'?[{l:'Chưa có Sale',c:'#dc2626'}]:[]):Object.values(STATUS);
+  $('#legend').innerHTML=`<b style="font-size:12px">${S.mf.colorBy==='care'?'Tình trạng chăm sóc':S.mf.colorBy==='sale'?'Sale phụ trách':'Trạng thái khách hàng'}</b>`+lg.map(x=>`<div><i style="background:${x.c}"></i>${x.l}</div>`).join('')+`<div style="margin-top:6px;border-top:1px solid #eee;padding-top:6px"><span style="font-size:10px;font-weight:600;border:1px solid #cbd5e1;border-left:3px solid #2563eb;padding:0 4px;border-radius:4px">An</span>&nbsp;Nhãn Sale phụ trách</div>`;
+  if(!MAP)return;
+  $('#map').classList.toggle('nolabels',!S.mf.labels||MAP.getZoom()<13);
+  if(mapLayer)mapLayer.remove();
+  mapLayer=L.layerGroup().addTo(MAP);
+  const list=mapFiltered();
+  if(S.mf.route){
+    const r=ROUTE(S.mf.route),pts=r.stops.map(s=>OUT(s.oid)).map(o=>[o.lat,o.lng]);
+    L.polyline(pts,{color:SALE(r.saleId).color,weight:4,opacity:.7,dashArray:'8 6'}).addTo(mapLayer);
+    r.stops.forEach((s,i)=>{const o=OUT(s.oid);L.marker([o.lat,o.lng],{icon:L.divIcon({className:'',html:`<div class="stopnum">${i+1}</div>`,iconSize:[20,20],iconAnchor:[10,26]}),interactive:false}).addTo(mapLayer)});
+  }
+  list.forEach(o=>{
+    const s=SALE(o.saleId);
+    const m=L.marker([o.lat,o.lng],{icon:L.divIcon({className:'',html:`<div class="mk ${o.saleId?'':'un'}" style="--c:${colorFor(o)}"><b></b><span style="--s:${s?s.color:'#dc2626'}">${s?s.short:'Chưa có Sale'}</span></div>`,iconSize:[14,14],iconAnchor:[7,7]})});
+    m.bindPopup(()=>popupHtml(o),{maxWidth:300});m.addTo(mapLayer);
+  });
+  if(S.mf.showSales){
+    todayStats(scopeActive()).filter(x=>x.last).forEach(x=>{
+      const o=OUT(x.last.oid);
+      L.marker([o.lat+0.0009,o.lng],{zIndexOffset:1000,icon:L.divIcon({className:'',html:`<div class="salepin" style="--c:${x.s.color}">${x.s.short}</div>`,iconSize:[30,30],iconAnchor:[15,15]})})
+       .bindTooltip(`<b>${x.s.name}</b><br>${x.open?'Đang visit':'Check-in gần nhất'}: ${fmtT(x.last.inM)} – ${esc(o.name)}<br>Tiến độ tuyến: ${x.done}/${x.planned}`,{direction:'top',offset:[0,-14]}).addTo(mapLayer);
+    });
+  }
+  if(fit&&list.length){MAP.fitBounds(L.latLngBounds(list.map(o=>[o.lat,o.lng])).pad(0.15),{maxZoom:15})}
+}
+function popupHtml(o){
+  const na=o.open[0];
+  return `<div class="pop"><h5>${esc(o.name)}</h5><div class="row">${stPill(o)} ${carePill(o)}</div>
+  <div class="kv"><span>Mã</span><b>${o.code}</b><span>Địa chỉ</span><span style="color:inherit">${esc(o.addr)}</span><span>Sale</span>${o.saleId?esc(SALE(o.saleId).name):'<b style="color:#dc2626">Chưa phân bổ</b>'}<span>Tuyến</span><span style="color:inherit">${routeNames(o)}</span>
+  <span>Lần ghé gần nhất</span><span style="color:inherit">${lastTxt(o)}</span><span>Số lần đã ghé</span><b>${o.visitCount}</b>
+  <span>Next Action</span><span style="color:inherit">${na?`${esc(na.title)} · hạn ${fmtD(na.due)}${na.due<TODAY?' <b style="color:#dc2626">(quá hạn)</b>':''}`:'—'}</span></div>
+  <button class="btn sm p" onclick="openOutlet('${o.id}')">Xem timeline & chi tiết</button></div>`;
+}
+
+/* ============================================================
+   DRAWER: CHI TIẾT ĐIỂM BÁN + CUSTOMER TIMELINE
+   ============================================================ */
+let drawerOid=null,drawerTab='timeline';
+function openOutlet(oid,tab){
+  drawerOid=oid;drawerTab=tab||'timeline';if(MAP)MAP.closePopup();
+  renderDrawer();$('#drawer').classList.add('on');$('#dov').classList.add('on');
+}
+function closeDrawer(){$('#drawer').classList.remove('on');$('#dov').classList.remove('on');drawerOid=null}
+$('#dov').onclick=closeDrawer;
+function renderDrawer(){
+  const o=OUT(drawerOid);if(!o)return;const cu=CUS(o.cid);
+  const sibs=outlets.filter(x=>x.cid===o.cid&&x.id!==o.id);
+  const ords=orders.filter(x=>x.oid===o.id).sort((a,b)=>b.date-a.date);
+  const acts=actions.filter(a=>a.oid===o.id).sort((a,b)=>b.created-a.created);
+  const canCheck=o.saleId==='s1'||(!o.saleId&&SALE('s1').districts.includes(o.district));
+  $('#drawer').innerHTML=`<div class="dh"><div class="row" style="align-items:flex-start;flex-wrap:nowrap"><div style="flex:1"><div class="muted small">${o.code} · ${esc(o.type)} · ${o.district}</div><h2>${esc(o.name)}</h2>
+     <div class="row" style="margin-top:6px">${stPill(o)} ${carePill(o)} ${isNewCus(o)?pill('#2563eb','Khách mới',false):pill('#64748b','Khách cũ',false)}</div></div><button class="x" onclick="closeDrawer()">×</button></div>
+     <div class="kvg" style="margin-top:12px"><span>Sale phụ trách</span><span>${schip(o.saleId)}</span><span>Tuyến</span><span>${routeNames(o)}</span><span>Lần ghé gần nhất</span><span>${lastTxt(o)} · ${o.visitCount} lần ghé</span></div>
+     <div class="row" style="margin-top:12px">
+       ${canManage()?`<button class="btn sm" onclick="openAssign(['${o.id}'])">${ic('swap',14)} Đổi Sale phụ trách</button>`:''}
+       <button class="btn sm" onclick="openAddAction('${o.id}')">${ic('plus',14)} Next Action</button>
+       <button class="btn sm" onclick="closeDrawer();gotoMap({q:'${esc(o.code)}'})">${ic('map',14)} Xem trên bản đồ</button>
+       ${canCheck?`<button class="btn sm p" onclick="closeDrawer();S.m.view='outlet';S.m.oid='${o.id}';go('mobile')">${ic('phone',14)} Check-in (App Sale)</button>`:''}
+     </div></div>
+   <div class="db"><div class="tabs">${[['timeline','Timeline'],['actions',`Next Action (${o.open.length})`],['orders',`Đơn hàng (${ords.length})`],['info','Thông tin']].map(([k,l])=>`<button class="${drawerTab===k?'on':''}" onclick="drawerTab='${k}';renderDrawer()">${l}</button>`).join('')}</div>
+   ${drawerTab==='timeline'?timelineHtml(o):drawerTab==='actions'?actionsHtml(acts):drawerTab==='orders'?ordersHtml(ords):
+    `<div class="kvg"><span>Khách hàng (CRM)</span><b>${esc(cu.name)}</b><span>Loại khách hàng</span><span>${cu.kind} · ${cu.group}</span><span>Người liên hệ</span><span>${esc(o.contact)} · ${o.phone}</span><span>Địa chỉ điểm bán</span><span>${esc(o.addr)}</span><span>Tọa độ GPS</span><span>${o.lat.toFixed(6)}, ${o.lng.toFixed(6)}</span><span>Nguồn tạo</span><span>${o.source==='field'?'Sale tạo ngoài thị trường (GPS)':'Import / CRM'} · ${fmtDY(o.created)}</span><span>Tần suất chuẩn</span><span>${S.cfg.freq[o.status]} ngày/lần (theo trạng thái)</span></div>
+     <h4 style="margin:18px 0 8px">Các điểm bán khác của cùng khách hàng</h4>
+     ${sibs.length?sibs.map(s=>`<div class="li click" onclick="openOutlet('${s.id}')"><div style="flex:1"><b>${esc(s.name)}</b><div class="muted small">${esc(s.addr)}</div></div>${schip(s.saleId)}</div>`).join(''):'<div class="muted small">Khách hàng này chỉ có 1 điểm bán. Mô hình dữ liệu tách Khách hàng (CRM) và Điểm bán (Outlet) để hỗ trợ chuỗi nhiều chi nhánh.</div>'}`}
+   </div>`;
+}
+function visitCard(v,showOutlet){
+  const o=OUT(v.oid),r=v.rid?ROUTE(v.rid):null,a=v.aid?actions.find(x=>x.id===v.aid):null;
+  const noteM=v.outM!=null?Math.min(v.inM+8,v.outM-1):v.inM+5;
+  return `<div class="ev"><div class="ev-h">${showOutlet?`<b style="cursor:pointer" onclick="openOutlet('${o.id}')">${esc(o.name)}</b>`:''}${schip(v.sid)}<span class="muted">·</span>${r?pill('#1a5276','Tuyến '+r.name,false):pill('#7c3aed','Ngoài tuyến',false)}${v.flags.map(f=>`<span class="flag">${f}</span>`).join('')}<span class="dt">${fmtD(v.date)}${sameDay(v.date,TODAY)?' (hôm nay)':''}</span></div>
+   <div class="log">
+    <div><span class="tm">${fmtT(v.inM)}</span><span class="k">Check-in</span><span>GPS cách điểm bán ${v.dist}m (±${v.acc}m) ${v.dist<=S.cfg.radius?'<span class="okb">✓ Hợp lệ</span>':`<span class="flag">Vượt bán kính ${S.cfg.radius}m</span> <span class="muted">${esc(v.farReason)}</span>`}</span></div>
+    ${v.note?`<div><span class="tm">${fmtT(noteM)}</span><span class="k">Note</span><span>${esc(v.note)}</span></div>`:''}
+    ${v.outM!=null?`<div><span class="tm">${fmtT(v.outM)}</span><span class="k">Check-out</span><span>Thời lượng ${v.outM-v.inM} phút · Kết quả: ${pill(OUT_C[v.outcome]||'#64748b',v.outcome,false)}</span></div>`:`<div><span class="tm">…</span><span class="k" style="color:var(--warn)">Đang visit</span><span class="muted">Chưa check-out</span></div>`}
+    ${a?`<div><span class="tm">→</span><span class="k">Next Action</span><span>${esc(a.title)} · hạn ${fmtD(a.due)} · ${SALE(a.sid).name} ${a.status==='done'?'<span class="okb">Đã xong</span>':a.due<TODAY?'<span class="flag">Quá hạn</span>':pill('#2563eb','Đang mở',false)}</span></div>`:''}
+   </div></div>`;
+}
+function timelineHtml(o){
+  const ev=[];
+  o.visits.forEach(v=>ev.push({ts:vTs(v),h:visitCard(v,false)}));
+  skips.filter(k=>k.oid===o.id).forEach(k=>ev.push({ts:k.date.getTime()+k.atM*60000,h:`<div class="ev sys"><div class="ev-h">${pill('#dc2626','Bỏ qua điểm',false)} ${schip(k.sid)} <span>Tuyến ${ROUTE(k.rid).name} – lý do: <b>${esc(k.reason)}</b></span><span class="dt">${fmtD(k.date)}</span></div></div>`}));
+  handovers.filter(h=>h.oid===o.id).forEach(h=>ev.push({ts:h.date.getTime()+9*3600e3,h:`<div class="ev sys" style="border-color:#bfd6ea"><div class="ev-h">${pill('#1a5276','Bàn giao Sale',false)} ${schip(h.from)} → ${schip(h.to)}<span class="dt">${fmtD(h.date)}</span></div><div class="small muted" style="margin-top:4px">Thực hiện: ${esc(h.by)} · ${esc(h.reason)} · Toàn bộ lịch sử trước đó được giữ nguyên.</div></div>`}));
+  orders.filter(x=>x.oid===o.id).forEach(x=>ev.push({ts:x.date.getTime()+23*3600e3,h:`<div class="ev sys"><div class="ev-h">${pill('#16a34a','Đơn hàng ERP',false)} <b>${x.id}</b> · ${x.items} SKU · ${money(x.amount)} · ${x.status}<span class="dt">${fmtD(x.date)}</span></div></div>`}));
+  ev.push({ts:o.created.getTime(),h:`<div class="ev sys"><div class="ev-h">${pill('#7c3aed','Tạo điểm bán',false)} ${o.source==='field'?`Sale ${SALE(o.createdBy)?.name||''} tạo ngoài tuyến từ GPS`:'Import từ dữ liệu CRM'}<span class="dt">${fmtDY(o.created)}</span></div></div>`});
+  ev.sort((a,b)=>b.ts-a.ts);
+  let cur='',html=`<p class="muted small" style="margin-top:0">Timeline hợp nhất: check-in/out, note, kết quả, Next Action, đơn hàng, bàn giao Sale. Đổi Sale không làm mất lịch sử.</p>`;
+  ev.forEach(e=>{const d=new Date(e.ts),m=`Tháng ${d.getMonth()+1}/${d.getFullYear()}`;if(m!==cur){cur=m;html+=`<div class="tl-month">${m}</div>`}html+=e.h});
+  return html;
+}
+function actionsHtml(acts){
+  if(!acts.length)return '<div class="empty">Chưa có Next Action</div>';
+  return `<div class="tbl"><table class="t"><thead><tr><th>Việc cần làm</th><th>Hạn</th><th>Phụ trách</th><th>Trạng thái</th><th></th></tr></thead><tbody>${acts.map(a=>`<tr><td>${esc(a.title)}<div class="muted small">Tạo ${fmtD(a.created)}</div></td><td>${fmtD(a.due)}</td><td>${SALE(a.sid).short}</td><td>${a.status==='done'?'<span class="okb">Đã xong</span>':a.due<TODAY?'<span class="flag">Quá hạn</span>':pill('#2563eb','Đang mở',false)}</td><td>${a.status==='open'?`<button class="btn sm" onclick="doneAction('${a.id}')">Hoàn thành</button>`:''}</td></tr>`).join('')}</tbody></table></div>`;
+}
+function ordersHtml(ords){
+  if(!ords.length)return '<div class="empty">Chưa có đơn hàng liên kết (dữ liệu từ CRM/ERP)</div>';
+  return `<p class="muted small" style="margin-top:0">Đồng bộ từ ERP, liên kết với visit phát sinh đơn.</p><div class="tbl"><table class="t"><thead><tr><th>Mã đơn</th><th>Ngày</th><th class="num">SKU</th><th class="num">Giá trị</th><th>Trạng thái</th></tr></thead><tbody>${ords.map(x=>`<tr><td>${x.id}</td><td>${fmtD(x.date)}</td><td class="num">${x.items}</td><td class="num">${money(x.amount)}</td><td>${x.status}</td></tr>`).join('')}</tbody></table></div>`;
+}
+function doneAction(id){const a=actions.find(a=>a.id===id);a.status='done';a.doneAt=TODAY;reindex();renderDrawer();toast('Đã hoàn thành: '+a.title)}
+
+/* ============================================================
+   MODALS
+   ============================================================ */
+function openModal(title,body,foot){
+  $('#modal').innerHTML=`<div class="mh"><h3>${title}</h3><button class="x" onclick="closeModal()">×</button></div><div class="mb">${body}</div><div class="mf">${foot}</div>`;
+  $('#modal').classList.add('on');$('#mov').classList.add('on');
+}
+function closeModal(){$('#modal').classList.remove('on');$('#mov').classList.remove('on')}
+$('#mov').onclick=closeModal;
+function openAssign(ids){
+  const os=ids.map(OUT),ss=activeSales().filter(s=>S.role==='admin'||s.team==='tay');
+  openModal(`Phân bổ / đổi Sale phụ trách (${ids.length} điểm)`,
+   `<div class="small muted">${os.slice(0,5).map(o=>esc(o.name)).join(', ')}${os.length>5?` và ${os.length-5} điểm khác`:''}</div>
+    <label class="f">Sale nhận bàn giao<select id="asSale">${ss.map(s=>`<option value="${s.id}">${s.name} – ${TEAMS[s.team].name}</option>`).join('')}</select></label>
+    <label class="f">Lý do<select id="asReason"><option>Điều chỉnh địa bàn</option><option>Sale nghỉ việc / chuyển bộ phận</option><option>Cân bằng khối lượng công việc</option><option>Phân bổ điểm bán mới</option></select></label>
+    <label class="row small"><input type="checkbox" id="asAct" checked> Chuyển các Next Action đang mở sang Sale mới</label>
+    <label class="row small"><input type="checkbox" id="asRoute" checked> Gỡ điểm khỏi tuyến của Sale cũ</label>
+    <div class="tip" style="margin:0">Lịch sử visit, note, kết quả vẫn giữ nguyên người thực hiện ban đầu. Sự kiện bàn giao được ghi vào timeline và audit log.</div>`,
+   `<button class="btn" onclick="closeModal()">Hủy</button><button class="btn p" onclick="doAssign(${JSON.stringify(ids).replace(/"/g,"'")})">Xác nhận bàn giao</button>`);
+}
+function doAssign(ids){
+  const to=$('#asSale').value,reason=$('#asReason').value,mvA=$('#asAct').checked,mvR=$('#asRoute').checked;
+  ids.forEach(id=>{const o=OUT(id);if(o.saleId===to)return;
+    handovers.push({oid:id,from:o.saleId,to,date:TODAY,by:ROLES[S.role].name,reason});
+    if(mvA)actions.forEach(a=>{if(a.oid===id&&a.status==='open')a.sid=to});
+    if(mvR)routes.forEach(r=>{if(r.saleId!==to)r.stops=r.stops.filter(s=>s.oid!==id)});
+    o.saleId=to;});
+  closeModal();S.sel.clear();
+  notify('handover',`${ids.length} điểm bán được bàn giao cho ${SALE(to).name} (${reason})`,ids[0],to);
+  refresh();if(drawerOid)renderDrawer();
+}
+function openAddAction(oid){
+  const o=OUT(oid);
+  openModal('Tạo Next Action',`<div><b>${esc(o.name)}</b></div>
+   <label class="f">Việc cần làm<input id="naT" value="Gửi báo giá"></label>
+   <div class="row"><label class="f" style="flex:1">Hạn<input type="date" id="naD" value="2026-09-28"></label>
+   <label class="f" style="flex:1">Người phụ trách<select id="naS">${activeSales().map(s=>`<option value="${s.id}" ${s.id===o.saleId?'selected':''}>${s.name}</option>`).join('')}</select></label></div>`,
+   `<button class="btn" onclick="closeModal()">Hủy</button><button class="btn p" onclick="addAction('${oid}')">Tạo</button>`);
+}
+function addAction(oid){
+  const [y,m,d]=$('#naD').value.split('-').map(Number);
+  actions.push({id:'a'+(++aid),oid,sid:$('#naS').value,title:$('#naT').value||'Việc cần làm',due:new Date(y,m-1,d),status:'open',created:TODAY});
+  closeModal();reindex();if(drawerOid){drawerTab='actions';renderDrawer()}toast('Đã tạo Next Action');
+}
+
+/* ============================================================
+   03 · TUYẾN BÁN HÀNG
+   ============================================================ */
+function routeHistory(r,n){
+  const out=[];
+  for(let b=0;b<=n;b++){const d=dAdd(TODAY,-b);if(!r.days.includes(d.getDay()))continue;
+    const done=visits.filter(v=>v.rid===r.id&&sameDay(v.date,d)&&v.outM!=null),sk=skips.filter(k=>k.rid===r.id&&sameDay(k.date,d));
+    const planned=b===0?r.stops.length:done.length+sk.length;
+    out.push({d,done,sk,planned,today:b===0,who:done[0]?.sid||sk[0]?.sid||r.saleId});}
+  return out;
+}
+function routeRate(r,n=28){const h=routeHistory(r,n).filter(x=>!x.today);const p=h.reduce((a,x)=>a+x.planned,0),d=h.reduce((a,x)=>a+x.done.length,0);return p?Math.round(d/p*100):0}
+function rRoutes(c){
+  const rs=routes.filter(r=>inScopeSale(r.saleId));
+  if(!S.routeSel||!rs.find(r=>r.id===S.routeSel))S.routeSel=rs[0]?.id;
+  const r=ROUTE(S.routeSel),ed=canManage();
+  c.innerHTML=`<div class="rgrid"><div>
+    <div class="row" style="margin-bottom:10px"><b style="flex:1">${rs.length} tuyến cố định</b>${ed?`<button class="btn sm p" onclick="openNewRoute()">${ic('plus',14)} Tạo tuyến</button>`:''}</div>
+    ${rs.map(x=>{const rate=routeRate(x);return `<div class="rcard ${x.id===S.routeSel?'on':''}" onclick="S.routeSel='${x.id}';go('routes')"><div class="row"><b style="flex:1">${esc(x.name)}</b>${daysHtml(x.days)}</div>
+      <div class="row small muted" style="margin-top:4px">${schip(x.saleId)} · ${x.stops.length} điểm</div>
+      <div class="row" style="margin-top:6px;flex-wrap:nowrap"><div class="bar" style="flex:1"><i style="width:${rate}%;background:${rate>=85?'#16a34a':rate>=70?'#d97706':'#dc2626'}"></i></div><span class="small">${rate}% hoàn thành 4 tuần</span></div></div>`}).join('')}
+    <div class="card" style="margin-top:14px"><h3>Hai mô hình vận hành</h3><div class="small"><p style="margin:0 0 6px"><b>Tuyến cố định:</b> Manager tạo tuyến, gán Sale, thứ tự điểm, điểm bắt buộc. Hệ thống ghi nhận điểm đã ghé / bỏ qua + lý do.</p><p style="margin:0 0 6px"><b>Đi tự do:</b> Sale tự chọn điểm theo tình hình thị trường – ghi nhận “Ngoài tuyến”.</p><p style="margin:0"><b>Điểm ngoài tuyến:</b> Sale tạo outlet mới từ GPS ngay tại chỗ.</p></div></div>
+  </div>
+  <div>${r?routeDetail(r,ed):'<div class="card empty">Chưa có tuyến</div>'}</div></div>`;
+  if(r&&window.L){
+    routeMap=L.map('routeMap',{scrollWheelZoom:false});
+    addBaseLayer(routeMap);
+    const pts=r.stops.map(s=>OUT(s.oid)).map(o=>[o.lat,o.lng]);
+    if(pts.length){L.polyline(pts,{color:SALE(r.saleId).color,weight:4,opacity:.75}).addTo(routeMap);
+      r.stops.forEach((s,i)=>{const o=OUT(s.oid);L.marker([o.lat,o.lng],{icon:L.divIcon({className:'',html:`<div class="stopnum" style="background:${s.req?'#1a5276':'#94a3b8'}">${i+1}</div>`,iconSize:[20,20],iconAnchor:[10,10]})}).bindTooltip(o.name).addTo(routeMap)});
+      routeMap.fitBounds(L.latLngBounds(pts).pad(0.2))}else routeMap.setView(DIST[r.name.replace(/ \d+$/,'')]?.c||[21.02,105.82],13);
+  }
+}
+const daysHtml=days=>`<span class="days">${[1,2,3,4,5,6,0].map(d=>`<i class="${days.includes(d)?'on':''}">${WD[d]}</i>`).join('')}</span>`;
+function routeDetail(r,ed){
+  const hist=routeHistory(r,21);
+  const cand=outlets.filter(o=>!r.stops.some(s=>s.oid===o.id)&&(o.saleId===r.saleId||(!o.saleId&&SALE(r.saleId).districts.includes(o.district))));
+  let totalM=0;r.stops.forEach((s,i)=>{if(i){const a=OUT(r.stops[i-1].oid),b=OUT(s.oid);totalM+=hav([a.lat,a.lng],[b.lat,b.lng])}});
+  return `<div class="card"><div class="row"><div style="flex:1"><h2 style="margin:0;font-size:18px">Tuyến ${esc(r.name)}</h2><div class="row small muted" style="margin-top:4px">${schip(r.saleId)} · ${r.stops.length} điểm · ~${fmtDist(totalM)} · ${r.stops.filter(s=>s.req).length} điểm bắt buộc</div></div>
+    ${ed?`<div class="row">${[1,2,3,4,5,6,0].map(d=>`<button class="chip ${r.days.includes(d)?'on':''}" onclick="toggleDay('${r.id}',${d})">${WD[d]}</button>`).join('')}</div>`:daysHtml(r.days)}</div>
+    <div class="g2e" style="margin-top:14px">
+      <div><div class="row" style="margin-bottom:6px"><b style="flex:1">Danh sách & thứ tự điểm</b>${ed?`<button class="btn sm" onclick="optimizeRoute('${r.id}')" title="Sắp xếp theo điểm gần nhất (phạm vi Mở rộng)">Tối ưu thứ tự</button>`:''}</div>
+        <div class="stops" style="max-height:360px;overflow:auto">${r.stops.map((s,i)=>{const o=OUT(s.oid);return `<div class="li"><span class="sn" style="background:${s.req?'#1a5276':'#94a3b8'}">${i+1}</span><div style="flex:1;min-width:0"><b style="cursor:pointer" onclick="openOutlet('${o.id}')">${esc(o.name)}</b><div class="muted small">${esc(o.addr)}</div></div>
+          ${ed?`<label class="small row" title="Điểm bắt buộc"><input type="checkbox" ${s.req?'checked':''} onchange="toggleReq('${r.id}',${i})">BB</label><button class="btn sm" onclick="moveStop('${r.id}',${i},-1)" ${i?'':'disabled'}>↑</button><button class="btn sm" onclick="moveStop('${r.id}',${i},1)" ${i<r.stops.length-1?'':'disabled'}>↓</button><button class="btn sm bad" onclick="removeStop('${r.id}',${i})">×</button>`:s.req?'<span class="small muted">Bắt buộc</span>':''}</div>`}).join('')||'<div class="empty">Chưa có điểm</div>'}</div>
+        ${ed?`<div class="row" style="margin-top:8px;flex-wrap:nowrap"><select id="addStop" style="flex:1"><option value="">+ Thêm điểm bán vào tuyến…</option>${cand.map(o=>`<option value="${o.id}">${esc(o.name)} – ${o.district}${o.saleId?'':' (chưa có Sale)'}</option>`).join('')}</select><button class="btn sm p" onclick="addStop('${r.id}')">Thêm</button></div>`:''}
+      </div>
+      <div><div id="routeMap"></div><p class="muted small">Số tròn đậm = điểm bắt buộc; xám = điểm tùy chọn.</p></div>
+    </div></div>
+  <div class="card" style="margin-top:16px"><h3>Lịch sử thực hiện tuyến <span class="sub">3 tuần gần nhất</span></h3>
+    <div class="tbl"><table class="t"><thead><tr><th>Ngày</th><th>Người đi</th><th class="num">Kế hoạch</th><th class="num">Đã ghé</th><th class="num">Bỏ qua</th><th style="width:22%">Hoàn thành</th><th>Điểm bỏ qua & lý do</th></tr></thead><tbody>
+    ${hist.map(h=>{const p=h.planned?Math.round(h.done.length/h.planned*100):0;return `<tr><td>${WD[h.d.getDay()]} ${fmtD(h.d)}${h.today?' <span class="pill" style="background:#e8f2fb;color:#1a5276">Hôm nay</span>':''}</td><td>${SALE(h.who).short}</td><td class="num">${h.planned}</td><td class="num">${h.done.length}</td><td class="num">${h.sk.length}</td>
+      <td><div class="row" style="flex-wrap:nowrap"><div class="bar" style="flex:1"><i style="width:${p}%;background:${h.today?'#2e86c1':p>=85?'#16a34a':p>=70?'#d97706':'#dc2626'}"></i></div><span class="small">${p}%</span></div></td>
+      <td class="small">${h.sk.map(k=>`${esc(OUT(k.oid).name)}: <span class="muted">${esc(k.reason)}</span>`).join('<br>')||(h.today?'<span class="muted">Đang thực hiện</span>':'—')}</td></tr>`}).join('')}
+    </tbody></table></div></div>`;
+}
+function moveStop(rid,i,d){const r=ROUTE(rid),[x]=r.stops.splice(i,1);r.stops.splice(i+d,0,x);reindex();go('routes')}
+function removeStop(rid,i){ROUTE(rid).stops.splice(i,1);reindex();go('routes')}
+function toggleReq(rid,i){const s=ROUTE(rid).stops[i];s.req=!s.req;go('routes')}
+function toggleDay(rid,d){const r=ROUTE(rid);r.days=r.days.includes(d)?r.days.filter(x=>x!==d):[...r.days,d];go('routes')}
+function addStop(rid){const v=$('#addStop').value;if(!v)return;const r=ROUTE(rid),o=OUT(v);r.stops.push({oid:v,req:true});if(!o.saleId){o.saleId=r.saleId;handovers.push({oid:v,from:null,to:r.saleId,date:TODAY,by:ROLES[S.role].name,reason:'Phân bổ khi thêm vào tuyến'})}reindex();go('routes')}
+function optimizeRoute(rid){const r=ROUTE(rid),req=new Map(r.stops.map(s=>[s.oid,s.req]));r.stops=nnOrder(r.stops.map(s=>OUT(s.oid))).map(o=>({oid:o.id,req:req.get(o.id)}));go('routes');toast('Đã sắp xếp lại thứ tự theo quãng đường ngắn nhất')}
+function openNewRoute(){
+  const ss=activeSales().filter(s=>inScopeSale(s.id));
+  openModal('Tạo tuyến mới',`<label class="f">Tên tuyến<input id="nrName" placeholder="VD: Cầu Giấy 02"></label>
+   <label class="f">Sale phụ trách<select id="nrSale">${ss.map(s=>`<option value="${s.id}">${s.name}</option>`).join('')}</select></label>
+   <div class="f small muted">Lịch đi tuyến</div><div class="chips" id="nrDays">${[1,2,3,4,5,6].map(d=>`<button class="chip" data-d="${d}" onclick="this.classList.toggle('on')">${WD[d]}</button>`).join('')}</div>
+   <div class="muted small">Sau khi tạo, thêm điểm bán và sắp xếp thứ tự ở màn hình chi tiết tuyến.</div>`,
+   `<button class="btn" onclick="closeModal()">Hủy</button><button class="btn p" onclick="createRoute()">Tạo tuyến</button>`);
+}
+function createRoute(){
+  const days=[...document.querySelectorAll('#nrDays .chip.on')].map(b=>+b.dataset.d);
+  const r={id:'r'+(routes.length+1),name:$('#nrName').value||'Tuyến mới',saleId:$('#nrSale').value,days:days.length?days:[1],stops:[],created:TODAY};
+  routes.push(r);S.routeSel=r.id;closeModal();go('routes');
+}
+
+/* ============================================================
+   04 · LỊCH SALE
+   ============================================================ */
+function rCalendar(c){
+  const mon=dAdd(TODAY,-((TODAY.getDay()+6)%7)+S.calWeek*7),days=[...Array(7)].map((_,i)=>dAdd(mon,i));
+  const sids=scopeActive();
+  let cells='';
+  sids.forEach(id=>{const s=SALE(id);
+    cells+=`<div><div class="schip b"><i style="background:${s.color}"></i>${s.name}</div><div class="muted small">${TEAMS[s.team].name}</div></div>`;
+    days.forEach(d=>{
+      const isT=sameDay(d,TODAY),past=d<TODAY&&!isT,wd=d.getDay();
+      if(wd===0){cells+=`<div class="muted small ${isT?'today-col':''}">Nghỉ</div>`;return}
+      const rs=routes.filter(r=>r.saleId===id&&r.days.includes(wd));
+      const free=visits.filter(v=>v.sid===id&&!v.rid&&sameDay(v.date,d)).length;
+      let h='';
+      rs.forEach(r=>{
+        const done=visits.filter(v=>v.rid===r.id&&sameDay(v.date,d)&&v.outM!=null).length,sk=skips.filter(k=>k.rid===r.id&&sameDay(k.date,d)).length;
+        if(d>TODAY){h+=`<div class="cblk" style="--c:#94a3b8"><b>${esc(r.name)}</b><span class="muted">Kế hoạch ${r.stops.length} điểm</span></div>`;return}
+        const plan=isT?r.stops.length:done+sk,p=plan?done/plan:0,col=isT?'#2e86c1':p>=.85?'#16a34a':p>=.7?'#d97706':'#dc2626';
+        if(!isT&&!plan&&d<dAdd(TODAY,-42)){h+=`<div class="cblk" style="--c:#cbd5e1"><b>${esc(r.name)}</b><span class="muted">Ngoài phạm vi dữ liệu demo</span></div>`;return}
+        h+=`<div class="cblk" style="--c:${col}"><b>${esc(r.name)}</b>${isT?'Đang chạy ':''}${done}/${plan} điểm${sk?` · <span style="color:var(--bad)">${sk} bỏ qua</span>`:''}</div>`;
+      });
+      if(free)h+=`<div class="small" style="color:#7c3aed">+ ${free} visit tự do</div>`;
+      cells+=`<div class="cc ${isT?'today-col':''}" onclick="calDay('${id}',${d.getTime()})">${h||'<span class="muted small">—</span>'}</div>`;
+    });
+  });
+  c.innerHTML=`<div class="row" style="margin-bottom:12px"><button class="btn sm" onclick="S.calWeek--;go('calendar')" ${S.calWeek<=-5?'disabled':''}>‹ Tuần trước</button><b>Tuần ${fmtD(days[0])} – ${fmtD(days[6])}/${days[6].getFullYear()}</b><button class="btn sm" onclick="S.calWeek++;go('calendar')" ${S.calWeek>=2?'disabled':''}>Tuần sau ›</button>${S.calWeek?`<button class="btn sm" onclick="S.calWeek=0;go('calendar')">Tuần này</button>`:''}
+    <span style="flex:1"></span><span class="small row">${pill('#16a34a','≥ 85%')} ${pill('#d97706','70–85%')} ${pill('#dc2626','< 70%')} ${pill('#2e86c1','Đang chạy')} ${pill('#94a3b8','Kế hoạch')}</span></div>
+   <div class="cal"><div class="ch">Sale</div>${days.map(d=>`<div class="ch ${sameDay(d,TODAY)?'today':''}">${WDL[d.getDay()]}<br><span style="font-weight:400">${fmtD(d)}</span></div>`).join('')}${cells}</div>
+   <p class="muted small">Bấm vào một ô để xem chi tiết visit trong ngày của Sale.</p>`;
+}
+function calDay(sid,ts){
+  const d=new Date(ts),vs=visits.filter(v=>v.sid===sid&&sameDay(v.date,d)).sort((a,b)=>a.inM-b.inM),sk=skips.filter(k=>k.sid===sid&&sameDay(k.date,d));
+  const rs=routes.filter(r=>r.saleId===sid&&r.days.includes(d.getDay()));
+  const plan=d>TODAY?rs.flatMap(r=>r.stops.map((s,i)=>`<div class="li"><span class="sn">${i+1}</span><div style="flex:1">${esc(OUT(s.oid).name)}<div class="muted small">${esc(r.name)}</div></div></div>`)).join(''):'';
+  openModal(`${SALE(sid).name} · ${WDL[d.getDay()]} ${fmtDY(d)}`,
+    (plan?`<b>Kế hoạch tuyến</b>${plan}`:'')+
+    (vs.length?vs.map(v=>visitCard(v,true)).join(''):d<=TODAY?'<div class="muted">Không có visit</div>':'')+
+    (sk.length?`<b>Điểm bỏ qua</b>`+sk.map(k=>`<div class="li"><div style="flex:1">${esc(OUT(k.oid).name)}</div><span class="flag">${esc(k.reason)}</span></div>`).join(''):''),
+    `<button class="btn" onclick="closeModal()">Đóng</button>`);
+}
+
+/* ============================================================
+   05 · KHÁCH HÀNG / ĐIỂM BÁN
+   ============================================================ */
+function rOutlets(c){
+  const f=S.of,outs=scopeOutlets();
+  const tabs=`<div class="tabs"><button class="${f.tab==='outlets'?'on':''}" onclick="S.of.tab='outlets';go('outlets')">Điểm bán / Outlet (${outs.length})</button><button class="${f.tab==='customers'?'on':''}" onclick="S.of.tab='customers';go('outlets')">Khách hàng (CRM)</button></div>`;
+  if(f.tab==='customers'){
+    const cs=customers.map(cu=>({cu,os:outs.filter(o=>o.cid===cu.id)})).filter(x=>x.os.length).sort((a,b)=>b.os.length-a.os.length);
+    c.innerHTML=tabs+`<p class="muted small">Một khách hàng có thể có nhiều điểm bán; hoạt động DMS ghi nhận tại từng điểm bán cụ thể.</p><div class="tbl"><table class="t"><thead><tr><th>Khách hàng</th><th>Loại</th><th>Liên hệ</th><th class="num">Số điểm bán</th><th>Sale phụ trách</th><th class="num">Tổng visit</th><th>Ghé gần nhất</th></tr></thead><tbody>
+     ${cs.map(({cu,os})=>{const l=os.map(o=>o.last).filter(Boolean).sort((a,b)=>vTs(b)-vTs(a))[0];return `<tr class="click" onclick="openOutlet('${os[0].id}','info')"><td><b>${esc(cu.name)}</b>${os.length>1?`<div class="muted small">${os.map(o=>esc(o.name)).join(' · ')}</div>`:''}</td><td>${cu.kind}<div class="muted small">${cu.group}</div></td><td>${esc(cu.contact)}<div class="muted small">${cu.phone}</div></td><td class="num">${os.length}</td><td>${[...new Set(os.map(o=>o.saleId))].map(schip).join('<br>')}</td><td class="num">${os.reduce((a,o)=>a+o.visitCount,0)}</td><td>${l?fmtD(l.date):'—'}</td></tr>`}).join('')}</tbody></table></div>`;
+    return;
+  }
+  let list=outs;
+  if(f.q){const q=f.q.toLowerCase();list=list.filter(o=>(o.name+o.addr+o.code+o.contact).toLowerCase().includes(q))}
+  if(f.status)list=list.filter(o=>o.status===f.status);
+  if(f.sale)list=list.filter(o=>f.sale==='none'?!o.saleId:o.saleId===f.sale);
+  if(f.area)list=list.filter(o=>o.district===f.area);
+  if(f.care)list=list.filter(o=>o.care===f.care);
+  const ss=scopeActive().map(SALE),areas=[...new Set(outs.map(o=>o.district))];
+  const o_=(k,arr)=>arr.map(([v,l])=>`<option value="${v}" ${f[k]===v?'selected':''}>${l}</option>`).join('');
+  c.innerHTML=tabs+`<div class="row" style="margin-bottom:12px">
+    <input style="width:240px" placeholder="Tìm tên, mã, địa chỉ, người liên hệ…" value="${esc(f.q)}" onchange="S.of.q=this.value;go('outlets')">
+    <select onchange="S.of.status=this.value;go('outlets')"><option value="">Trạng thái</option>${o_('status',Object.entries(STATUS).map(([k,v])=>[k,v.l]))}</select>
+    <select onchange="S.of.care=this.value;go('outlets')"><option value="">Tình trạng chăm sóc</option>${o_('care',Object.entries(CARE).map(([k,v])=>[k,v.l]))}</select>
+    <select onchange="S.of.sale=this.value;go('outlets')"><option value="">Sale</option>${o_('sale',ss.map(s=>[s.id,s.name]).concat(S.role==='admin'?[['none','— Chưa có Sale —']]:[]))}</select>
+    <select onchange="S.of.area=this.value;go('outlets')"><option value="">Khu vực</option>${o_('area',areas.map(a=>[a,a]))}</select>
+    <span style="flex:1"></span>
+    ${canManage()?`<button class="btn sm" ${S.sel.size?'':'disabled'} onclick="openAssign([...S.sel])">${ic('swap',14)} Phân bổ Sale (${S.sel.size})</button>`:''}
+    <button class="btn sm" onclick="exportCSV('diem_ban',outletRows())">${ic('dl',14)} Xuất Excel</button>
+    <button class="btn sm p" onclick="S.m.view='newOutlet';go('mobile')">${ic('plus',14)} Thêm điểm bán</button></div>
+  <div class="tbl" style="max-height:calc(100vh - 230px)"><table class="t"><thead><tr>${canManage()?`<th><input type="checkbox" onchange="selAll(this.checked)"></th>`:''}<th>Điểm bán</th><th>Khu vực</th><th>Trạng thái</th><th>Sale phụ trách</th><th>Tuyến</th><th>Ghé gần nhất</th><th class="num">Số lần</th><th>Chăm sóc</th><th>Next Action</th></tr></thead><tbody>
+  ${list.map(o=>`<tr class="click" onclick="openOutlet('${o.id}')">${canManage()?`<td onclick="event.stopPropagation()"><input type="checkbox" ${S.sel.has(o.id)?'checked':''} onchange="selOne('${o.id}',this.checked)"></td>`:''}
+   <td><b>${esc(o.name)}</b><div class="muted small">${o.code} · ${esc(o.type)}</div></td><td>${o.district}</td><td>${stPill(o)}</td><td>${schip(o.saleId)}</td><td class="small">${routeNames(o)}</td><td>${lastTxt(o)}</td><td class="num">${o.visitCount}</td><td>${carePill(o)}</td>
+   <td class="small">${o.open[0]?`${esc(o.open[0].title)}<div class="${o.open[0].due<TODAY?'':'muted'}" style="${o.open[0].due<TODAY?'color:var(--bad)':''}">hạn ${fmtD(o.open[0].due)}</div>`:'<span class="muted">—</span>'}</td></tr>`).join('')||`<tr><td colspan="10" class="empty">Không có điểm bán phù hợp</td></tr>`}
+  </tbody></table></div>`;
+  window._outList=list;
+}
+function selOne(id,on){on?S.sel.add(id):S.sel.delete(id);go('outlets')}
+function selAll(on){(window._outList||[]).forEach(o=>on?S.sel.add(o.id):S.sel.delete(o.id));go('outlets')}
+function outletRows(){return [['Mã','Tên','Loại','Khu vực','Địa chỉ','Trạng thái','Sale','Tuyến','Ghé gần nhất','Số lần ghé','Chăm sóc','Lat','Lng']].concat((window._outList||[]).map(o=>[o.code,o.name,o.type,o.district,o.addr,STATUS[o.status].l,o.saleId?SALE(o.saleId).name:'',o.routeIds.map(i=>ROUTE(i).name).join('; '),o.last?fmtDY(o.last.date):'',o.visitCount,CARE[o.care].l,o.lat.toFixed(6),o.lng.toFixed(6)]))}
+function exportCSV(name,rows){
+  const csv='﻿'+rows.map(r=>r.map(x=>`"${String(x).replace(/"/g,'""')}"`).join(',')).join('\n');
+  const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8'}));a.download=`DMS_${name}_${fmtD(TODAY).replace('/','')}.csv`;a.click();
+}
+
+/* ============================================================
+   06 · NHẬT KÝ THỊ TRƯỜNG
+   ============================================================ */
+function rJournal(c){
+  const f=S.jf,range=+f.range,from=dAdd(TODAY,-(range-1));
+  const okS=sid=>inScopeSale(sid)&&(!f.sale||sid===f.sale);
+  const okA=oid=>!f.area||OUT(oid).district===f.area;
+  let ev=[];
+  if(!f.type||f.type==='visit')visits.forEach(v=>{if(v.date>=from&&okS(v.sid)&&okA(v.oid)&&(!f.flag||v.flags.length))ev.push({ts:vTs(v),h:()=>visitCard(v,true)})});
+  if(!f.flag){
+  if(!f.type||f.type==='skip')skips.forEach(k=>{if(k.date>=from&&okS(k.sid)&&okA(k.oid))ev.push({ts:k.date.getTime()+k.atM*60000,h:()=>`<div class="ev sys"><div class="ev-h">${pill('#dc2626','Bỏ qua điểm',false)}<b style="cursor:pointer" onclick="openOutlet('${k.oid}')">${esc(OUT(k.oid).name)}</b>${schip(k.sid)}<span>Tuyến ${ROUTE(k.rid).name} – ${esc(k.reason)}</span><span class="dt">${fmtD(k.date)} ${fmtT(k.atM)}</span></div></div>`})});
+  if(!f.type||f.type==='newoutlet')outlets.forEach(o=>{if(o.source==='field'&&o.created>=from&&okS(o.createdBy)&&okA(o.id))ev.push({ts:o.created.getTime()+15*3600e3,h:()=>`<div class="ev sys"><div class="ev-h">${pill('#7c3aed','Điểm mới ngoài tuyến',false)}<b style="cursor:pointer" onclick="openOutlet('${o.id}')">${esc(o.name)}</b>${schip(o.createdBy)}<span class="muted">${esc(o.addr)} · GPS ${o.lat.toFixed(5)}, ${o.lng.toFixed(5)}</span><span class="dt">${fmtD(o.created)}</span></div></div>`})});
+  if(!f.type||f.type==='handover')handovers.forEach(h=>{if(h.date>=from&&(okS(h.to)||okS(h.from))&&okA(h.oid))ev.push({ts:h.date.getTime()+9*3600e3,h:()=>`<div class="ev sys"><div class="ev-h">${pill('#1a5276','Bàn giao',false)}<b style="cursor:pointer" onclick="openOutlet('${h.oid}')">${esc(OUT(h.oid).name)}</b>${schip(h.from)} → ${schip(h.to)}<span class="muted">${esc(h.reason)}</span><span class="dt">${fmtD(h.date)}</span></div></div>`})});
+  }
+  ev.sort((a,b)=>b.ts-a.ts);
+  const vsN=visits.filter(v=>v.date>=from&&okS(v.sid)&&okA(v.oid));
+  const areas=[...new Set(scopeOutlets().map(o=>o.district))];
+  const o_=(k,arr)=>arr.map(([v,l])=>`<option value="${v}" ${f[k]===v?'selected':''}>${l}</option>`).join('');
+  c.innerHTML=`<div class="row" style="margin-bottom:12px">
+   <select onchange="S.jf.range=this.value;S.jf.limit=40;go('journal')">${o_('range',[['1','Hôm nay'],['7','7 ngày'],['30','30 ngày']])}</select>
+   <select onchange="S.jf.sale=this.value;go('journal')"><option value="">Tất cả Sale</option>${o_('sale',scopeSales().map(id=>[id,SALE(id).name]))}</select>
+   <select onchange="S.jf.area=this.value;go('journal')"><option value="">Tất cả khu vực</option>${o_('area',areas.map(a=>[a,a]))}</select>
+   <select onchange="S.jf.type=this.value;go('journal')"><option value="">Mọi loại sự kiện</option>${o_('type',[['visit','Visit (check-in/out, note)'],['skip','Bỏ điểm trên tuyến'],['newoutlet','Tạo điểm ngoài tuyến'],['handover','Bàn giao Sale']])}</select>
+   <label class="row small"><input type="checkbox" ${f.flag?'checked':''} onchange="S.jf.flag=this.checked;go('journal')"> Chỉ visit cần duyệt GPS</label>
+   <span style="flex:1"></span><span class="small muted">${vsN.length} visit · ${vsN.filter(v=>!v.rid).length} ngoài tuyến · TB ${Math.round(vsN.filter(v=>v.outM).reduce((a,v)=>a+v.outM-v.inM,0)/Math.max(1,vsN.filter(v=>v.outM).length))} phút/visit</span></div>
+   <div style="max-width:980px">${ev.slice(0,f.limit).map(e=>e.h()).join('')||'<div class="card empty">Không có hoạt động</div>'}
+   ${ev.length>f.limit?`<div style="text-align:center"><button class="btn" onclick="S.jf.limit+=40;go('journal')">Xem thêm (${ev.length-f.limit})</button></div>`:''}</div>`;
+}
+
+/* ============================================================
+   07 · BÁO CÁO
+   ============================================================ */
+function rReports(c){
+  if(S.role==='sale'){c.innerHTML=`<div class="card empty">Báo cáo quản trị dành cho Trưởng nhóm và Quản lý.<br>Sale xem kết quả cá nhân ở màn hình Tổng quan.</div>`;return}
+  const p=S.rp,from=dAdd(TODAY,-(p.period-1)),sids=scopeActive(),outs=scopeOutlets();
+  const vs=visits.filter(v=>v.date>=from&&inScopeSale(v.sid));
+  let body='',rows=[];
+  if(p.tab==='sale'){
+    const data=sids.map(id=>{const s=SALE(id),my=vs.filter(v=>v.sid===id),rv=my.filter(v=>v.rid&&v.outM!=null&&!sameDay(v.date,TODAY)),sk=skips.filter(k=>k.sid===id&&k.date>=from&&!sameDay(k.date,TODAY));
+      const fin=my.filter(v=>v.outM!=null),dur=fin.length?Math.round(fin.reduce((a,v)=>a+v.outM-v.inM,0)/fin.length):0;
+      const workDays=new Set(my.map(v=>v.date.getTime())).size;
+      return {s,n:my.length,perDay:workDays?(my.length/workDays).toFixed(1):'0',rate:rv.length+sk.length?Math.round(rv.length/(rv.length+sk.length)*100):0,
+        newO:outlets.filter(o=>o.source==='field'&&o.createdBy===id&&o.created>=from).length,gps:my.length?Math.round(my.filter(v=>!v.flags.length).length/my.length*100):100,dur,
+        orders:orders.filter(x=>x.sid===id&&x.date>=from).length,forgot:outlets.filter(o=>o.saleId===id&&o.care==='overdue').length,od:actions.filter(a=>a.sid===id&&a.status==='open'&&a.due<TODAY).length}});
+    const mx=Math.max(...data.map(d=>d.n),1);
+    rows=[['Sale','Số visit','Visit/ngày','Hoàn thành tuyến %','Khách mới tạo','GPS hợp lệ %','Thời lượng TB (phút)','Đơn hàng','Khách lâu chưa ghé','Next Action quá hạn']].concat(data.map(d=>[d.s.name,d.n,d.perDay,d.rate,d.newO,d.gps,d.dur,d.orders,d.forgot,d.od]));
+    body=`<div class="g2"><div class="tbl"><table class="t"><thead><tr><th>Sale</th><th class="num">Visit</th><th class="num">Visit/ngày</th><th class="num">HT tuyến</th><th class="num">KH mới</th><th class="num">GPS hợp lệ</th><th class="num">TB phút</th><th class="num">Đơn</th><th class="num">Lâu chưa ghé</th><th class="num">NA quá hạn</th></tr></thead><tbody>
+      ${data.map(d=>`<tr><td>${schip(d.s.id)}</td><td class="num b">${d.n}</td><td class="num">${d.perDay}</td><td class="num" style="color:${d.rate>=85?'#16a34a':d.rate>=70?'#d97706':'#dc2626'}">${d.rate}%</td><td class="num">${d.newO}</td><td class="num">${d.gps}%</td><td class="num">${d.dur}</td><td class="num">${d.orders}</td><td class="num">${d.forgot}</td><td class="num" style="${d.od?'color:var(--bad)':''}">${d.od}</td></tr>`).join('')}</tbody></table></div>
+      <div class="card"><h3>Số visit theo Sale</h3>${data.map(d=>`<div class="hbar"><span>${d.s.name}</span><div class="bar"><i style="width:${d.n/mx*100}%;background:${d.s.color}"></i></div><span class="small b">${d.n}</span></div>`).join('')}</div></div>`;
+  }else if(p.tab==='coverage'){
+    const areas=[...new Set(outs.map(o=>o.district))];
+    const def={assigned:'Điểm có Sale phụ trách / Tổng điểm',visited:`Điểm đã ghé trong ${p.period} ngày / Tổng điểm`,freq:'Điểm được chăm sóc đúng tần suất / Tổng điểm'};
+    const data=areas.map(a=>{const ao=outs.filter(o=>o.district===a),av=vs.filter(v=>OUT(v.oid).district===a);
+      const assigned=ao.filter(o=>o.saleId).length,visited=ao.filter(o=>o.visits.some(v=>v.date>=from)).length,freq=ao.filter(o=>o.care==='ok').length;
+      const cov={assigned,visited,freq}[p.cov];
+      return {a,n:ao.length,sales:new Set(ao.map(o=>o.saleId).filter(Boolean)).size,assigned,visited,freq,freqAvg:(av.length/Math.max(1,ao.length)/(p.period/7)).toFixed(2),uncovered:ao.length-cov,pct:Math.round(cov/Math.max(1,ao.length)*100)}});
+    const tot=data.reduce((s,d)=>({n:s.n+d.n,c:s.c+(d.n-d.uncovered)}),{n:0,c:0});
+    rows=[['Khu vực','Số điểm bán','Số Sale','Có Sale','Đã ghé','Đúng tần suất','Tần suất ghé (lần/điểm/tuần)','Điểm chưa phủ','Độ phủ %']].concat(data.map(d=>[d.a,d.n,d.sales,d.assigned,d.visited,d.freq,d.freqAvg,d.uncovered,d.pct]));
+    body=`<div class="card" style="margin-bottom:16px"><div class="row"><b>Định nghĩa độ phủ (cần chốt trong BRD):</b>${Object.entries(def).map(([k,l])=>`<button class="chip ${p.cov===k?'on':''}" onclick="S.rp.cov='${k}';go('reports')">${l}</button>`).join('')}</div>
+      <div style="margin-top:10px;font-size:22px;font-weight:700">${Math.round(tot.c/Math.max(1,tot.n)*100)}% <span class="small muted" style="font-weight:400">độ phủ toàn phạm vi · ${tot.c}/${tot.n} điểm</span></div></div>
+      <div class="g2"><div class="tbl"><table class="t"><thead><tr><th>Khu vực</th><th class="num">Điểm bán</th><th class="num">Số Sale</th><th class="num">Có Sale</th><th class="num">Đã ghé</th><th class="num">Đúng tần suất</th><th class="num">Tần suất ghé</th><th class="num">Chưa phủ</th></tr></thead><tbody>
+      ${data.map(d=>`<tr class="click" onclick="gotoMap({area:'${d.a}'})"><td>${d.a}</td><td class="num">${d.n}</td><td class="num">${d.sales}</td><td class="num">${d.assigned}</td><td class="num">${d.visited}</td><td class="num">${d.freq}</td><td class="num">${d.freqAvg}</td><td class="num" style="${d.uncovered?'color:var(--bad)':''}">${d.uncovered}</td></tr>`).join('')}</tbody></table></div>
+      <div class="card"><h3>Độ phủ theo khu vực</h3>${data.sort((a,b)=>b.pct-a.pct).map(d=>`<div class="hbar"><span>${d.a}</span><div class="bar"><i style="width:${d.pct}%;background:${d.pct>=70?'#16a34a':d.pct>=50?'#d97706':'#dc2626'}"></i></div><span class="small b">${d.pct}%</span></div>`).join('')}</div></div>`;
+  }else if(p.tab==='route'){
+    const rs=routes.filter(r=>inScopeSale(r.saleId));
+    const data=rs.map(r=>{const h=routeHistory(r,p.period).filter(x=>!x.today);const pl=h.reduce((a,x)=>a+x.planned,0),dn=h.reduce((a,x)=>a+x.done.length,0);
+      const reasons={};h.forEach(x=>x.sk.forEach(k=>reasons[k.reason]=(reasons[k.reason]||0)+1));
+      return {r,runs:h.length,pl,dn,sk:pl-dn,rate:pl?Math.round(dn/pl*100):0,top:Object.entries(reasons).sort((a,b)=>b[1]-a[1])[0]}});
+    rows=[['Tuyến','Sale','Số lượt chạy','Điểm kế hoạch','Đã ghé','Bỏ qua','Hoàn thành %','Lý do bỏ qua nhiều nhất']].concat(data.map(d=>[d.r.name,SALE(d.r.saleId).name,d.runs,d.pl,d.dn,d.sk,d.rate,d.top?d.top[0]:'']));
+    body=`<div class="tbl"><table class="t"><thead><tr><th>Tuyến</th><th>Sale</th><th>Lịch</th><th class="num">Lượt chạy</th><th class="num">Kế hoạch</th><th class="num">Đã ghé</th><th class="num">Bỏ qua</th><th style="width:20%">Hoàn thành</th><th>Lý do bỏ qua nhiều nhất</th></tr></thead><tbody>
+      ${data.map(d=>`<tr class="click" onclick="S.routeSel='${d.r.id}';go('routes')"><td><b>${esc(d.r.name)}</b></td><td>${schip(d.r.saleId)}</td><td>${daysHtml(d.r.days)}</td><td class="num">${d.runs}</td><td class="num">${d.pl}</td><td class="num">${d.dn}</td><td class="num">${d.sk}</td><td><div class="row" style="flex-wrap:nowrap"><div class="bar" style="flex:1"><i style="width:${d.rate}%;background:${d.rate>=85?'#16a34a':d.rate>=70?'#d97706':'#dc2626'}"></i></div><span class="small b">${d.rate}%</span></div></td><td class="small">${d.top?`${esc(d.top[0])} (${d.top[1]})`:'—'}</td></tr>`).join('')}</tbody></table></div>`;
+  }else{
+    const fin=vs.filter(v=>v.outM!=null),oc={};fin.forEach(v=>oc[v.outcome]=(oc[v.outcome]||0)+1);
+    const bk=[['< 10 phút',0,10],['10–20 phút',10,20],['20–30 phút',20,30],['30–45 phút',30,45],['> 45 phút',45,999]].map(([l,a,b])=>[l,fin.filter(v=>v.outM-v.inM>=a&&v.outM-v.inM<b).length]);
+    const mo=Math.max(...Object.values(oc),1),mb=Math.max(...bk.map(b=>b[1]),1);
+    const od=sids.map(id=>[SALE(id),actions.filter(a=>a.sid===id&&a.status==='open'&&a.due<TODAY).length,actions.filter(a=>a.sid===id&&a.created>=from).length]);
+    rows=[['Kết quả visit','Số lượng','Tỷ lệ %']].concat(Object.entries(oc).map(([k,n])=>[k,n,Math.round(n/fin.length*100)]));
+    body=`<div class="kpis" style="margin-bottom:16px">${kpi('Visit hoàn thành',fin.length,`${p.period} ngày`,'#1a5276')}${kpi('Thời lượng TB',Math.round(fin.reduce((a,v)=>a+v.outM-v.inM,0)/Math.max(1,fin.length))+'<small> phút</small>','Check-in → check-out','#0891b2')}${kpi('Tỷ lệ ra đơn',Math.round((oc['Đặt hàng']||0)/Math.max(1,fin.length)*100)+'%','Outcome “Đặt hàng”','#16a34a')}${kpi('GPS cần duyệt',vs.filter(v=>v.flags.length).length,'Ngoài bán kính / quá ngắn','#dc2626')}</div>
+     <div class="g2e"><div class="card"><h3>Kết quả visit (outcome chuẩn hóa)</h3>${Object.entries(oc).sort((a,b)=>b[1]-a[1]).map(([k,n])=>`<div class="hbar"><span>${k}</span><div class="bar"><i style="width:${n/mo*100}%;background:${OUT_C[k]}"></i></div><span class="small b">${n} <span class="muted">(${Math.round(n/fin.length*100)}%)</span></span></div>`).join('')}</div>
+     <div class="card"><h3>Phân bố thời lượng visit</h3>${bk.map(([l,n])=>`<div class="hbar"><span>${l}</span><div class="bar"><i style="width:${n/mb*100}%;background:#2e86c1"></i></div><span class="small b">${n}</span></div>`).join('')}
+       <h3 style="margin-top:18px">Next Action theo Sale</h3><div class="tbl"><table class="t"><thead><tr><th>Sale</th><th class="num">Tạo trong kỳ</th><th class="num">Quá hạn</th></tr></thead><tbody>${od.map(([s,o,n])=>`<tr><td>${schip(s.id)}</td><td class="num">${n}</td><td class="num" style="${o?'color:var(--bad)':''}">${o}</td></tr>`).join('')}</tbody></table></div></div></div>`;
+  }
+  c.innerHTML=`<div class="row" style="margin-bottom:4px"><div class="tabs" style="flex:1;margin:0">${[['sale','Theo Sale'],['coverage','Độ phủ theo khu vực'],['route','Hoàn thành tuyến'],['quality','Chất lượng visit']].map(([k,l])=>`<button class="${p.tab===k?'on':''}" onclick="S.rp.tab='${k}';go('reports')">${l}</button>`).join('')}</div>
+    <select onchange="S.rp.period=+this.value;go('reports')">${[[7,'7 ngày'],[14,'14 ngày'],[30,'30 ngày']].map(([v,l])=>`<option value="${v}" ${p.period===v?'selected':''}>${l}</option>`).join('')}</select>
+    <button class="btn sm" onclick="exportCSV('bao_cao_${p.tab}',window._rows)">${ic('dl',14)} Xuất Excel</button></div>
+    <p class="muted small" style="margin:8px 0 14px">Kỳ báo cáo: ${fmtD(from)} – ${fmtD(TODAY)} · ${S.role==='lead'?'Team Hà Nội Tây':'Toàn bộ thị trường'} · Dữ liệu hôm nay realtime, dữ liệu kỳ tổng hợp theo batch.</p>${body}`;
+  window._rows=rows;
+}
+
+/* ============================================================
+   APP SALE (MOBILE)
+   ============================================================ */
+const ME='s1';
+function curPos(){const t=visits.filter(v=>v.sid===ME&&sameDay(v.date,TODAY)).sort((a,b)=>b.inM-a.inM)[0];if(t){const o=OUT(t.oid);return[o.lat,o.lng]}return DIST['Cầu Giấy'].c}
+function stopState(r,oid){
+  const v=visits.find(v=>v.rid===r.id&&v.oid===oid&&sameDay(v.date,TODAY));
+  if(v)return v.outM==null?'prog':'done';
+  if(skips.find(k=>k.rid===r.id&&k.oid===oid&&sameDay(k.date,TODAY)))return'skip';
+  return'pending';
+}
+function rMobile(c){
+  c.innerHTML=`<div class="mob">
+    <div class="side-col"><div class="card"><h3>Kịch bản demo cho Sale</h3><ol class="steps" style="padding:0;margin:0">
+      <li><b>Mở tuyến hôm nay</b>Tuyến Cầu Giấy 01 – danh sách điểm có thứ tự, điểm tiếp theo được đánh dấu.</li>
+      <li><b>Chọn điểm → Check-in</b>Kéo thanh “khoảng cách mô phỏng” để thử xác thực GPS theo bán kính ${S.cfg.radius}m.</li>
+      <li><b>Ghi note, chọn kết quả</b>Outcome chuẩn hóa để báo cáo được.</li>
+      <li><b>Tạo Next Action & Check-out</b>Thời lượng visit tự tính (demo: 1 giây = 1 phút, có nút tua nhanh).</li>
+      <li><b>Bỏ qua điểm / Đi tự do / Điểm ngoài tuyến</b>Ghi lý do bỏ qua; tạo outlet mới từ GPS.</li>
+    </ol><p class="muted small" style="margin:0">Sau mỗi bước, quay lại Tổng quan, Bản đồ hoặc Nhật ký để thấy dữ liệu cập nhật. Web responsive/PWA ở MVP1; app native khi cần chạy nền & offline.</p></div></div>
+    <div><div class="phone"><div class="notch"></div><div id="phone" style="display:flex;flex-direction:column;height:100%"></div></div></div>
+    <div class="side-col"><div class="card"><h3>${ic('bell',16)} Manager nhận được <span class="sub">realtime</span></h3><div class="feed" id="mfeed"></div></div></div>
+  </div>`;
+  renderPhone();renderMobileFeed();
+}
+function renderMobileFeed(){const el=$('#mfeed');if(el)el.innerHTML=S.notifs.slice(0,9).map(nitem).join('')}
+function renderPhone(){
+  const el=$('#phone');if(!el)return;const m=S.m,r=todayRoute(ME);
+  if(timerInt){clearInterval(timerInt);timerInt=null}
+  const bar=(t,s,back)=>`<div class="pbar">${back?`<button class="back" onclick="${back}">‹ Quay lại</button>`:''}<div class="t">${t}</div><div class="s">${s}</div></div>`;
+  let h='';
+  if(m.view==='home'){
+    const st=r.stops.map(s=>stopState(r,s.oid)),done=st.filter(x=>x==='done').length,nextI=st.indexOf('pending');
+    const openV=visits.find(v=>v.sid===ME&&sameDay(v.date,TODAY)&&v.outM==null);
+    h=bar('Xin chào, An 👋',`${WDL[TODAY.getDay()]} ${fmtDY(TODAY)} · ${fmtT(S.simMin)}`)+`<div class="pbody">
+      ${openV?`<div class="pcard" style="border:2px solid var(--warn)"><b>Đang visit: ${esc(OUT(openV.oid).name)}</b><div class="small muted">Check-in lúc ${fmtT(openV.inM)}</div><button class="pbtn" style="margin-top:8px" onclick="S.m.vid='${openV.id}';S.m.oid='${openV.oid}';S.m.view='visit';renderPhone()">Tiếp tục visit</button></div>`:''}
+      <div class="pcard"><div class="row"><b style="flex:1">Tuyến ${esc(r.name)}</b>${daysHtml(r.days)}</div><div class="row" style="margin-top:8px;flex-wrap:nowrap"><div class="bar" style="flex:1;height:10px"><i style="width:${done/r.stops.length*100}%;background:var(--ok)"></i></div><b class="small">${done}/${r.stops.length}</b></div></div>
+      <div class="pcard" style="padding:4px 10px">${r.stops.map((s,i)=>{const o=OUT(s.oid),x=st[i],cls=x==='pending'&&i===nextI?'next':x;const v=visits.find(v=>v.rid===r.id&&v.oid===o.id&&sameDay(v.date,TODAY));
+        return `<div class="stop ${cls}" onclick="mOpen('${o.id}')"><span class="st">${x==='done'?'✓':x==='skip'?'✕':i+1}</span><div style="flex:1;min-width:0"><div class="b" style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(o.name)}</div><div class="small muted">${x==='done'?`Đã ghé ${fmtT(v.inM)}–${fmtT(v.outM)}`:x==='skip'?'Đã bỏ qua':x==='prog'?'Đang visit':cls==='next'?'Điểm tiếp theo · '+fmtDist(hav(curPos(),[o.lat,o.lng])):esc(o.addr.split(',')[0])}${s.req?'':' · tùy chọn'}</div></div></div>`}).join('')}</div>
+      <div class="row" style="flex-wrap:nowrap"><button class="pbtn alt" onclick="S.m.view='free';renderPhone()">Đi tự do</button><button class="pbtn alt" onclick="S.m.view='newOutlet';renderPhone()">+ Điểm ngoài tuyến</button></div></div>`;
+  }else if(m.view==='outlet'){
+    const o=OUT(m.oid),inR=r.stops.some(s=>s.oid===o.id),state=inR?stopState(r,o.id):'pending';
+    const g=gpsCheck();
+    h=bar(esc(o.name),`${esc(o.addr)}`,"S.m.view='home';renderPhone()")+`<div class="pbody">
+      <div class="pcard"><div class="row">${stPill(o)} ${inR?pill('#1a5276','Tuyến '+r.name,false):pill('#7c3aed','Ngoài tuyến',false)}</div>
+        <div class="small" style="margin-top:8px">Liên hệ: ${esc(o.contact)} · ${o.phone}<br>Lần ghé gần nhất: ${o.last?`${fmtD(o.last.date)} – ${esc(o.last.outcome||'')}`:'Chưa từng ghé'}<br>Số lần đã ghé: ${o.visitCount}</div>
+        ${o.last&&o.last.note?`<div class="small" style="margin-top:6px;background:#f8fafc;border-radius:8px;padding:8px"><b>Note lần trước (${SALE(o.last.sid).short}):</b> ${esc(o.last.note)}</div>`:''}
+        ${o.open.length?`<div class="small" style="margin-top:6px;color:var(--bad)"><b>Việc đang mở:</b> ${o.open.map(a=>`${esc(a.title)} (hạn ${fmtD(a.due)})`).join('; ')}</div>`:''}</div>
+      ${state==='done'||state==='skip'?`<div class="pcard small">Điểm này đã ${state==='done'?'được ghé':'bị bỏ qua'} hôm nay.</div>`:`
+      <div class="pcard"><b class="small">Mô phỏng vị trí GPS của Sale</b>
+        <div class="row small" style="margin-top:6px;flex-wrap:nowrap">Khoảng cách <input type="range" min="0" max="600" value="${m.dist}" style="flex:1" oninput="S.m.dist=+this.value;renderPhone()"><b>${m.dist}m</b></div>
+        <div class="row small" style="flex-wrap:nowrap">Độ chính xác <select onchange="S.m.acc=+this.value;renderPhone()">${[8,15,35,80].map(a=>`<option value="${a}" ${m.acc===a?'selected':''}>±${a}m</option>`).join('')}</select></div>
+        <div class="gpsbox ${g.cls}">${g.msg}</div>
+        ${g.cls!=='ok'&&!g.block?`<select style="width:100%;margin-bottom:8px" onchange="S.m.farReason=this.value"><option value="">— Chọn lý do lệch vị trí —</option>${FAR_REASONS.map(x=>`<option ${m.farReason===x?'selected':''}>${x}</option>`).join('')}</select>`:''}
+        <button class="pbtn" ${g.block||(g.cls!=='ok'&&!m.farReason)?'disabled':''} onclick="mCheckin()">📍 Check-in</button></div>
+      ${inR?`<div class="pcard"><b class="small">Không ghé được điểm này?</b><select style="width:100%;margin:6px 0" onchange="S.m.skipReason=this.value">${SKIP_REASONS.map(x=>`<option ${m.skipReason===x?'selected':''}>${x}</option>`).join('')}</select><button class="pbtn alt" onclick="mSkip()">Bỏ qua điểm</button></div>`:''}`}</div>`;
+  }else if(m.view==='visit'){
+    const v=visits.find(x=>x.id===m.vid),o=OUT(v.oid);
+    h=bar('Đang visit',esc(o.name),"S.m.view='home';renderPhone()")+`<div class="pbody">
+      <div class="pcard" style="text-align:center"><div class="small muted">Check-in ${fmtT(v.inM)} · GPS ${v.dist}m ${v.flags.length?'<span class="flag">Cần duyệt</span>':'<span class="okb">Hợp lệ</span>'}</div><div class="timer" id="vtimer">00 phút</div>
+        <div class="row" style="justify-content:center"><button class="chip" onclick="S.m.bonus+=5">+5 phút</button><button class="chip" onclick="S.m.bonus+=15">+15 phút</button><span class="small muted">(tua nhanh demo)</span></div></div>
+      <div class="pcard"><b class="small">Ghi chú làm việc</b><textarea id="mnote" rows="3" placeholder="VD: Trao đổi chính sách nhập hàng tháng 10; khách quan tâm dòng X." style="margin-top:6px">${esc(v.note)}</textarea><button class="chip" style="margin-top:6px" onclick="mSaveNote()">Lưu note</button></div>
+      <div class="pcard"><b class="small">Kết quả visit *</b><div class="chips" style="margin-top:6px">${S.cfg.outcomes.map(x=>`<button class="chip ${m.outcome===x?'on':''}" onclick="mOutcome('${x}')">${x}</button>`).join('')}</div></div>
+      <div class="pcard"><label class="row small b"><input type="checkbox" ${m.na?'checked':''} onchange="S.m.na=this.checked;renderPhone()"> Tạo Next Action</label>
+        ${m.na?`<input id="naTitle" style="width:100%;margin-top:6px" placeholder="Việc cần làm" value="${esc(m.naTitle)}" oninput="S.m.naTitle=this.value"><div class="row" style="margin-top:6px;flex-wrap:nowrap"><input type="date" id="naDue" value="${m.naDue||'2026-09-28'}" onchange="S.m.naDue=this.value" style="flex:1"><span class="small muted">Phụ trách: An</span></div>`:''}</div>
+      <button class="pbtn ok" ${m.outcome?'':'disabled'} onclick="mCheckout()">Check-out</button><div style="height:10px"></div></div>`;
+    const tick=()=>{const t=$('#vtimer');if(t)t.textContent=pad(mElapsed())+' phút'};tick();timerInt=setInterval(tick,1000);
+  }else if(m.view==='done'){
+    const v=visits.find(x=>x.id===m.vid),o=OUT(v.oid),a=v.aid?actions.find(x=>x.id===v.aid):null;
+    h=bar('Hoàn thành visit ✓',esc(o.name))+`<div class="pbody"><div class="pcard"><div class="log">
+      <div><span class="tm">${fmtT(v.inM)}</span><span class="k">Check-in</span><span>${v.rid?'Tuyến '+ROUTE(v.rid).name:'Ngoài tuyến'} · GPS ${v.dist}m</span></div>
+      ${v.note?`<div><span class="tm">${fmtT(v.inM+Math.min(8,v.outM-v.inM-1))}</span><span class="k">Note</span><span>${esc(v.note)}</span></div>`:''}
+      <div><span class="tm">${fmtT(v.outM)}</span><span class="k">Check-out</span><span>${v.outM-v.inM} phút · ${esc(v.outcome)}</span></div>
+      ${a?`<div><span class="tm">→</span><span class="k">Next Action</span><span>${esc(a.title)} · hạn ${fmtD(a.due)}</span></div>`:''}</div>
+      ${v.flags.length?`<div class="gpsbox warn">${v.flags.join(', ')} – visit được gửi Trưởng nhóm duyệt.</div>`:''}</div>
+      <div class="small muted" style="margin:0 4px 10px">Đã lưu vào Timeline khách hàng và gửi thông báo cho Trưởng nhóm/Quản lý.</div>
+      <button class="pbtn" onclick="S.m.view='home';renderPhone()">Về tuyến hôm nay</button><div style="height:8px"></div>
+      <button class="pbtn alt" onclick="openOutlet('${o.id}')">Xem timeline điểm bán</button></div>`;
+  }else if(m.view==='free'){
+    const pos=curPos(),pool=outlets.filter(o=>o.saleId===ME||(!o.saleId&&SALE(ME).districts.includes(o.district))).map(o=>({o,d:hav(pos,[o.lat,o.lng])})).sort((a,b)=>a.d-b.d);
+    h=bar('Đi tự do','Chọn điểm bán gần bạn',"S.m.view='home';renderPhone()")+`<div class="pbody"><input placeholder="Tìm điểm bán…" style="width:100%;margin-bottom:10px" oninput="document.querySelectorAll('#freeList .stop').forEach(e=>e.style.display=e.textContent.toLowerCase().includes(this.value.toLowerCase())?'':'none')">
+      <div class="pcard" style="padding:4px 10px" id="freeList">${pool.slice(0,30).map(({o,d})=>`<div class="stop" onclick="mOpen('${o.id}')"><span class="st" style="border-color:${STATUS[o.status].c}"> </span><div style="flex:1;min-width:0"><div class="b">${esc(o.name)}</div><div class="small muted">${fmtDist(d)} · ${STATUS[o.status].l} · ${o.last?'ghé '+daysAgo(o.last.date)+' ngày trước':'chưa từng ghé'}${o.saleId?'':' · chưa có Sale'}</div></div></div>`).join('')}</div></div>`;
+  }else if(m.view==='newOutlet'){
+    const p=curPos();
+    h=bar('Điểm bán mới','Tạo từ vị trí GPS hiện tại',"S.m.view='home';renderPhone()")+`<div class="pbody"><div class="pcard" style="display:flex;flex-direction:column;gap:8px">
+      <label class="f">Tên điểm bán *<input id="noName" placeholder="VD: Tạp hóa Thu Trang"></label>
+      <label class="f">Loại điểm<select id="noType">${TYPES.map(t=>`<option>${t[0]}</option>`).join('')}</select></label>
+      <label class="f">Người liên hệ<input id="noContact" placeholder="Chị Trang"></label>
+      <label class="f">Số điện thoại<input id="noPhone" placeholder="09xx xxx xxx"></label>
+      <label class="f">Địa chỉ<input id="noAddr" value="${rint(1,200)} Trần Duy Hưng, Cầu Giấy, Hà Nội"></label>
+      <div class="gpsbox ok">📍 GPS hiện tại: ${(p[0]+0.0012).toFixed(6)}, ${(p[1]+0.0009).toFixed(6)} (±9m)<br><span class="small">Địa chỉ được gợi ý bằng reverse-geocoding.</span></div>
+      <label class="row small"><input type="checkbox" id="noCheck" checked> Check-in ngay tại điểm này</label>
+      <button class="pbtn" onclick="mCreateOutlet()">Lưu điểm bán</button></div></div>`;
+  }
+  el.innerHTML=h;
+}
+function gpsCheck(){
+  const m=S.m,R=S.cfg.radius;
+  if(m.acc>S.cfg.acc)return{cls:'warn',msg:`⚠️ Tín hiệu GPS yếu (±${m.acc}m > ngưỡng ${S.cfg.acc}m). Nên ra khu vực thoáng và thử lại; nếu vẫn check-in, visit sẽ được đánh dấu cần duyệt.`};
+  if(m.dist>R)return S.cfg.policy==='block'?{cls:'bad',block:true,msg:`⛔ Bạn đang cách điểm bán ${m.dist}m, vượt bán kính ${R}m. Chính sách hiện tại: <b>chặn check-in</b>.`}:{cls:'bad',msg:`⚠️ Cách điểm bán ${m.dist}m (bán kính ${R}m). Được phép check-in nhưng phải nêu lý do; visit sẽ chờ Trưởng nhóm duyệt.`};
+  return{cls:'ok',msg:`✓ Vị trí hợp lệ: cách điểm bán ${m.dist}m (±${m.acc}m), trong bán kính ${R}m.`};
+}
+function mOpen(oid){const r=todayRoute(ME),v=visits.find(v=>v.oid===oid&&v.sid===ME&&sameDay(v.date,TODAY)&&v.outM==null);S.m.oid=oid;S.m.farReason='';S.m.dist=rint(8,60);S.m.acc=12;if(v){S.m.vid=v.id;S.m.view='visit'}else S.m.view='outlet';renderPhone()}
+function mCheckin(){
+  const m=S.m,o=OUT(m.oid),r=todayRoute(ME),inR=r.stops.some(s=>s.oid===o.id);
+  const flags=[];if(m.dist>S.cfg.radius)flags.push('Ngoài bán kính');if(m.acc>S.cfg.acc)flags.push('GPS yếu');
+  S.simMin+=rint(6,12);
+  const v={id:'v'+(++vid),oid:o.id,sid:ME,rid:inR?r.id:null,date:TODAY,inM:S.simMin,outM:null,dist:m.dist,acc:m.acc,flags,farReason:m.farReason,outcome:null,note:'',lat:o.lat,lng:o.lng};
+  visits.push(v);m.vid=v.id;m.start=Date.now();m.bonus=0;m.outcome='';m.na=true;m.naTitle='';m.naDue='';m.view='visit';
+  notify('checkin',`An vừa check-in tại ${o.name} – ${fmtT(v.inM)} – ${o.district}${inR?'':' (ngoài tuyến)'}`,o.id,ME);
+  if(flags.length)notify('gps',`Check-in của An tại ${o.name}: ${flags.join(', ')} (${m.dist}m) – cần duyệt`,o.id,ME);
+  refresh();
+}
+const mElapsed=()=>Math.max(1,Math.floor((Date.now()-S.m.start)/1000)+S.m.bonus);
+function mSaveNote(){const v=visits.find(x=>x.id===S.m.vid);v.note=$('#mnote').value.trim();if(v.note)notify('note',`An cập nhật note tại ${OUT(v.oid).name}: “${v.note.slice(0,60)}${v.note.length>60?'…':''}”`,v.oid,ME);refresh()}
+function mOutcome(x){const n=$('#mnote');if(n){visits.find(v=>v.id===S.m.vid).note=n.value}S.m.outcome=x;S.m.na=!!ACTION_OF[x]||x==='Đặt hàng'?!!ACTION_OF[x]:false;S.m.naTitle=ACTION_OF[x]||'';renderPhone()}
+function mCheckout(){
+  const m=S.m,v=visits.find(x=>x.id===m.vid),o=OUT(v.oid);
+  const n=$('#mnote');if(n)v.note=n.value.trim();
+  const dur=mElapsed();v.outM=v.inM+dur;v.outcome=m.outcome;
+  if(dur<S.cfg.minDur)v.flags.push('Visit quá ngắn');
+  if(m.na&&(m.naTitle||$('#naTitle')?.value)){const t=$('#naTitle')?.value||m.naTitle,[y,mo,d]=($('#naDue')?.value||m.naDue||'2026-09-28').split('-').map(Number);
+    actions.push({id:'a'+(++aid),oid:o.id,vid:v.id,sid:ME,title:t,due:new Date(y,mo-1,d),status:'open',created:TODAY});v.aid='a'+aid}
+  if(v.outcome==='Đặt hàng')orders.push({id:'SO-0925-'+String(++ordN).padStart(4,'0'),oid:o.id,vid:v.id,sid:ME,date:TODAY,amount:rint(20,150)*100000,items:rint(3,10),status:'Chờ duyệt'});
+  S.simMin=v.outM;m.view='done';
+  notify('checkout',`An hoàn thành visit ${o.name} – thời lượng ${dur} phút · Kết quả: ${v.outcome}`,o.id,ME);
+  refresh();
+}
+function mSkip(){
+  const m=S.m,o=OUT(m.oid),r=todayRoute(ME);
+  skips.push({id:'k'+(++kid),date:TODAY,rid:r.id,oid:o.id,sid:ME,reason:m.skipReason,atM:S.simMin});
+  notify('skip',`Điểm ${o.name} chưa được ghé theo tuyến ${r.name} ngày ${fmtD(TODAY)} – lý do: ${m.skipReason}`,o.id,ME);
+  m.view='home';refresh();
+}
+function mCreateOutlet(){
+  const name=$('#noName').value.trim();if(!name){$('#noName').focus();return}
+  const p=curPos(),cu={id:'c'+(++cid),name:'Hộ KD '+name,kind:'Hộ kinh doanh',group:'Bán lẻ',contact:$('#noContact').value||'—',phone:$('#noPhone').value||'—'};customers.push(cu);
+  const o={id:'o'+(++oi),code:'OL'+String(oi).padStart(4,'0'),name,type:$('#noType').value,district:'Cầu Giấy',addr:$('#noAddr').value,lat:p[0]+0.0012,lng:p[1]+0.0009,status:'new',saleId:ME,created:TODAY,cid:cu.id,phone:cu.phone,contact:cu.contact,source:'field',createdBy:ME};
+  outlets.push(o);usedNames.add(name);
+  notify('newoutlet',`An tạo điểm bán mới ngoài tuyến: ${name} (GPS) – Cầu Giấy`,o.id,ME);
+  reindex();
+  if($('#noCheck').checked){S.m.oid=o.id;S.m.dist=6;S.m.acc=9;S.m.farReason='';mCheckin()}else{S.m.view='home';refresh()}
+}
+
+/* ============================================================
+   CẤU HÌNH
+   ============================================================ */
+function rSettings(c){
+  if(S.role!=='admin'){c.innerHTML=`<div class="card empty">Chỉ Quản lý / Admin được thay đổi cấu hình DMS.<br><button class="btn" style="margin-top:10px" onclick="S.role='admin';renderUser();updateBell();go('settings')">Chuyển sang vai trò Admin</button></div>`;return}
+  const cf=S.cfg,EVN={checkin:'Check-in',checkout:'Check-out',note:'Cập nhật note / kết quả',skip:'Bỏ điểm trong tuyến',overdue:'Next Action quá hạn',gps:'Check-in ngoài bán kính / GPS yếu',newoutlet:'Tạo điểm bán ngoài tuyến',handover:'Bàn giao Sale phụ trách'};
+  c.innerHTML=`<div class="g2e">
+  <div class="card"><h3>${ic('pin',16)} Xác thực GPS & Check-in</h3>
+    <div class="set-row"><div class="h"><b>Bán kính check-in</b><span>Khoảng cách tối đa giữa Sale và GPS điểm bán</span></div><div class="row"><input type="range" min="30" max="500" step="10" value="${cf.radius}" oninput="S.cfg.radius=+this.value;this.nextElementSibling.textContent=this.value+' m'" style="flex:1"><b>${cf.radius} m</b></div></div>
+    <div class="set-row"><div class="h"><b>Ngưỡng độ chính xác GPS</b><span>Trên ngưỡng = GPS yếu</span></div><select onchange="S.cfg.acc=+this.value">${[20,30,50,80,100].map(v=>`<option ${cf.acc===v?'selected':''} value="${v}">±${v} m</option>`).join('')}</select></div>
+    <div class="set-row"><div class="h"><b>Khi vượt bán kính</b><span>Chính sách xử lý</span></div><select onchange="S.cfg.policy=this.value"><option value="flag" ${cf.policy==='flag'?'selected':''}>Cho phép + bắt buộc lý do + chờ duyệt</option><option value="block" ${cf.policy==='block'?'selected':''}>Chặn check-in</option></select></div>
+    <div class="set-row"><div class="h"><b>Thời lượng visit tối thiểu</b><span>Ngắn hơn sẽ bị gắn cờ</span></div><select onchange="S.cfg.minDur=+this.value">${[0,3,5,10].map(v=>`<option ${cf.minDur===v?'selected':''} value="${v}">${v?v+' phút':'Không kiểm tra'}</option>`).join('')}</select></div>
+    <div class="set-row"><div class="h"><b>Chống giả lập vị trí</b><span>Đề xuất cho bản app native</span></div><div class="small"><label class="row"><input type="checkbox" checked disabled> Phát hiện Mock Location (Android)</label><label class="row"><input type="checkbox" checked disabled> Kiểm tra vận tốc bất thường giữa 2 check-in</label><label class="row"><input type="checkbox" disabled> Bắt buộc chụp ảnh tại điểm bán</label></div></div>
+  </div>
+  <div class="card"><h3>${ic('clock',16)} Tần suất chăm sóc theo trạng thái</h3>
+    <p class="muted small" style="margin-top:0">Dùng để tính “Lâu chưa ghé” và độ phủ “đúng tần suất”.</p>
+    ${Object.entries(STATUS).map(([k,v])=>`<div class="set-row"><div class="h">${pill(v.c,v.l)}</div><div class="row"><input type="number" min="1" max="90" value="${cf.freq[k]}" style="width:80px" onchange="S.cfg.freq['${k}']=+this.value;reindex()"> ngày / lần</div></div>`).join('')}
+    <h3 style="margin-top:16px">Kết quả visit chuẩn hóa</h3>
+    <div class="chips">${cf.outcomes.map((o,i)=>`<span class="chip">${esc(o)} <a href="#" onclick="S.cfg.outcomes.splice(${i},1);go('settings');return false" style="color:var(--bad);text-decoration:none">×</a></span>`).join('')}</div>
+    <div class="row" style="margin-top:8px"><input id="newOc" placeholder="Thêm kết quả…"><button class="btn sm" onclick="const v=$('#newOc').value.trim();if(v){S.cfg.outcomes.push(v);OUT_C[v]=OUT_C[v]||'#0f766e';go('settings')}">Thêm</button></div>
+  </div></div>
+  <div class="card" style="margin-top:16px"><h3>${ic('bell',16)} Quy tắc thông báo <span class="sub">Gửi tới Trưởng nhóm & Quản lý theo phạm vi quyền</span></h3>
+    <div class="tbl"><table class="t"><thead><tr><th>Sự kiện</th><th>In-app</th><th>Email</th><th>Zalo OA / ZNS</th><th>Ví dụ nội dung</th></tr></thead><tbody>
+    ${Object.entries(EVN).map(([k,l])=>`<tr><td>${l}</td>${['inapp','email','zalo'].map(ch=>`<td><input type="checkbox" ${cf.notif[k][ch]?'checked':''} onchange="S.cfg.notif['${k}']['${ch}']=this.checked"></td>`).join('')}<td class="small muted">${{checkin:'Sale A vừa check-in tại Cửa hàng Minh Anh – 09:32 – Cầu Giấy',checkout:'Sale A hoàn thành visit – thời lượng 33 phút',note:'Sale A cập nhật kết quả: khách cần báo giá',skip:'Điểm C chưa được ghé theo tuyến ngày 25/09',overdue:'Khách X có việc cần xử lý quá hạn',gps:'Check-in lệch 260m – cần duyệt',newoutlet:'Sale A tạo điểm bán mới ngoài tuyến',handover:'12 điểm bán được bàn giao cho Sale B'}[k]}</td></tr>`).join('')}
+    </tbody></table></div></div>`;
+}
+
+/* ============================================================
+   KIẾN TRÚC & MVP
+   ============================================================ */
+function rArch(c){
+  const B=[
+    ['Customer (CRM)',0,0,['id, tên, nhóm','trạng thái, liên hệ','thông tin kinh doanh']],
+    ['Outlet / Điểm bán',1,0,['id, customer_id','địa chỉ, lat/lng (geo index)','loại, trạng thái','sale_id (hiện tại)','source, created_by']],
+    ['Sale / Team',2,0,['id, user_id, team_id','khu vực, vai trò','data scope: own/team/all']],
+    ['Order (ERP)',0,1,['id, outlet_id','visit_id (nullable)','ngày, giá trị, erp_ref']],
+    ['Visit',1,1,['id, outlet_id, sale_id','route_id (nullable)','checkin_at, lat/lng, accuracy','checkout_at, outcome, note','flags[], device_info']],
+    ['Route',2,1,['id, tên, sale_id','lịch (T2…CN)','hiệu lực từ/đến']],
+    ['Assignment History',0,2,['outlet_id','from_sale → to_sale','at, by, reason']],
+    ['Next Action',1,2,['id, visit_id, outlet_id','assignee, due','status, done_at']],
+    ['Route Stop',2,2,['route_id, outlet_id','seq (thứ tự)','required, skip_reason*']],
+  ];
+  const X=i=>20+i*270,Y=j=>20+j*190,W=220,H=b=>30+b[3].length*17+8;
+  const ctr=n=>{const b=B.find(b=>b[0]===n);return[X(b[1])+W/2,Y(b[2])+H(b)/2]};
+  const E=[['Customer (CRM)','Outlet / Điểm bán','1 – n'],['Outlet / Điểm bán','Sale / Team','n – 1'],['Outlet / Điểm bán','Visit','1 – n'],['Visit','Sale / Team','n – 1'],['Visit','Route','n – 0..1'],['Route','Route Stop','1 – n'],['Visit','Next Action','1 – n'],['Outlet / Điểm bán','Assignment History','1 – n'],['Outlet / Điểm bán','Order (ERP)','1 – n'],['Visit','Order (ERP)','0..1']];
+  const svg=`<svg class="erd" viewBox="0 0 800 580" role="img" aria-label="Sơ đồ quan hệ dữ liệu DMS">
+    ${E.map(([a,b,l])=>{const p=ctr(a),q=ctr(b),mx=(p[0]+q[0])/2,my=(p[1]+q[1])/2;return `<line x1="${p[0]}" y1="${p[1]}" x2="${q[0]}" y2="${q[1]}" stroke="#94a3b8" stroke-width="1.5" ${l==='0..1'?'stroke-dasharray="5 4"':''}/><rect x="${mx-26}" y="${my-9}" width="52" height="18" rx="4" fill="#fff" stroke="#e2e8f0"/><text x="${mx}" y="${my+4}" font-size="10.5" text-anchor="middle" fill="#475569">${l}</text>`}).join('')}
+    ${B.map(b=>{const x=X(b[1]),y=Y(b[2]),h=H(b),core=['Outlet / Điểm bán','Visit'].includes(b[0]);return `<g><rect x="${x}" y="${y}" width="${W}" height="${h}" rx="8" fill="#fff" stroke="${core?'#1a5276':'#cbd5e1'}" stroke-width="${core?2:1}"/><rect x="${x}" y="${y}" width="${W}" height="26" rx="8" fill="${core?'#1a5276':'#e8f2fb'}"/><rect x="${x}" y="${y+18}" width="${W}" height="8" fill="${core?'#1a5276':'#e8f2fb'}"/><text x="${x+10}" y="${y+17}" font-size="12.5" font-weight="600" fill="${core?'#fff':'#0e3556'}">${b[0]}</text>${b[3].map((f,i)=>`<text x="${x+10}" y="${y+44+i*17}" font-size="11" fill="#334155">${f}</text>`).join('')}</g>`}).join('')}
+  </svg>`;
+  const T=[
+   ['Bản đồ','Map provider, chi phí API, geocoding, clustering','Tile OSM/Mapbox (chi phí thấp) + geocoding Vietmap/Google cho địa chỉ VN; cache kết quả geocode vào Outlet.','Theo dõi quota; chỉ geocode khi tạo/sửa địa chỉ.'],
+   ['GPS','Độ chính xác, bán kính, GPS yếu, chống gian lận','Bán kính mặc định 100m (cấu hình theo loại điểm); ngưỡng ±50m; lưu lat/lng/accuracy/timestamp thiết bị + server.','Native: phát hiện mock location, kiểm tra vận tốc giữa 2 check-in, ảnh tại điểm.'],
+   ['Mobile','Web responsive hay app, chạy nền','MVP1: web responsive/PWA (Geolocation API khi mở app) – triển khai nhanh.','App native (Flutter/React Native) khi cần tracking nền và offline.'],
+   ['Offline','Check-in/note khi mất mạng','MVP: online, retry tự động khi mạng chập chờn.','Hàng đợi cục bộ (IndexedDB/SQLite), gửi kèm thời gian thiết bị; server đối chiếu và gắn cờ khi lệch.'],
+   ['Notification','In-app, email, Zalo/SMS','In-app realtime (WebSocket/SSE) theo phạm vi quyền; email tổng hợp cuối ngày.','Zalo ZNS cho sự kiện quan trọng (quá hạn, bỏ tuyến).'],
+   ['Dữ liệu','Customer – Outlet – Sale – Route – Visit – Order','Tách Customer/Outlet; Visit lưu sale_id tại thời điểm ghé → đổi Sale không mất lịch sử; Visit chỉ ghi thêm (append-only).','Liên kết Order/ERP qua outlet_id + visit_id.'],
+   ['Phân quyền','Sale/team/admin, đổi Sale phụ trách','RBAC + phạm vi dữ liệu (own/team/all) lọc ở tầng query.','Quyền chi tiết theo khu vực.'],
+   ['Audit log','Ai tạo/sửa/xóa','Bảng audit chung: entity, action, before/after, actor, thời điểm, IP/thiết bị.','Không xóa cứng Visit.'],
+   ['Hiệu năng','Hàng chục nghìn điểm trên bản đồ','Chỉ tải điểm trong khung nhìn hiện tại (geo index, PostGIS); phân trang danh sách.','Gom cụm phía server khi > 5.000 điểm; vector tiles khi > 50.000 điểm.'],
+   ['Báo cáo','Realtime hay batch, export','KPI hôm nay: realtime. Báo cáo kỳ: bảng tổng hợp chạy batch hằng đêm.','Xuất Excel bất đồng bộ với tập dữ liệu lớn.'],
+  ];
+  const PH=[['MVP 1','#1a5276','Outlet + GPS + bản đồ + Sale phụ trách + Check-in/Check-out + Note + Timeline + phân quyền cơ bản','02 Bản đồ · 05 Điểm bán · 06 Nhật ký · App Sale · Cấu hình GPS'],
+   ['MVP 2','#2e86c1','Tuyến cố định + lịch tuyến + theo dõi hoàn thành tuyến + notification + Next Action','03 Tuyến · 04 Lịch Sale · Thông báo'],
+   ['MVP 3','#0f766e','Độ phủ + báo cáo nâng cao + điểm ngoài tuyến + cảnh báo lâu chưa ghé + dashboard quản lý','01 Tổng quan · 07 Báo cáo'],
+   ['Mở rộng','#d4ac0d','Offline, tối ưu route, tích hợp đơn hàng/ERP, Zalo/SMS, phân tích nâng cao','Nút “Tối ưu thứ tự”, tab Đơn hàng, kênh Zalo']];
+  c.innerHTML=`<div class="card"><h3>Luồng nghiệp vụ cốt lõi</h3><div class="flow">${['Quản lý thị trường','Phân bổ Sale','Xây tuyến','Sale đi thị trường','Check-in GPS','Note / Kết quả','Check-out','Next Action','Timeline','Notification','Dashboard / Độ phủ'].map(x=>`<span>${x}</span>`).join('<em>→</em>')}</div>
+    <p class="small muted" style="margin:10px 0 0">Bản đồ = lớp trực quan · GPS = lớp xác thực · Visit/Timeline = lớp dữ liệu lịch sử · Dashboard = lớp quản trị.</p></div>
+  <div class="g2" style="margin-top:16px"><div class="card"><h3>Mô hình dữ liệu đề xuất</h3>${svg}</div>
+   <div class="card"><h3>Nguyên tắc thiết kế</h3><div class="list small">
+    <div class="li"><b style="width:18px">1</b><div><b>Visit là bản ghi không sửa được.</b> Chỉnh sửa tạo bản ghi điều chỉnh, có audit – làm bằng chứng làm việc.</div></div>
+    <div class="li"><b style="width:18px">2</b><div><b>Đổi Sale không mất lịch sử.</b> Visit lưu sale_id tại thời điểm ghé; việc bàn giao ghi vào Assignment History.</div></div>
+    <div class="li"><b style="width:18px">3</b><div><b>Tách Khách hàng và Điểm bán.</b> Một khách hàng có nhiều điểm; DMS vận hành ở cấp điểm bán.</div></div>
+    <div class="li"><b style="width:18px">4</b><div><b>Mọi visit phải có kết quả chuẩn hóa</b> và có thể sinh Next Action → báo cáo được, không để visit “trôi”.</div></div>
+    <div class="li"><b style="width:18px">5</b><div><b>Độ phủ và tần suất là tham số cấu hình</b>, định nghĩa rõ trong BRD (3 cách tính đã mô phỏng ở Báo cáo).</div></div>
+    <div class="li"><b style="width:18px">6</b><div><b>Phạm vi dữ liệu theo vai trò</b> áp dụng ở tầng API – bản đồ, báo cáo, thông báo dùng chung một bộ lọc.</div></div>
+   </div></div></div>
+  <div class="card" style="margin-top:16px"><h3>Các điểm cần trao đổi với Giám đốc Kỹ thuật <span class="sub">Khuyến nghị ban đầu để thảo luận</span></h3>
+   <div class="tbl"><table class="t"><thead><tr><th>Hạng mục</th><th>Câu hỏi</th><th>Khuyến nghị cho MVP</th><th>Hướng mở rộng</th></tr></thead><tbody>${T.map(r=>`<tr><td class="b">${r[0]}</td><td class="small muted">${r[1]}</td><td class="small">${r[2]}</td><td class="small">${r[3]}</td></tr>`).join('')}</tbody></table></div></div>
+  <div class="card" style="margin-top:16px"><h3>Phạm vi MVP theo giai đoạn <span class="sub">Tag MVP trên menu trái tương ứng</span></h3>
+   <div class="tbl"><table class="t"><thead><tr><th>Phase</th><th>Phạm vi</th><th>Màn hình trong mockup</th></tr></thead><tbody>${PH.map(p=>`<tr><td><span class="phase" style="background:${p[1]}">${p[0]}</span></td><td class="small">${p[2]}</td><td class="small muted">${p[3]}</td></tr>`).join('')}</tbody></table></div></div>`;
+}
+
+/* ============================================================
+   INIT
+   ============================================================ */
+seedNotifs();renderUser();renderClock();updateBell();go('overview');
+</script>
+</body>
+</html>
